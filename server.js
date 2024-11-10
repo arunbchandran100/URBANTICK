@@ -2,6 +2,7 @@ const express = require("express");
 const app = express();
 app.set("view engine", "ejs"); 
 app.use(express.static("public"));
+require("./models/mongodb");
 
 // const session = require("express-session");
 // const nocache = require("nocache");
