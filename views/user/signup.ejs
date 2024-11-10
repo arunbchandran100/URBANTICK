@@ -45,7 +45,7 @@
         <h2 class="text-2xl font-semibold text-center mb-6">Signup</h2>
 
         <!-- Signup Form -->
-        <form action="/user/signup" method="post" id="signup-form" class="space-y-4" onsubmit="return validateForm()">
+        <form action="/user/signup" method="post" id="signup-form" class="space-y-4" onsubmit="handleSignup(event)">
 
         <!-- Username Input -->
         <div>
@@ -86,6 +86,8 @@
         <div>
             <button type="submit" class="w-full py-3 bg-black text-white font-semibold rounded-lg hover:bg-gray-800 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-gray-700">Signup</button>
         </div>
+
+        <div id="signup-success" class="success-text text-green-500"></div>
       </form>
 
     </div>
