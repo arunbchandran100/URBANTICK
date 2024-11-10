@@ -20,7 +20,7 @@ const userSchema = new mongoose.Schema({
 
 // Password hashing middleware
 userSchema.pre("save", async function (next) {
-  if (!this.isModified("password")) return next(); // Only hash the password if it's new or modified
+  if (!this.isModified("password")) return next();  
 
   try {
     // Hash the password using bcrypt with salt rounds

@@ -23,7 +23,7 @@ const path = require("path");
 // );
 
 app.use(express.json());
-app.use(express.urlencoded({ extended: true })); // Add this line to handle form data
+app.use(express.urlencoded({ extended: true })); 
 
 
 const publicUsers = require("./routes/publicUsersRoute")
