@@ -8,7 +8,7 @@
     if (!regex.test(fullName)) {
         fullNameError.textContent = "Only alphabets are allowed.";
     } else {
-        fullNameError.textContent = "";
+        fullNameError.textContent = "";  
     }
     }
 
@@ -22,7 +22,7 @@
     
     if (startsWithNumber) {
         emailError.textContent = "Email ID cannot start with a number.";
-        return; // Return early if this condition is met
+        return;  
     }
 
     const regex = /^[\w-\.]+@([\w-]+\.)+[\w-]{2,4}$/;

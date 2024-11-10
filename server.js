@@ -22,13 +22,14 @@ const path = require("path");
 //   })
 // );
 
-app.use(express.urlencoded({ extended: true }));
 app.use(express.json());
+app.use(express.urlencoded({ extended: true })); // Add this line to handle form data
 
-const publicUsers = require("./routes/publicUsers")
+
+const publicUsers = require("./routes/publicUsersRoute")
 app.use("/", publicUsers)
 
-const userRoute = require("./routes/user");
+const userRoute = require("./routes/userRoute");
 app.use("/user", userRoute);
 
 // const adminRoute = require("./routes/admin");

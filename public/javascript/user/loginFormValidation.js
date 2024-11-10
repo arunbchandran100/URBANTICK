@@ -8,7 +8,7 @@ function validateEmail() {
 
   if (startsWithNumber) {
     emailError.textContent = "Email ID cannot start with a number.";
-    return; // Return early if this condition is met
+    return; 
   }
 
   const regex = /^[\w-\.]+@([\w-]+\.)+[\w-]{2,4}$/;
