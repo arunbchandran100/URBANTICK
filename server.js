@@ -4,6 +4,7 @@ app.set("view engine", "ejs");
 app.use(express.static("public"));
 require("./models/mongodb");
 const path = require("path");
+require("dotenv").config();
 
 
 // const session = require("express-session");

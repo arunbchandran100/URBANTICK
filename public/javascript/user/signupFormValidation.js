@@ -10,7 +10,7 @@ function validateFullName() {
   } else {
     fullNameError.textContent = "";
     return true;
-  }
+    }
 }
 
 function validateEmail() {
@@ -97,12 +97,11 @@ function togglePasswordVisibility(id) {
 
 // Handle signup
 async function handleSignup(event) {
-  event.preventDefault(); // Prevent the form from submitting and redirecting
+  event.preventDefault();
 
-  const isFormValid = validateForm(); // Ensure validateForm returns a boolean
-
+  const isFormValid = validateForm();
   if (!isFormValid) {
-    return; // Stop execution if form is not valid
+    return;
   }
 
   const fullName = document.getElementById("fullName").value;
@@ -110,7 +109,6 @@ async function handleSignup(event) {
   const password = document.getElementById("password").value;
 
   try {
-    // Send signup data to the server using fetch
     const response = await fetch("/user/signup", {
       method: "POST",
       headers: {
@@ -120,29 +118,53 @@ async function handleSignup(event) {
     });
 
     const data = await response.json();
-    console.log(data); // Log the response for debugging
-
-    if (response.status === 201) {
-      // If signup is successful, clear error messages and redirect to login page
-      document.getElementById("email-error").textContent = "";
-      document.getElementById("signup-success").textContent = data.message; // Show success message
-      setTimeout(() => {
-        window.location.href = "/user/login"; // Redirect to login page after 2 seconds
-      }, 1500); // Delay to show the success message before redirect
-    } else if (
-      response.status === 400 &&
-      data.message === "Email is already registered"
-    ) {
-      // Show specific error message for already registered email
-      document.getElementById("email-error").textContent = data.message;
+    if (response.status === 200) {
+      alert(data.message);
+      document.getElementById("otp-section").style.display = "block"; // Show OTP input section
     } else {
-      // Show generic error message for other types of errors
-      document.getElementById("email-error").textContent =
-        data.message || "An error occurred during signup. Please try again.";
+      document.getElementById("email-error").textContent = data.message;
     }
   } catch (error) {
-    console.error("Error:", error);
     document.getElementById("email-error").textContent =
       "An error occurred during signup. Please try again.";
   }
 }
+
+
+async function handleOTPVerification(event) {
+  event.preventDefault();
+
+  const email = document.getElementById("email").value;
+  const otp = document.getElementById("otp").value;
+  const fullName = document.getElementById("fullName").value;
+  const password = document.getElementById("password").value;
+
+  try {
+    const response = await fetch("/user/verify-otp", {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({ email, otp, fullName, password }),
+    });
+
+    const data = await response.json();
+    if (response.status === 201) {
+      alert(data.message);
+      window.location.href = "/user/login";
+    } else {
+      document.getElementById("otp-error").textContent = data.message;
+    }
+  } catch (error) {
+    document.getElementById("otp-error").textContent =
+      "An error occurred during OTP verification. Please try again.";
+  }
+}
+
+
+
+
+
+
+
+

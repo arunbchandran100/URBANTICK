@@ -33,28 +33,72 @@ exports.loginPOST = async (req, res) => {
 
 
 // -------------User Signup Page--------------------
+const { OTP, saveOTP } = require("../models/otpModel");
+const nodemailer = require("nodemailer");
+const { generateOTP, sendOTPEmail } = require("../utils/sendOTPutil");
+const crypto = require("crypto");
+
+
 exports.signupGET = (req, res) => {
   res.render("user/signup");
 };
 
+// Configure nodemailer
+const transporter = nodemailer.createTransport({
+  service: 'Gmail', // Use your email provider
+  auth: {
+    user: process.env.EMAIL, // Your email address
+    pass: process.env.PASSWORD, // Your email password
+  },
+});
+
+
+
+
+
+
+// Generate and send OTP, save OTP to database
 exports.signupPOST = async (req, res) => {
   try {
     const { fullName, email, password } = req.body;
     const userExists = await User.findOne({ email });
     if (userExists) {
       return res.status(400).json({ message: "Email is already registered" });
-    } else {
-      const newUser = new User({
-        fullName,
-        email,
-        password,
-      });
-
-      await newUser.save();
-
-      res.status(201).json({ message: "User registered successfully" });
     }
+
+    const otp = generateOTP();
+    console.log(otp)
+    await sendOTPEmail(email, otp);
+    await saveOTP(email, otp);
+
+    res.status(200).json({ message: "OTP sent to your email" });
   } catch (error) {
     res.status(500).json({ message: "Server error" });
   }
 };
+
+// Verify OTP and save user data to database
+exports.verifyOTP = async (req, res) => {
+  try {
+    const { email, otp, fullName, password } = req.body;
+    const otpRecord = await OTP.findOne({ email, otp });
+
+    if (!otpRecord) {
+      return res.status(400).json({ message: "Invalid OTP" });
+    }
+
+    const newUser = new User({ fullName, email, password });
+    await newUser.save();
+
+    await OTP.deleteOne({ email, otp });
+
+    res.status(201).json({ message: "User registered successfully" });
+  } catch (error) {
+    res.status(500).json({ message: "Server error" });
+  }
+};
+
+
+
+
+

@@ -9,6 +9,7 @@ router.post("/login",User.loginPOST)
 
 router.get("/signup", User.signupGET);
 router.post("/signup", User.signupPOST);
+router.post("/verify-otp", User.verifyOTP);
 
 
 module.exports = router;
