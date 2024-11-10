@@ -3,6 +3,8 @@ const app = express();
 app.set("view engine", "ejs"); 
 app.use(express.static("public"));
 require("./models/mongodb");
+const path = require("path");
+
 
 // const session = require("express-session");
 // const nocache = require("nocache");
@@ -35,3 +37,5 @@ app.use("/user", userRoute);
 app.listen(3000, () => {
   console.log("running at 3000");
 });
+
+app.use(express.static(path.join(__dirname, "public")));
