@@ -21,6 +21,9 @@ app.use("/", publicUsers);
 const userRoute = require("./routes/userRoute");
 app.use("/user", userRoute);
 
+const adminRoute = require("./routes/adminRoute");
+app.use("/admin", adminRoute);
+
 
 // --------------Google Login---------------------------
 app.use(express.static(path.join(__dirname, "public")));

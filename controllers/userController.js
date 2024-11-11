@@ -3,7 +3,7 @@ const bcrypt = require("bcryptjs");
 
 // -------------User Login Page--------------------
 exports.loginGET = (req, res) => {
-  res.render("user/login");
+  res.render("user/userLogin");
 };
 
 // controllers/userController.js
@@ -14,12 +14,12 @@ exports.loginPOST = async (req, res) => {
 
     const user = await User.findOne({ email });
     if (!user) {
-      return res.render("user/login", { error: "User not registered" });
+      return res.render("user/userLogin", { error: "User not registered" });
     }
 
     const isMatch = await bcrypt.compare(password, user.password);
     if (!isMatch) {
-      return res.render("user/login", { error: "Invalid credentials" });
+      return res.render("user/userLogin", { error: "Invalid credentials" });
     }
 
     res.status(200).json({ message: "Login successful!" });
@@ -40,7 +40,7 @@ const crypto = require("crypto");
 
 
 exports.signupGET = (req, res) => {
-  res.render("user/signup");
+  res.render("user/userSignup");
 };
 
 // Configure nodemailer

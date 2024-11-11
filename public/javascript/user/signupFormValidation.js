@@ -142,7 +142,7 @@ async function handleSignup(event) {
     const data = await response.json();
     if (response.status === 200) {
       // Standard alert replacement with SweetAlert
-      swal("", data.message, "info");
+      swal("", data.message, "success");
 
       document.getElementById("google-auth-div").style.display = "none";
       document.getElementById("otp-section").style.display = "block"; // Show OTP input section
@@ -176,7 +176,7 @@ async function handleResendOTP(event) {
 
     const data = await response.json();
     if (response.status === 200) {
-      swal("", data.message, "info");
+      swal("", data.message, "success");
 
       startTimer(30); // Reset the timer for 30 seconds
     } else {
@@ -234,7 +234,7 @@ async function handleOTPVerification(event) {
 
     const data = await response.json();
     if (response.status === 201) {
-      swal("", data.message, "info");
+      swal("", data.message, "success");
 
       window.location.href = "/user/login";
     } else {

@@ -1,0 +1,134 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Admin Dashboard</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+    <link
+      rel="stylesheet"
+      href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.6.0/css/all.min.css"
+      integrity="sha512-Kc323vGBEqzTmouAECnVceyQqyqdsSiqLQISBL29aUW4U/M7pSPA/gEUZQqv1cwx4OnYxTxve5UMg5GT6L4JJg=="
+      crossorigin="anonymous"
+      referrerpolicy="no-referrer"
+    />
+    <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
+
+</head>
+
+<body class="bg-black text-white min-h-screen">
+
+  <!-- Sidebar -->
+  <aside class="fixed top-0 left-0 w-64 h-full bg-zinc-900 p-5 shadow-lg">
+    <!-- Logo -->
+    <div class="flex items-center justify-center mb-8">
+      <img src="/images/white-nobg-background.png" alt="UrbanTick Logo" class="h-12">
+    </div>
+
+    <!-- Navigation Links -->
+    <nav class="space-y-6 text-sm">
+      <a href="#" class="flex items-center space-x-3 text-gray-400 hover:text-white">
+        <span class="material-icons">dashboard</span>
+        <span>Dashboard</span>
+      </a>
+      <a href="#" class="flex items-center space-x-3 text-gray-400 hover:text-white">
+        <span class="material-icons">inventory_2</span>
+        <span>Products</span>
+      </a>
+      <a href="#" class="flex items-center space-x-3 text-gray-400 hover:text-white">
+        <span class="material-icons">people</span>
+        <span>Customers</span>
+      </a>
+      <a href="#" class="flex items-center space-x-3 text-gray-400 hover:text-white">
+        <span class="material-icons">shopping_cart</span>
+        <span>Orders</span>
+      </a>
+      <a href="#" class="flex items-center space-x-3 text-gray-400 hover:text-white">
+        <span class="material-icons">local_offer</span>
+        <span>Coupons</span>
+      </a>
+      <a href="#" class="flex items-center space-x-3 text-gray-400 hover:text-white">
+        <span class="material-icons">category</span>
+        <span>Category</span>
+      </a>
+      <a href="#" class="flex items-center space-x-3 text-gray-400 hover:text-white">
+        <span class="material-icons">star</span>
+        <span>Offers</span>
+      </a>
+      <a href="#" class="flex items-center space-x-3 text-gray-400 hover:text-white">
+        <span class="material-icons">photo</span>
+        <span>Banner</span>
+      </a>
+      <a href="#" class="flex items-center space-x-3 text-gray-400 hover:text-white">
+        <span class="material-icons">assessment</span>
+        <span>Sales Report</span>
+      </a>
+      <a href="#" class="flex items-center space-x-3 text-gray-400 hover:text-white">
+        <span class="material-icons">logout</span>
+        <span>Logout</span>
+      </a>
+    </nav>
+  </aside>
+
+  <!-- Main Content -->
+  <main class="ml-64 p-8">
+    <!-- Header -->
+    <header class="flex items-center justify-between mb-8">
+      <h1 class="text-2xl font-semibold text-gray-200">Sales Summary</h1>
+      <div class="flex items-center space-x-4">
+        <select class="px-4 py-2 text-gray-800 bg-gray-100 rounded-md">
+          <option>2024</option>
+          <!-- Additional options as needed -->
+        </select>
+        <button class="px-4 py-2 text-black bg-white rounded-md">Download</button>
+      </div>
+    </header>
+
+    <!-- Sales Summary Cards -->
+    <section class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+      <!-- Revenue Card -->
+      <div class="p-6 bg-zinc-800 rounded-lg shadow-md">
+        <h2 class="text-gray-400">Revenue</h2>
+        <div class="flex items-center justify-between mt-2">
+          <p class="text-xl font-bold">$7,825</p>
+          <p class="text-orange-500 font-semibold">+ 22%</p>
+        </div>
+        <!-- Add a simple chart graphic if needed here -->
+      </div>
+
+      <!-- Orders Card -->
+      <div class="p-6 bg-zinc-800 rounded-lg shadow-md">
+        <h2 class="text-gray-400">Orders</h2>
+        <div class="flex items-center justify-between mt-2">
+          <p class="text-xl font-bold">900</p>
+          <p class="text-red-500 font-semibold">- 25%</p>
+        </div>
+      </div>
+
+      <!-- Products Sold Card -->
+      <div class="p-6 bg-zinc-800 rounded-lg shadow-md">
+        <h2 class="text-gray-400">Products Sold</h2>
+        <div class="flex items-center justify-between mt-2">
+          <p class="text-xl font-bold">14.4k</p>
+          <p class="text-green-500 font-semibold">+ 45%</p>
+        </div>
+      </div>
+
+      <!-- Total Customers Card -->
+      <div class="p-6 bg-zinc-800 rounded-lg shadow-md">
+        <h2 class="text-gray-400">Total Customers</h2>
+        <div class="flex items-center justify-between mt-2">
+          <p class="text-xl font-bold">100</p>
+          <p class="text-green-500 font-semibold">+ 4%</p>
+        </div>
+      </div>
+    </section>
+  </main>
+
+  <!-- Footer -->
+  <footer class="absolute bottom-5 left-1/2 transform -translate-x-1/2 text-gray-500 text-sm">
+    © 2024 UrbanTick. All Rights Reserved.
+  </footer>
+
+</body>
+</html>
