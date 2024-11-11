@@ -59,3 +59,31 @@ function togglePasswordVisibility(id) {
     passwordField.type = "password";
   }
 }
+
+
+
+// // -----------------Google Signin-----------------
+//   function onSignIn(googleUser) {
+//     const profile = googleUser.getBasicProfile();
+//     console.log('ID: ' + profile.getId());
+//     console.log('Name: ' + profile.getName());
+//     console.log('Email: ' + profile.getEmail());
+
+//     // Send profile information to your backend for further processing
+//     const id_token = googleUser.getAuthResponse().id_token;
+//     fetch('/auth/google', {
+//       method: 'POST',
+//       headers: {
+//         'Content-Type': 'application/json'
+//       },
+//       body: JSON.stringify({ token: id_token })
+//     }).then(response => {
+//       // Handle response
+//       if (response.ok) {
+//         window.location.href = '/profile';
+//       } else {
+//         console.log('Failed to sign in with Google');
+//       }
+//     });
+//   }
+

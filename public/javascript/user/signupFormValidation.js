@@ -156,14 +156,16 @@ async function handleSignup(event) {
 
     const data = await response.json();
     if (response.status === 200) {
-      alert(data.message);
+      // Standard alert replacement with SweetAlert
+      swal("", data.message, "info");
+
       document.getElementById("otp-section").style.display = "block"; // Show OTP input section
       document.getElementById("fullName").disabled = true;
       document.getElementById("email").disabled = true;
       document.getElementById("password").disabled = true;
 
       console.log("starting timer at handleSignup");
-      startTimer(30);  
+      startTimer(30);
     } else {
       document.getElementById("email-error").textContent = data.message;
     }
@@ -188,7 +190,8 @@ async function handleResendOTP(event) {
 
     const data = await response.json();
     if (response.status === 200) {
-      alert(data.message);
+      swal("", data.message, "info");
+
       startTimer(30); // Reset the timer for 30 seconds
     } else {
       document.getElementById("otp-error").textContent = data.message;
@@ -245,7 +248,8 @@ async function handleOTPVerification(event) {
 
     const data = await response.json();
     if (response.status === 201) {
-      alert(data.message);
+      swal("", data.message, "info");
+
       window.location.href = "/user/login";
     } else {
       document.getElementById("otp-error").textContent = data.message;

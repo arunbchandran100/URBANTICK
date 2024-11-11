@@ -6,6 +6,9 @@
     <link rel="stylesheet" href="style.css" />
     <title>User login</title>
     <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://apis.google.com/js/platform.js" async defer></script>
+    <meta name="google-signin-client_id" content="YOUR_GOOGLE_CLIENT_ID.apps.googleusercontent.com">
+
     <link
       rel="stylesheet"
       href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.6.0/css/all.min.css"
@@ -81,15 +84,13 @@
             </div>
           </form>
 
-          <!-- Or Continue With Section -->
-          <div class="text-center mt-6 text-gray-500 text-sm">Or continue with</div>
-
-          <!-- Google Button -->
-          <div class="flex justify-center mt-4">
-            <button class="flex items-center py-2 px-4 bg-white border border-gray-300 rounded-lg shadow-sm hover:bg-gray-100 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-gray-700">
-                <img src="https://upload.wikimedia.org/wikipedia/commons/5/53/Google_%22G%22_Logo.svg" alt="Google" class="h-6 w-6 mr-2">
-            </button>
-          </div>
+          <!-- Google Sign in -->
+          <div class="flex justify-center text-center mt-6 text-gray-500 text-sm">
+            Or continue with Google
+          </div class="flex justify-center">
+          <a class="flex justify-center mt-6" href="http://localhost:3000/auth/google"> 
+            <i class="fa-brands fa-google fa-lg" style="color: #b12020;"></i>
+          </a>
       </div>
     </div>
 
