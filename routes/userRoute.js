@@ -10,6 +10,6 @@ router.post("/login",User.loginPOST)
 router.get("/signup", User.signupGET);
 router.post("/signup", User.signupPOST);
 router.post("/verify-otp", User.verifyOTP);
-
+router.post('/resend-otp', User.resendOTP)
 
 module.exports = router;

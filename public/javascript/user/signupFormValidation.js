@@ -95,7 +95,44 @@ function togglePasswordVisibility(id) {
   }
 }
 
-// Handle signup
+let timer; // Declare a timer variable for countdown
+
+let otpTimer;
+let otpTimeout;
+
+// function startOTPTimer() {
+//   let timeLeft = 10;
+//   const timerElement = document.getElementById("timer");
+//   otpTimer = setInterval(() => {
+//     if (timeLeft <= 0) {
+//       clearInterval(otpTimer);
+//       otpTimeout = true;
+//       timerElement.textContent = "Expired";
+//       document.getElementById("resend-otp").style.display = "block"; // Show resend button
+//     } else {
+//       timerElement.textContent = `${timeLeft} seconds`;
+//     }
+//     timeLeft -= 1;
+//   }, 1000);
+// }
+
+function disableFields() {
+  document.getElementById("fullName").disabled = true;
+  document.getElementById("email").disabled = true;
+  document.getElementById("password").disabled = true;
+  document.getElementById("confirmPassword").disabled = true;
+}
+
+function enableFields() {
+  document.getElementById("fullName").disabled = false;
+  document.getElementById("email").disabled = false;
+  document.getElementById("password").disabled = false;
+  document.getElementById("confirmPassword").disabled = false;
+}
+
+
+// -------------------------------------------------------
+
 async function handleSignup(event) {
   event.preventDefault();
 
@@ -121,14 +158,72 @@ async function handleSignup(event) {
     if (response.status === 200) {
       alert(data.message);
       document.getElementById("otp-section").style.display = "block"; // Show OTP input section
+      document.getElementById("fullName").disabled = true;
+      document.getElementById("email").disabled = true;
+      document.getElementById("password").disabled = true;
+
+      console.log("starting timer at handleSignup");
+      startTimer(30);  
     } else {
       document.getElementById("email-error").textContent = data.message;
     }
   } catch (error) {
-    document.getElementById("email-error").textContent =
-      "An error occurred during signup. Please try again.";
+    console.log('error')
   }
 }
+
+async function handleResendOTP(event) {
+  event.preventDefault();
+
+  const email = document.getElementById("email").value;
+
+  try {
+    const response = await fetch("/user/resend-otp", {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({ email }),
+    });
+
+    const data = await response.json();
+    if (response.status === 200) {
+      alert(data.message);
+      startTimer(30); // Reset the timer for 30 seconds
+    } else {
+      document.getElementById("otp-error").textContent = data.message;
+    }
+  } catch (error) {
+    document.getElementById("otp-error").textContent =
+      "An error occurred while resending OTP. Please try again.";
+  }
+}
+
+
+
+// Updated startTimer function
+function startTimer(duration) {
+  let timeRemaining = duration;
+  const timerDisplay = document.getElementById("timer");
+  const resendButton = document.getElementById("resend-otp");
+
+  // Hide the resend button when the timer starts
+  resendButton.style.display = 'none';
+  console.log("timer started");
+  timer = setInterval(() => {
+    if (timeRemaining <= 0) {
+      clearInterval(timer);
+      timerDisplay.textContent = "You can now resend the OTP.";
+      
+      // Show the resend button when the timer ends
+      resendButton.style.display = 'block';
+    } else {
+      timeRemaining--;
+      timerDisplay.textContent = `Resend OTP in ${timeRemaining} seconds.`;
+    }
+  }, 1000);
+}
+
 
 
 async function handleOTPVerification(event) {
@@ -160,11 +255,3 @@ async function handleOTPVerification(event) {
       "An error occurred during OTP verification. Please try again.";
   }
 }
-
-
-
-
-
-
-
-

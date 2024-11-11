@@ -67,7 +67,7 @@ exports.signupPOST = async (req, res) => {
     }
 
     const otp = generateOTP();
-    console.log(otp)
+    console.log("first geberated otp is "+otp)
     await sendOTPEmail(email, otp);
     await saveOTP(email, otp);
 
@@ -76,6 +76,8 @@ exports.signupPOST = async (req, res) => {
     res.status(500).json({ message: "Server error" });
   }
 };
+
+
 
 // Verify OTP and save user data to database
 exports.verifyOTP = async (req, res) => {
@@ -93,6 +95,30 @@ exports.verifyOTP = async (req, res) => {
     await OTP.deleteOne({ email, otp });
 
     res.status(201).json({ message: "User registered successfully" });
+  } catch (error) {
+    res.status(500).json({ message: "Server error" });
+  }
+};
+
+
+
+exports.resendOTP = async (req, res) => {
+  try {
+    const { email } = req.body;
+    const otpRecord = await OTP.findOne({ email });
+    if (!otpRecord) {
+      return res.status(400).json({ message: "Email is not registered" });
+    }
+
+    const newOtp = generateOTP();
+    console.log("resend OTP is " + newOtp)
+    otpRecord.otp = newOtp; // Update the OTP
+    otpRecord.createdAt = Date.now(); // Update the createdAt timestamp
+    await otpRecord.save();
+
+    await sendOTPEmail(email, newOtp);
+
+    res.status(200).json({ message: "OTP resent to your email" });
   } catch (error) {
     res.status(500).json({ message: "Server error" });
   }
