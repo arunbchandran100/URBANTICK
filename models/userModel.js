@@ -14,13 +14,20 @@ const userSchema = new mongoose.Schema({
   },
   password: {
     type: String,
-    required: true,
+    required: function () {
+      return !this.googleId; // Password is required if googleId is not present
+    },
+  },
+  googleId: {
+    type: String,
+    unique: true,
+    sparse: true, // Allows for null values
   },
 });
 
 // Password hashing middleware
 userSchema.pre("save", async function (next) {
-  if (!this.isModified("password")) return next();  
+  if (!this.isModified("password")) return next();
 
   try {
     // Hash the password using bcrypt with salt rounds

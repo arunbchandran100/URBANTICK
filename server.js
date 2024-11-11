@@ -1,63 +1,98 @@
+require("dotenv").config();
 const express = require("express");
 const app = express();
-app.set("view engine", "ejs"); 
+const passport = require("passport");
+const session = require("express-session");
+const mongoose = require("mongoose");
+const User = require("./models/userModel");
+const GoogleStrategy = require("passport-google-oauth20").Strategy;
+const path = require("path");
+
+app.set("view engine", "ejs");
 app.use(express.static("public"));
 require("./models/mongodb");
-const path = require("path");
-require("dotenv").config();
 
+app.use(express.json());
+app.use(express.urlencoded({ extended: true }));
 
+const publicUsers = require("./routes/publicUsersRoute");
+app.use("/", publicUsers);
+
+const userRoute = require("./routes/userRoute");
+app.use("/user", userRoute);
+
+// ---------------------------Google login---------------------
+
+// require("dotenv").config();
+
+// const passport = require("passport");
 // const session = require("express-session");
-// const nocache = require("nocache");
-// app.set("view engine", "ejs");
-// const path = require("path");
-// app.set("views", path.join(__dirname, "views"));
-
-// app.use(nocache());
+// const GoogleStrategy = require("passport-google-oauth20").Strategy;
 
 // app.use(
 //   session({
-//     secret: "password",
+//     secret: "secret",
 //     resave: false,
 //     saveUninitialized: true,
 //   })
 // );
 
-app.use(express.json());
-app.use(express.urlencoded({ extended: true })); 
+// app.use(passport.initialize());
+// app.use(passport.session());
 
+// // console.log(process.env.GOOGLE_CLIENT_ID)
+// // console.log(process.env.GOOGLE_CLIENT_SECRET)
 
-const publicUsers = require("./routes/publicUsersRoute")
-app.use("/", publicUsers)
+// passport.use(
+//   new GoogleStrategy(
+//     {
+//       clientID: process.env.GOOGLE_CLIENT_ID,
+//       clientSecret: process.env.GOOGLE_CLIENT_SECRET,
+//       callbackURL: "http://localhost:3000/auth/google/callback",
+//     },
+//     (accessToken, refreshToken, profile, done) => {
+//       return done(null, profile);
+//     }
+//   )
+// );
 
-const userRoute = require("./routes/userRoute");
-app.use("/user", userRoute);
+// passport.serializeUser((user, done) => done(null, user));
+// passport.deserializeUser((user, done) => done(null, user));
 
-// const adminRoute = require("./routes/admin");
-// app.use("/admin", adminRoute);
+// app.get("/", (req, res) => {
+//   res.send("<a href='/auth/google'>Login with Google</a>");
+// });
 
+// app.get(
+//   "/auth/google",
+//   passport.authenticate("google", { scope: ["profile", "email"] ,prompt: 'select_account'})
+// );
+
+// app.get(
+//   "/auth/google/callback",
+//   passport.authenticate("google", { failureRedirect: "/" }),
+//   (req, res) => {
+//     res.redirect("/profile");
+//   }
+// );
+
+// app.get("/profile", (req, res) => {
+//   res.send(`Welcome ${req.user.displayName}`);
+// });
+
+// app.get("/logout", (req, res) => {
+//   req.logout(() => {
+//     res.redirect("/");
+//   });
+// });
+
+// app.listen(3000, () => {
+//   console.log(`Server is running at port 3000`);
+// });
+
+// server.js
 
 app.use(express.static(path.join(__dirname, "public")));
-
-
-// const session = require("express-session");
-// const passport = require("passport");
-// const authRoutes = require("./routes/authRoutes"); // Adjust the path as needed
-// require("./config/passport"); // Ensure Passport configuration is loaded
-
-
-
-
-
-// Google login----------------------------------------------
-
-require("dotenv").config();
-
-const passport = require("passport");
-const session = require("express-session");
-const GoogleStrategy = require("passport-google-oauth20").Strategy;
-
-
 
 app.use(
   session({
@@ -70,9 +105,6 @@ app.use(
 app.use(passport.initialize());
 app.use(passport.session());
 
-console.log(process.env.GOOGLE_CLIENT_ID)
-console.log(process.env.GOOGLE_CLIENT_SECRET)
-
 passport.use(
   new GoogleStrategy(
     {
@@ -80,14 +112,34 @@ passport.use(
       clientSecret: process.env.GOOGLE_CLIENT_SECRET,
       callbackURL: "http://localhost:3000/auth/google/callback",
     },
-    (accessToken, refreshToken, profile, done) => {
-      return done(null, profile);
+    async (accessToken, refreshToken, profile, done) => {
+      try {
+        let user = await User.findOne({ googleId: profile.id });
+        if (!user) {
+          user = new User({
+            googleId: profile.id,
+            fullName: profile.displayName,
+            email: profile.emails[0].value,
+          });
+          await user.save();
+        }
+        return done(null, user);
+      } catch (err) {
+        return done(err, null);
+      }
     }
   )
 );
 
-passport.serializeUser((user, done) => done(null, user));
-passport.deserializeUser((user, done) => done(null, user));
+
+
+passport.serializeUser((user, done) => done(null, user.id));
+passport.deserializeUser((id, done) => {
+  User.findById(id)
+    .then((user) => done(null, user))
+    .catch((err) => done(err, null));
+});
+
 
 app.get("/", (req, res) => {
   res.send("<a href='/auth/google'>Login with Google</a>");
@@ -95,7 +147,10 @@ app.get("/", (req, res) => {
 
 app.get(
   "/auth/google",
-  passport.authenticate("google", { scope: ["profile", "email"] ,prompt: 'select_account'})
+  passport.authenticate("google", {
+    scope: ["profile", "email"],
+    prompt: "select_account",
+  })
 );
 
 app.get(
@@ -107,7 +162,7 @@ app.get(
 );
 
 app.get("/profile", (req, res) => {
-  res.send(`Welcome ${req.user.displayName}`);
+  res.send(`Welcome ${req.user.fullName}`);
 });
 
 app.get("/logout", (req, res) => {
