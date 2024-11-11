@@ -100,21 +100,6 @@ let timer; // Declare a timer variable for countdown
 let otpTimer;
 let otpTimeout;
 
-// function startOTPTimer() {
-//   let timeLeft = 10;
-//   const timerElement = document.getElementById("timer");
-//   otpTimer = setInterval(() => {
-//     if (timeLeft <= 0) {
-//       clearInterval(otpTimer);
-//       otpTimeout = true;
-//       timerElement.textContent = "Expired";
-//       document.getElementById("resend-otp").style.display = "block"; // Show resend button
-//     } else {
-//       timerElement.textContent = `${timeLeft} seconds`;
-//     }
-//     timeLeft -= 1;
-//   }, 1000);
-// }
 
 function disableFields() {
   document.getElementById("fullName").disabled = true;
@@ -159,6 +144,7 @@ async function handleSignup(event) {
       // Standard alert replacement with SweetAlert
       swal("", data.message, "info");
 
+      document.getElementById("google-auth-div").style.display = "none";
       document.getElementById("otp-section").style.display = "block"; // Show OTP input section
       document.getElementById("fullName").disabled = true;
       document.getElementById("email").disabled = true;
