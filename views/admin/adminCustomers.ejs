@@ -1,0 +1,139 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Admin Dashboard</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <link
+      rel="stylesheet"
+      href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.6.0/css/all.min.css"
+      integrity="sha512-Kc323vGBEqzTmouAECnVceyQqyqdsSiqLQISBL29aUW4U/M7pSPA/gEUZQqv1cwx4OnYxTxve5UMg5GT6L4JJg=="
+      crossorigin="anonymous"
+      referrerpolicy="no-referrer"
+  />
+  <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
+</head>
+<body class="bg-black text-white min-h-screen">
+  <!-- Sidebar -->
+  <aside class="fixed top-0 left-0 w-64 h-full bg-zinc-900 p-5 shadow-lg">
+    <!-- Logo -->
+    <div class="flex items-center justify-center mb-8">
+      <img src="/images/white-nobg-background.png" alt="UrbanTick Logo" class="h-12">
+    </div>
+    <!-- Navigation Links -->
+    <nav class="space-y-6 text-sm">
+      <a href="/admin/dashboard" class="flex items-center space-x-3 text-gray-400 hover:text-white">
+        <span class="material-icons">dashboard</span>
+        <span>Dashboard</span>
+      </a>
+      <a href="#" class="flex items-center space-x-3 text-gray-400 hover:text-white">
+        <span class="material-icons">inventory_2</span>
+        <span>Products</span>
+      </a>
+      <a href="/admin/customers" class="flex items-center space-x-3 text-gray-400 hover:text-white">
+        <span class="material-icons">people</span>
+        <span>Customers</span>
+      </a>
+      <a href="#" class="flex items-center space-x-3 text-gray-400 hover:text-white">
+        <span class="material-icons">shopping_cart</span>
+        <span>Orders</span>
+      </a>
+      <a href="#" class="flex items-center space-x-3 text-gray-400 hover:text-white">
+        <span class="material-icons">local_offer</span>
+        <span>Coupons</span>
+      </a>
+      <a href="#" class="flex items-center space-x-3 text-gray-400 hover:text-white">
+        <span class="material-icons">category</span>
+        <span>Category</span>
+      </a>
+      <a href="#" class="flex items-center space-x-3 text-gray-400 hover:text-white">
+        <span class="material-icons">star</span>
+        <span>Offers</span>
+      </a>
+      <a href="#" class="flex items-center space-x-3 text-gray-400 hover:text-white">
+        <span class="material-icons">photo</span>
+        <span>Banner</span>
+      </a>
+      <a href="#" class="flex items-center space-x-3 text-gray-400 hover:text-white">
+        <span class="material-icons">assessment</span>
+        <span>Sales Report</span>
+      </a>
+      <a href="#" class="flex items-center space-x-3 text-gray-400 hover:text-white">
+        <form action="/admin/logout" method="post">
+          <button type="submit" class="flex items-center space-x-2 px-4 py-2 bg-red-700 text-white font-semibold rounded-lg hover:bg-red-900 focus:outline-none focus:ring-2 focus:ring-red-400">
+            <span class="material-icons">logout</span>
+            <span>Logout</span>
+          </button>
+        </form>
+      </a>
+    </nav>
+  </aside>
+  <!-- Main Content -->
+  <main class="ml-64 p-8">
+    <!-- Header -->
+    <header class="flex items-center justify-between mb-8">
+      <h1 class="text-2xl font-semibold text-gray-200">Customers</h1>
+      <div class="flex items-center space-x-4">
+        <div class="relative">
+          <input type="text" placeholder="Search" class="bg-gray-800 text-white p-2 rounded pl-10 focus:outline-none">
+          <span class="absolute left-3 top-2 text-gray-400">
+            <i class="material-icons">search</i>
+          </span>
+        </div>
+      </div>
+    </header>
+
+    <!-- Customer Table -->
+<div class="bg-zinc-800 rounded-lg p-6">
+  <table class="min-w-full text-left text-gray-400">
+    <thead>
+      <tr class="border-b border-gray-700">
+        <th class="py-3 px-4">S.No</th> <!-- Added Serial Number Column -->
+        <th class="py-3 px-4">Id</th>
+        <th class="py-3 px-4">Name</th>
+        <th class="py-3 px-4">Email</th>
+        <th class="py-3 px-4">Mobile</th>
+        <th class="py-3 px-4">Action</th>
+      </tr>
+    </thead>
+    <tbody>
+      <% customers.forEach((customer, index) => { %>
+        <tr class="border-b border-gray-700">
+          <td class="py-3 px-4 text-white"><%= (currentPage - 1) * 12 + index + 1 %></td> <!-- Adjusted Serial Number for Pagination -->
+          <td class="py-3 px-4 text-white"><%= customer._id %></td>
+          <td class="py-3 px-4 text-white"><%= customer.fullName %></td>
+          <td class="py-3 px-4 text-white"><%= customer.email %></td>
+          <td class="py-3 px-4 text-white"><%= customer.mobile %></td>
+          <td class="py-3 px-4 flex space-x-2">
+            <form action="/admin/customers/unblock/<%= customer._id %>" method="post">
+              <button class="bg-green-500 text-white px-3 py-1 rounded hover:bg-green-600">UnBlock</button>
+            </form>
+            <form action="/admin/customers/block/<%= customer._id %>" method="post">
+              <button class="bg-red-500 text-white px-3 py-1 rounded hover:bg-red-600">Block</button>
+            </form>
+          </td>
+        </tr>
+      <% }); %>
+    </tbody>
+  </table>
+
+  <!-- Pagination -->
+  <div class="flex justify-center space-x-2 mt-4">
+    <% if (currentPage > 1) { %>
+      <a href="/admin/customers?page=<%= currentPage - 1 %>" class="bg-gray-700 text-white px-3 py-1 rounded hover:bg-gray-600">Previous</a>
+    <% } %>
+    <% for (let i = 1; i <= totalPages; i++) { %>
+      <a href="/admin/customers?page=<%= i %>" class="bg-gray-700 text-white px-3 py-1 rounded hover:bg-gray-600"><%= i %></a>
+    <% } %>
+    <% if (currentPage < totalPages) { %>
+      <a href="/admin/customers?page=<%= currentPage + 1 %>" class="bg-gray-700 text-white px-3 py-1 rounded hover:bg-gray-600">Next</a>
+    <% } %>
+  </div>
+</div>
+
+
+  </main>
+
+</body>
+</html>
