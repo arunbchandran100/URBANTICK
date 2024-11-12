@@ -1,4 +1,6 @@
 const userAuthenticated = require("../middleware/adminauthmildware");
+const User = require("../models/userModel");  
+
 
 ///////////////////Admin Login-------------------
 exports.getLogin = (req, res) => {
@@ -56,7 +58,6 @@ exports.getDashboard = [
 
   // userAuthenticated,
 ///////////////////Dashboard Customers-------------------
-const User = require("../models/userModel");  // Assuming you have a Customer model
 
 // Fetch all customers
 exports.getCustomers = [
@@ -87,7 +88,7 @@ exports.unblockCustomer = [
   async (req, res) => {
     try {
       const customerId = req.params.id;
-      await Customer.findByIdAndUpdate(customerId, { status: "active" });
+      await User.findByIdAndUpdate(customerId, { status: "active" });
       res.redirect("/admin/customers");
     } catch (err) {
       res.status(500).send("Error unblocking customer");
@@ -100,7 +101,7 @@ exports.blockCustomer = [
   async (req, res) => {
     try {
       const customerId = req.params.id;
-      await Customer.findByIdAndUpdate(customerId, { status: "blocked" });
+      await User.findByIdAndUpdate(customerId, { status: "blocked" });
       res.redirect("/admin/customers");
     } catch (err) {
       res.status(500).send("Error blocking customer");

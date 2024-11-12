@@ -84,7 +84,7 @@
       </div>
     </header>
 
-    <!-- Customer Table -->
+<!-- Customer Table -->
 <div class="bg-zinc-800 rounded-lg p-6">
   <table class="min-w-full text-left text-gray-400">
     <thead>
@@ -94,6 +94,7 @@
         <th class="py-3 px-4">Name</th>
         <th class="py-3 px-4">Email</th>
         <th class="py-3 px-4">Mobile</th>
+        <th class="py-3 px-4">Status</th> <!-- Added Status Column -->
         <th class="py-3 px-4">Action</th>
       </tr>
     </thead>
@@ -105,6 +106,7 @@
           <td class="py-3 px-4 text-white"><%= customer.fullName %></td>
           <td class="py-3 px-4 text-white"><%= customer.email %></td>
           <td class="py-3 px-4 text-white"><%= customer.mobile %></td>
+          <td class="py-3 px-4 <%= customer.status === 'blocked' ? 'text-red-500' : 'text-white' %>"><%= customer.status %></td> <!-- Added Conditional Status -->
           <td class="py-3 px-4 flex space-x-2">
             <form action="/admin/customers/unblock/<%= customer._id %>" method="post">
               <button class="bg-green-500 text-white px-3 py-1 rounded hover:bg-green-600">UnBlock</button>
@@ -117,6 +119,7 @@
       <% }); %>
     </tbody>
   </table>
+
 
   <!-- Pagination -->
   <div class="flex justify-center space-x-2 mt-4">

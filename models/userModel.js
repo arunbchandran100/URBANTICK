@@ -26,6 +26,11 @@ const userSchema = new mongoose.Schema({
     unique: true,
     sparse: true, // Allows for null values
   },
+  status: {
+    type: String,
+    enum: ["active", "blocked"],
+    default: "active",
+  },
 });
 
 // Password hashing middleware
