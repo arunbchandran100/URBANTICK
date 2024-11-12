@@ -1,5 +1,7 @@
 const userAuthenticated = require("../middleware/adminauthmildware");
 const User = require("../models/userModel");  
+const Category = require("./models/categorySchema");
+const SubCategory = require("./models/subCategorySchema");
 
 
 ///////////////////Admin Login-------------------
@@ -56,16 +58,17 @@ exports.getDashboard = [
   },
 ];
 
-  // userAuthenticated,
+  // 
 ///////////////////Dashboard Customers-------------------
 
 // Fetch all customers
 exports.getCustomers = [
+  userAuthenticated,
   async (req, res) => {
     try {
-      const page = parseInt(req.query.page) || 1; // Get the page number from the query params, default to 1
-      const limit = 12; // Number of customers to display per page
-      const skip = (page - 1) * limit; // Calculate how many documents to skip
+      const page = parseInt(req.query.page) || 1; 
+      const limit = 12; 
+      const skip = (page - 1) * limit;
 
       const customers = await User.find().skip(skip).limit(limit);
       const totalCustomers = await User.countDocuments();
@@ -110,3 +113,24 @@ exports.blockCustomer = [
 ];
 
 
+exports.updateStatus = [
+  async (req, res) => {
+    try {
+      const customerId = req.params.id;
+      const status = req.body.status;
+
+      await User.findByIdAndUpdate(customerId, { status });
+
+      res.json({ success: true });
+    } catch (err) {
+      res.json({ success: false, message: "Error updating status" });
+    }
+  },
+];
+
+
+
+///////////////////Dashboard Category-------------------
+exports.getCategory = (req, res) => {
+  res.render("admin/adminCategory");
+};

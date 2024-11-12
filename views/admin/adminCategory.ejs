@@ -69,72 +69,122 @@
       </a>
     </nav>
   </aside>
-  <!-- Main Content -->
-  <main class="ml-64 p-8">
-    <!-- Header -->
-    <header class="flex items-center justify-between mb-8">
-      <h1 class="text-2xl font-semibold text-gray-200">Customers</h1>
-      <div class="flex items-center space-x-4">
-        <div class="relative">
-          <input type="text" placeholder="Search" class="bg-gray-800 text-white p-2 rounded pl-10 focus:outline-none">
-          <span class="absolute left-3 top-2 text-gray-400">
-            <i class="material-icons">search</i>
-          </span>
-        </div>
-      </div>
-    </header>
 
+
+
+
+  <!-- Main Content -->
+     <!--------------------------------Main Category----------------------------->
+
+  <main class="ml-64 p-8">
 <!-- Customer Table -->
 <div class="bg-zinc-800 rounded-lg p-6">
-  <table class="min-w-full text-left text-gray-400">
+  <table class=" min-w-full text-left text-gray-400">
+    <header class="flex items-center justify-between mb-4">
+      <h1 class="text-2xl font-semibold text-gray-200">Main Category</h1>
+    
+        <button class="bg-transparent border border-white text-white px-4 py-2 rounded-lg hover:bg-gray-700">
+          Add Category
+        </button>
+    </header>
     <thead>
       <tr class="border-b border-gray-700">
         <th class="py-3 px-4">S.No</th> <!-- Added Serial Number Column -->
-        <th class="py-3 px-4">Id</th>
-        <th class="py-3 px-4">Name</th>
-        <th class="py-3 px-4">Email</th>
-        <th class="py-3 px-4">Mobile</th>
-        <th class="py-3 px-4">Status</th> <!-- Added Status Column -->
+        <th class="py-3 px-4">Main Category</th>
         <th class="py-3 px-4">Action</th>
       </tr>
     </thead>
     <tbody>
-      <% customers.forEach((customer, index) => { %>
         <tr class="border-b border-gray-700">
-          <td class="py-3 px-4 text-white"><%= (currentPage - 1) * 12 + index + 1 %></td> <!-- Adjusted Serial Number for Pagination -->
-          <td class="py-3 px-4 text-white"><%= customer._id %></td>
-          <td class="py-3 px-4 text-white"><%= customer.fullName %></td>
-          <td class="py-3 px-4 text-white"><%= customer.email %></td>
-          <td class="py-3 px-4 text-white"><%= customer.mobile %></td>
-          <td class="py-3 px-4 <%= customer.status === 'blocked' ? 'text-red-500' : 'text-white' %>"><%= customer.status %></td> <!-- Added Conditional Status -->
-<td class="py-3 px-4 flex space-x-2">
-  <button class="bg-green-500 text-white px-3 py-1 rounded hover:bg-green-600" onclick="updateStatus('<%= customer._id %>', 'active')">UnBlock</button>
-  <button class="bg-red-500 text-white px-3 py-1 rounded hover:bg-red-600" onclick="updateStatus('<%= customer._id %>', 'blocked')">Block</button>
-</td>
-
+          <td class="py-3 px-4 text-white">1</td> 
+          <td class="py-3 px-4 text-white">Mens watch</td>
+          <td class="px-4 py-2">
+                <button class="bg-green-500 hover:bg-green-600 text-white px-3 py-1 rounded-lg">Edit</button>
+                <button class="bg-red-500 hover:bg-red-600 text-white px-3 py-1 rounded-lg">Delete</button>
+              </td>
         </tr>
-      <% }); %>
+
+        <tr class="border-b border-gray-700">
+          <td class="py-3 px-4 text-white">2</td> 
+          <td class="py-3 px-4 text-white">Women's watch</td>   
+                      <td class="px-4 py-2">
+                <button class="bg-green-500 hover:bg-green-600 text-white px-3 py-1 rounded-lg">Edit</button>
+                <button class="bg-red-500 hover:bg-red-600 text-white px-3 py-1 rounded-lg">Delete</button>
+              </td>
+        </tr>
+
     </tbody>
   </table>
 
 
   <!-- Pagination -->
-  <div class="flex justify-center space-x-2 mt-4">
-    <% if (currentPage > 1) { %>
-      <a href="/admin/customers?page=<%= currentPage - 1 %>" class="bg-gray-700 text-white px-3 py-1 rounded hover:bg-gray-600">Previous</a>
-    <% } %>
-    <% for (let i = 1; i <= totalPages; i++) { %>
-      <a href="/admin/customers?page=<%= i %>" class="bg-gray-700 text-white px-3 py-1 rounded hover:bg-gray-600"><%= i %></a>
-    <% } %>
-    <% if (currentPage < totalPages) { %>
-      <a href="/admin/customers?page=<%= currentPage + 1 %>" class="bg-gray-700 text-white px-3 py-1 rounded hover:bg-gray-600">Next</a>
-    <% } %>
-  </div>
+      <div class="flex justify-center items-center space-x-4 mt-6">
+        <button class="px-4 py-2 bg-gray-700 rounded-lg">Previous</button>
+        <button class="px-3 py-1 bg-gray-600 rounded-lg">1</button>
+        <button class="px-3 py-1 bg-gray-600 rounded-lg">2</button>
+        <button class="px-3 py-1 bg-gray-600 rounded-lg">3</button>
+        <button class="px-4 py-2 bg-gray-700 rounded-lg">Next</button>
+      </div>
+</div>
+  </main>
+
+
+
+  <!--------------------------------Sub Category----------------------------->
+  <main class="ml-64 p-8">
+
+<!-- Customer Table -->
+<div class="bg-zinc-800 rounded-lg p-6">
+  <table class=" min-w-full text-left text-gray-400">
+    <header class="flex items-center justify-between mb-4">
+      <h1 class="text-2xl font-semibold text-gray-200">Sub Category</h1>
+    
+        <button class="bg-transparent border border-white text-white px-4 py-2 rounded-lg hover:bg-gray-700">
+          Add Sub Category
+        </button>
+    </header>
+    <thead>
+      <tr class="border-b border-gray-700">
+        <th class="py-3 px-4">S.No</th> <!-- Added Serial Number Column -->
+        <th class="py-3 px-4">Sub Category</th>
+        <th class="py-3 px-4">Action</th>
+      </tr>
+    </thead>
+    <tbody>
+        <tr class="border-b border-gray-700">
+          <td class="py-3 px-4 text-white">1</td> 
+          <td class="py-3 px-4 text-white">Fossil</td>
+          <td class="px-4 py-2">
+                <button class="bg-green-500 hover:bg-green-600 text-white px-3 py-1 rounded-lg">Edit</button>
+                <button class="bg-red-500 hover:bg-red-600 text-white px-3 py-1 rounded-lg">Delete</button>
+              </td>
+        </tr>
+
+        <tr class="border-b border-gray-700">
+          <td class="py-3 px-4 text-white">2</td> 
+          <td class="py-3 px-4 text-white">Timex</td>   
+                      <td class="px-4 py-2">
+                <button class="bg-green-500 hover:bg-green-600 text-white px-3 py-1 rounded-lg">Edit</button>
+                <button class="bg-red-500 hover:bg-red-600 text-white px-3 py-1 rounded-lg">Delete</button>
+              </td>
+        </tr>
+
+    </tbody>
+  </table>
+
+
+  <!-- Pagination -->
+      <div class="flex justify-center items-center space-x-4 mt-6">
+        <button class="px-4 py-2 bg-gray-700 rounded-lg">Previous</button>
+        <button class="px-3 py-1 bg-gray-600 rounded-lg">1</button>
+        <button class="px-3 py-1 bg-gray-600 rounded-lg">2</button>
+        <button class="px-3 py-1 bg-gray-600 rounded-lg">3</button>
+        <button class="px-4 py-2 bg-gray-700 rounded-lg">Next</button>
+      </div>
 </div>
 
 
   </main>
-
   <script>
   function updateStatus(customerId, status) {
     fetch(`/admin/customers/updateStatus/${customerId}`, {

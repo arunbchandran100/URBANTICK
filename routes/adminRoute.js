@@ -14,11 +14,15 @@ router.post("/logout", adminController.logout);
 router.get("/dashboard",  adminController.getDashboard);
 
 
-// Admin dashboard Customers
-
-
+// Admin  Customers
 router.get("/customers", adminController.getCustomers);
 router.post("/customers/unblock/:id", adminController.unblockCustomer);
 router.post("/customers/block/:id", adminController.blockCustomer);
+router.post("/customers/updateStatus/:id", adminController.updateStatus);
+
+
+// Admin  Products
+router.get("/category", adminController.getCategory);
+
 
 module.exports = router;
