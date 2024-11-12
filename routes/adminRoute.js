@@ -1,13 +1,19 @@
 const express = require("express");
-const { body, validationResult } = require("express-validator");
 const router = express.Router();
+const adminController = require("../controllers/adminController");
 
-const User = require("../controllers/adminController");
 
-router.get("/login", User.loginGET);
-router.post("/login", User.loginPOST);
 
-router.get("/dashboard", User.dashboardGET);
-// router.post("/dashboard", User.dashboardPOST);
+// Admin login page
+router.get("/login",adminController.getLogin);
+
+// Handle admin login
+router.post("/login", adminController.postLogin);
+
+// Admin dashboard
+router.get("/dashboard",  adminController.getDashboard);
+
+// Logout admin
+router.post("/logout", adminController.logout);
 
 module.exports = router;

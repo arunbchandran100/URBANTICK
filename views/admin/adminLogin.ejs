@@ -16,7 +16,15 @@
   <div class="w-full max-w-md px-8 py-8 bg-zinc-900 rounded-lg shadow-lg text-center">
     <h2 class="mb-8 text-xl font-semibold text-gray-200">Admin Login</h2>
 
-    <form action="/admin/login" method="POST" class="space-y-6">
+
+    <!-- Display error message if it exists -->
+    <% if (error) { %>
+      <div class="mb-4 text-red-500">
+        <%= error %>
+      </div>
+    <% } %>
+
+  <form action="/admin/login" method="POST" class="space-y-6">
       <!-- Email Input -->
       <div class="relative">
         <input type="email" name="email" placeholder="Email" aria-label="Email" required
@@ -31,12 +39,46 @@
       
       <!-- Login Button -->
       <button type="submit" class="w-full py-2 text-black bg-white rounded-md hover:bg-gray-200">Login</button>
-    </form>
-  </div>
+  </form>
+    </div>
 
   <!-- Footer -->
   <footer class="absolute bottom-5 text-sm text-gray-500">
     © 2024 UrbanTick. All Rights Reserved.
   </footer>
+
+
+   <!-- <script>
+    document.getElementById('login-button').addEventListener('click', function() {
+      const email = document.getElementById('email').value;
+      const password = document.getElementById('password').value;
+      const emailErrorDiv = document.getElementById('email-error');
+      const passwordErrorDiv = document.getElementById('password-error');
+
+      emailErrorDiv.textContent = '';
+      passwordErrorDiv.textContent = '';
+
+      axios.post('/admin/login', {
+        email: email,
+        password: password
+      })
+      .then(response => {
+        if (response.data.success) {
+          window.location.href = '/admin/dashboard';
+        } else {
+          if (response.data.errorField === 'email') {
+            emailErrorDiv.textContent = response.data.message;
+          } else if (response.data.errorField === 'password') {
+            passwordErrorDiv.textContent = response.data.message;
+          }
+        }
+      })
+      .catch(error => {
+        console.error('Error:', error);
+      });
+    });
+  </script> -->
+
+
 </body>
 </html>

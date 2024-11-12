@@ -15,6 +15,17 @@ require("./models/mongodb");
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 
+
+app.use(
+  session({
+    secret: "your_secret_key", // Replace with a strong secret key
+    resave: false,
+    saveUninitialized: true,
+    cookie: { secure: false }, // Set `secure: true` in production if using HTTPS
+  })
+);
+
+
 const publicUsers = require("./routes/publicUsersRoute");
 app.use("/", publicUsers);
 
@@ -24,17 +35,24 @@ app.use("/user", userRoute);
 const adminRoute = require("./routes/adminRoute");
 app.use("/admin", adminRoute);
 
+// Session middleware
+
+
+// Other middleware (like body-parser, if needed)
+app.use(express.json());
+app.use(express.urlencoded({ extended: true }));
+
 
 // --------------Google Login---------------------------
 app.use(express.static(path.join(__dirname, "public")));
 
-app.use(
-  session({
-    secret: "secret",
-    resave: false,
-    saveUninitialized: true,
-  })
-);
+// app.use(
+//   session({
+//     secret: "secret",
+//     resave: false,
+//     saveUninitialized: true,
+//   })
+// );
 
 app.use(passport.initialize());
 app.use(passport.session());
