@@ -21,7 +21,7 @@ app.use(
     secret: "your_secret_key", // Replace with a strong secret key
     resave: false,
     saveUninitialized: true,
-    cookie: { secure: false }, // Set `secure: true` in production if using HTTPS
+    cookie: { maxAge: 60000 }, // 1 minute for testing purposes, increase as needed
   })
 );
 
