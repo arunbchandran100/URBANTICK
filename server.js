@@ -46,13 +46,6 @@ app.use(express.urlencoded({ extended: true }));
 // --------------Google Login---------------------------
 app.use(express.static(path.join(__dirname, "public")));
 
-// app.use(
-//   session({
-//     secret: "secret",
-//     resave: false,
-//     saveUninitialized: true,
-//   })
-// );
 
 app.use(passport.initialize());
 app.use(passport.session());
@@ -70,6 +63,13 @@ passport.use(
         let user = await User.findOne({ email: profile.emails[0].value });
 
         if (user) {
+          // Check if the user is blocked
+          if (user.status === "blocked") {
+            return done(null, false, {
+              message: `${profile.emails[0].value} is blocked`,
+            });
+          }
+
           // Update the existing user with the googleId
           user.googleId = profile.id;
         } else {
@@ -89,6 +89,7 @@ passport.use(
     }
   )
 );
+
 
 
 
@@ -113,13 +114,24 @@ app.get(
   })
 );
 
+
+
 app.get(
   "/auth/google/callback",
-  passport.authenticate("google", { failureRedirect: "/" }),
+  passport.authenticate("google", {
+    failureRedirect: "/",
+    failureMessage: true,
+  }),
   (req, res) => {
+    if (req.authInfo && req.authInfo.message) {
+      return res.render("user/userLogin", { error: req.authInfo.message });
+    }
     res.redirect("/profile");
   }
 );
+
+
+
 
 app.get("/profile", (req, res) => {
   res.send(`Welcome ${req.user.fullName}`);

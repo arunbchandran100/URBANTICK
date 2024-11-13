@@ -22,7 +22,22 @@ router.post("/customers/updateStatus/:id", adminController.updateStatus);
 
 
 // Admin  Products
-router.get("/category", adminController.getCategory);
 
+
+
+// Category Routes
+router.get("/category", adminController.getCategories);
+router.post("/category/add", adminController.addCategory);
+router.post("/category/update/:id", adminController.updateCategory);
+router.post("/category/delete/:id", adminController.deleteCategory);
+
+// SubCategory Routes
+router.get("/subCategory", adminController.getSubCategories);
+router.post("/subCategory/add", adminController.addSubCategory);
+router.post("/subCategory/update/:id", adminController.updateSubCategory);
+router.post("/subCategory/delete/:id", adminController.deleteSubCategory);
 
 module.exports = router;
+
+
+

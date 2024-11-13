@@ -6,7 +6,6 @@ exports.loginGET = (req, res) => {
   res.render("user/userLogin");
 };
 
-// controllers/userController.js
 
 exports.loginPOST = async (req, res) => {
   try {
@@ -17,17 +16,22 @@ exports.loginPOST = async (req, res) => {
       return res.render("user/userLogin", { error: "User not registered" });
     }
 
+    if (user.status === "blocked") {
+      return res.render("user/userLogin", { error: `${email} is blocked` });
+    }
+
     const isMatch = await bcrypt.compare(password, user.password);
     if (!isMatch) {
       return res.render("user/userLogin", { error: "Invalid credentials" });
     }
 
     res.status(200).json({ message: "Login successful!" });
-
   } catch (error) {
+    console.error("Error during login:", error);
     res.status(500).json({ message: "Server error" });
   }
 };
+
 
 
 

@@ -5,6 +5,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Admin Dashboard</title>
   <script src="https://cdn.tailwindcss.com"></script>
+  <script src="https://unpkg.com/sweetalert/dist/sweetalert.min.js"></script>
   <link
       rel="stylesheet"
       href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.6.0/css/all.min.css"
@@ -14,6 +15,11 @@
   />
   <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
 </head>
+
+
+
+
+
 <body class="bg-black text-white min-h-screen">
   <!-- Sidebar -->
   <aside class="fixed top-0 left-0 w-64 h-full bg-zinc-900 p-5 shadow-lg">
@@ -74,139 +80,150 @@
 
 
   <!-- Main Content -->
-     <!--------------------------------Main Category----------------------------->
+<!--------------------------------Main Category----------------------------->
 
-  <main class="ml-64 p-8">
-<!-- Customer Table -->
-<div class="bg-zinc-800 rounded-lg p-6">
-  <table class=" min-w-full text-left text-gray-400">
-    <header class="flex items-center justify-between mb-4">
-      <h1 class="text-2xl font-semibold text-gray-200">Main Category</h1>
-    
-        <button class="bg-transparent border border-white text-white px-4 py-2 rounded-lg hover:bg-gray-700">
-          Add Category
-        </button>
-    </header>
-    <thead>
-      <tr class="border-b border-gray-700">
-        <th class="py-3 px-4">S.No</th> <!-- Added Serial Number Column -->
-        <th class="py-3 px-4">Main Category</th>
-        <th class="py-3 px-4">Action</th>
-      </tr>
-    </thead>
-    <tbody>
+<main class="ml-64 p-8">
+  <!-- Customer Table -->
+  <div class="bg-zinc-800 rounded-lg p-6">
+    <table class="min-w-full text-left text-gray-400">
+      <header class="flex items-center justify-between mb-4">
+        <h1 class="text-2xl font-semibold text-gray-200">Main Category</h1>
+      </header>
+      <thead>
         <tr class="border-b border-gray-700">
-          <td class="py-3 px-4 text-white">1</td> 
-          <td class="py-3 px-4 text-white">Mens watch</td>
-          <td class="px-4 py-2">
-                <button class="bg-green-500 hover:bg-green-600 text-white px-3 py-1 rounded-lg">Edit</button>
-                <button class="bg-red-500 hover:bg-red-600 text-white px-3 py-1 rounded-lg">Delete</button>
-              </td>
+          <th class="py-3 px-4">S.No</th> <!-- Added Serial Number Column -->
+          <th class="py-3 px-4">Main Category</th>
+          <th class="py-3 px-4">Action</th>
         </tr>
+      </thead>
+      <tbody>
+        <% categories.forEach((category, index) => { %>
+          <tr class="border-b border-gray-700">
+            <td class="py-3 px-4 text-white"><%= (currentPage - 1) * 3 + index + 1 %></td> 
+            <td class="py-3 px-4 text-white"><a href="/admin/subCategory?mainCategoryId=<%= category._id %>"><%= category.categoriesName %></a></td>
+      <td class="px-4 py-2">
+        <button class="bg-green-500 text-white px-3 py-1 rounded-lg hover:bg-green-600" onclick="openEditModal('<%= category._id %>', '<%= category.categoriesName %>')">Edit</button>
+        <button class="bg-red-500 text-white px-3 py-1 rounded-lg hover:bg-red-600" onclick="deleteCategory('<%= category._id %>')">Delete</button>
+      </td>
 
-        <tr class="border-b border-gray-700">
-          <td class="py-3 px-4 text-white">2</td> 
-          <td class="py-3 px-4 text-white">Women's watch</td>   
-                      <td class="px-4 py-2">
-                <button class="bg-green-500 hover:bg-green-600 text-white px-3 py-1 rounded-lg">Edit</button>
-                <button class="bg-red-500 hover:bg-red-600 text-white px-3 py-1 rounded-lg">Delete</button>
-              </td>
-        </tr>
-
-    </tbody>
-  </table>
-
-
-  <!-- Pagination -->
-      <div class="flex justify-center items-center space-x-4 mt-6">
-        <button class="px-4 py-2 bg-gray-700 rounded-lg">Previous</button>
-        <button class="px-3 py-1 bg-gray-600 rounded-lg">1</button>
-        <button class="px-3 py-1 bg-gray-600 rounded-lg">2</button>
-        <button class="px-3 py-1 bg-gray-600 rounded-lg">3</button>
-        <button class="px-4 py-2 bg-gray-700 rounded-lg">Next</button>
+<!-- Edit Category Modal -->
+<div id="editCategoryModal" class="fixed inset-0 flex items-center justify-center z-50 hidden">
+  <div class="bg-zinc-500 bg-opacity-50 absolute inset-0"></div>
+  <div class="bg-black text-white rounded-lg shadow-xl relative z-10 p-6 w-1/3">
+    <h2 class="text-xl font-semibold mb-4">Edit Category</h2>
+    <form id="editCategoryForm" method="POST">
+      <div class="mb-4">
+        <label for="editCategoryName" class="block  text-gray-300">Category Name</label>
+        <input type="text" id="editCategoryName" name="categoriesName" class="bg-zinc-900 w-full px-4 py-2 border rounded-lg" required>
       </div>
-</div>
-  </main>
-
-
-
-  <!--------------------------------Sub Category----------------------------->
-  <main class="ml-64 p-8">
-
-<!-- Customer Table -->
-<div class="bg-zinc-800 rounded-lg p-6">
-  <table class=" min-w-full text-left text-gray-400">
-    <header class="flex items-center justify-between mb-4">
-      <h1 class="text-2xl font-semibold text-gray-200">Sub Category</h1>
-    
-        <button class="bg-transparent border border-white text-white px-4 py-2 rounded-lg hover:bg-gray-700">
-          Add Sub Category
-        </button>
-    </header>
-    <thead>
-      <tr class="border-b border-gray-700">
-        <th class="py-3 px-4">S.No</th> <!-- Added Serial Number Column -->
-        <th class="py-3 px-4">Sub Category</th>
-        <th class="py-3 px-4">Action</th>
-      </tr>
-    </thead>
-    <tbody>
-        <tr class="border-b border-gray-700">
-          <td class="py-3 px-4 text-white">1</td> 
-          <td class="py-3 px-4 text-white">Fossil</td>
-          <td class="px-4 py-2">
-                <button class="bg-green-500 hover:bg-green-600 text-white px-3 py-1 rounded-lg">Edit</button>
-                <button class="bg-red-500 hover:bg-red-600 text-white px-3 py-1 rounded-lg">Delete</button>
-              </td>
-        </tr>
-
-        <tr class="border-b border-gray-700">
-          <td class="py-3 px-4 text-white">2</td> 
-          <td class="py-3 px-4 text-white">Timex</td>   
-                      <td class="px-4 py-2">
-                <button class="bg-green-500 hover:bg-green-600 text-white px-3 py-1 rounded-lg">Edit</button>
-                <button class="bg-red-500 hover:bg-red-600 text-white px-3 py-1 rounded-lg">Delete</button>
-              </td>
-        </tr>
-
-    </tbody>
-  </table>
-
-
-  <!-- Pagination -->
-      <div class="flex justify-center items-center space-x-4 mt-6">
-        <button class="px-4 py-2 bg-gray-700 rounded-lg">Previous</button>
-        <button class="px-3 py-1 bg-gray-600 rounded-lg">1</button>
-        <button class="px-3 py-1 bg-gray-600 rounded-lg">2</button>
-        <button class="px-3 py-1 bg-gray-600 rounded-lg">3</button>
-        <button class="px-4 py-2 bg-gray-700 rounded-lg">Next</button>
+      <div class="flex justify-end space-x-4">
+        <button type="button" onclick="closeEditModal()" class="px-4 py-2 bg-gray-700 text-white rounded-lg">Cancel</button>
+        <button type="submit" class="px-4 py-2 bg-green-500 text-white rounded-lg">Update</button>
       </div>
+    </form>
+  </div>
 </div>
 
 
-  </main>
+          </tr>
+        <% }); %>
+      </tbody>
+    </table>
+
+    <div class="flex items-center justify-between mt-6 mb-2">
+      <button class="bg-transparent border border-white text-white px-4 py-2 rounded-lg hover:bg-gray-700">
+        Sub Category
+      </button>
+<!-- Add Category Button -->
+<button onclick="openModal()" class="bg-transparent border border-white text-white px-4 py-2 rounded-lg hover:bg-gray-700">
+  Add Category
+</button>
+
+<!-- Modal Structure -->
+<div id="addCategoryModal" class="fixed inset-0 flex items-center justify-center z-50 hidden">
+  <div class="bg-zinc-500 bg-opacity-50 absolute inset-0"></div>
+  <div class="bg-black text-white rounded-lg shadow-xl relative z-10 p-6 w-1/3">
+    <h2 class="text-xl font-semibold mb-4">Add New Category</h2>
+    <form id="addCategoryForm" method="POST" action="/admin/category/add">
+      <div class="mb-4">
+        <label for="categoryName" class="block text-gray-300">Category Name</label>
+        <input type="text" id="categoryName" name="categoriesName" class="bg-zinc-900 w-full px-4 py-2 border rounded-lg" required>
+      </div>
+      <div class="flex justify-end space-x-4">
+        <button type="button" onclick="closeModal()" class="px-4 py-2 bg-gray-700 text-white rounded-lg">Cancel</button>
+        <button type="submit" class="px-4 py-2 bg-green-500 text-white rounded-lg">Add</button>
+      </div>
+    </form>
+  </div>
+</div>
+
+
+    </div>
+    <!-- Pagination -->
+    <div class="flex justify-center items-center space-x-4 mt-6">
+      <% if (currentPage > 1) { %>
+        <a href="/admin/category?page=<%= currentPage - 1 %>" class="px-4 py-2 bg-gray-700 rounded-lg">Previous</a>
+      <% } %>
+      <% for (let i = 1; i <= totalPages; i++) { %>
+        <a href="/admin/category?page=<%= i %>" class="px-3 py-1 bg-gray-600 rounded-lg"><%= i %></a>
+      <% } %>
+      <% if (currentPage < totalPages) { %>
+        <a href="/admin/category?page=<%= currentPage + 1 %>" class="px-4 py-2 bg-gray-700 rounded-lg">Next</a>
+      <% } %>
+    </div>
+  </div>
+</main>
+
+<% if (typeof error !== 'undefined' && error) { %>
   <script>
-  function updateStatus(customerId, status) {
-    fetch(`/admin/customers/updateStatus/${customerId}`, {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json'
-      },
-      body: JSON.stringify({ status })
-    })
-    .then(response => response.json())
-    .then(data => {
-      if (data.success) {
-        location.reload(); // Refreshes the data on the page without a full page reload
-      } else {
-        alert('Error updating status');
-      }
-    })
-    .catch(error => {
-      console.error('Error:', error);
-    });
+    alert("<%= error %>");
+  </script>
+<% } %>
+
+<script>
+  function openModal() {
+    document.getElementById('addCategoryModal').classList.remove('hidden');
   }
+
+  function closeModal() {
+    document.getElementById('addCategoryModal').classList.add('hidden');
+  }
+
+
+  function openEditModal(id, name) {
+    const form = document.getElementById('editCategoryForm');
+    form.action = '/admin/category/update/' + id;
+    document.getElementById('editCategoryName').value = name;
+    document.getElementById('editCategoryModal').classList.remove('hidden');
+  }
+
+  function closeEditModal() {
+    document.getElementById('editCategoryModal').classList.add('hidden');
+  }
+
+  function deleteCategory(id) {
+    if (confirm("Are you sure you want to delete this category?")) {
+      fetch('/admin/category/delete/' + id, {
+        method: 'POST'
+      }).then(() => {
+        window.location.reload();
+      }).catch(err => {
+        alert("Error deleting category");
+      });
+    }
+  }
+
+
+
+
+
+
+
 </script>
+
+
+
+
 
 </body>
 </html>
