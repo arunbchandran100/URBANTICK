@@ -133,28 +133,31 @@ exports.updateStatus = [
 
 
 const Category = require("../models/categoryModel");
-const SubCategory = require("../models/subCategoryModel");
 
-exports.getCategories = async (req, res) => {
-  try {
-    const page = parseInt(req.query.page) || 1;
-    const limit = 10;
-    const skip = (page - 1) * limit;
+exports.getCategories = [
+  userAuthenticated,
+  async (req, res) => {
+    try {
+      const page = parseInt(req.query.page) || 1;
+      const limit = 10;
+      const skip = (page - 1) * limit;
 
-    const categories = await Category.find().skip(skip).limit(limit);
-    const totalCategories = await Category.countDocuments();
-    const totalPages = Math.ceil(totalCategories / limit);
+      const categories = await Category.find().skip(skip).limit(limit);
+      const totalCategories = await Category.countDocuments();
+      const totalPages = Math.ceil(totalCategories / limit);
 
-    res.render("admin/adminCategory", {
-      message: undefined,
-      categories,
-      currentPage: page,
-      totalPages,
-    });
-  } catch (err) {
-    res.status(500).send("Error fetching categories");
-  }
-};
+      res.render("admin/adminCategory", {
+        message: req.query.message || undefined, // Fetch message from query parameters
+        categories,
+        currentPage: page,
+        totalPages,
+      });
+    } catch (err) {
+      res.status(500).send("Error fetching categories");
+    }
+  },
+];
+
 
 
 exports.addCategory = async (req, res) => {
@@ -208,105 +211,5 @@ exports.deleteCategory = async (req, res) => {
     res.redirect("/admin/category");
   } catch (err) {
     res.status(500).send("Error deleting category");
-  }
-};
-
-///////////////////Dashboard Sub Category-------------------
-
-
-exports.getSubCategories = async (req, res) => {
-  try {
-    const page = parseInt(req.query.page) || 1;
-    const limit = 10;
-    const skip = (page - 1) * limit;
-
-    const subCategories = await SubCategory.find()
-      .populate("mainCategoryId")
-      .skip(skip)
-      .limit(limit);
-    const totalSubCategories = await SubCategory.countDocuments();
-    const totalSubPages = Math.ceil(totalSubCategories / limit);
-
-    res.render("admin/adminCategory", {
-      subCategories,
-      currentSubPage: page,
-      totalSubPages,
-    });
-  } catch (err) {
-    res.status(500).send("Error fetching subcategories");
-  }
-};
-
-
-
-
-
-
-// Fetch all categories
-// exports.getCategories = async (req, res) => {
-//   try {
-//     const categories = await Category.find();
-//     res.render("admin/adminCategory", { categories });
-//   } catch (err) {
-//     res.status(500).send("Error fetching categories");
-//   }
-// };
-
-
-
-
-
-
-
-// Update an existing category
-
-
-
-
-// Fetch all subcategories
-// exports.getSubCategories = async (req, res) => {
-//   try {
-//     const subCategories = await SubCategory.find().populate("mainCategoryId");
-//     res.render("admin/adminSubCategories", { subCategories });
-//   } catch (err) {
-//     res.status(500).send("Error fetching subcategories");
-//   }
-// };
-
-// Add a new subcategory
-exports.addSubCategory = async (req, res) => {
-  try {
-    const newSubCategory = new SubCategory({
-      categoriesName: req.body.categoriesName,
-      mainCategoryId: req.body.mainCategoryId,
-    });
-    await newSubCategory.save();
-    res.redirect("/admin/subCategory");
-  } catch (err) {
-    res.status(500).send("Error adding subcategory");
-  }
-};
-
-
-// Update an existing subcategory
-exports.updateSubCategory = async (req, res) => {
-  try {
-    await SubCategory.findByIdAndUpdate(req.params.id, {
-      categoriesName: req.body.categoriesName,
-      mainCategoryId: req.body.mainCategoryId,
-    });
-    res.redirect("/admin/subCategory");
-  } catch (err) {
-    res.status(500).send("Error updating subcategory");
-  }
-};
-
-// Delete a subcategory
-exports.deleteSubCategory = async (req, res) => {
-  try {
-    await SubCategory.findByIdAndDelete(req.params.id);
-    res.redirect("/admin/subCategory");
-  } catch (err) {
-    res.status(500).send("Error deleting subcategory");
   }
 };

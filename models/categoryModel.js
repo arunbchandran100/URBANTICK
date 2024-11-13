@@ -9,7 +9,6 @@ const categorySchema = new mongoose.Schema({
     type: String,
     required: true,
     unique: true,
-    // Ensure index is created with collation for case-insensitivity
     index: {
       unique: true,
       collation: { locale: "en", strength: 2 },

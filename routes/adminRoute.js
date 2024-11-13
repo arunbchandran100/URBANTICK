@@ -21,21 +21,28 @@ router.post("/customers/block/:id", adminController.blockCustomer);
 router.post("/customers/updateStatus/:id", adminController.updateStatus);
 
 
-// Admin  Products
-
-
-
 // Category Routes
 router.get("/category", adminController.getCategories);
 router.post("/category/add", adminController.addCategory);
 router.post("/category/update/:id", adminController.updateCategory);
 router.post("/category/delete/:id", adminController.deleteCategory);
 
-// SubCategory Routes
-router.get("/subCategory", adminController.getSubCategories);
-router.post("/subCategory/add", adminController.addSubCategory);
-router.post("/subCategory/update/:id", adminController.updateSubCategory);
-router.post("/subCategory/delete/:id", adminController.deleteSubCategory);
+
+// product Routes
+const adminProduct = require("../controllers/admin/adminProductController");
+
+
+router.get("/products", adminProduct.getProducts);
+router.get("/products/add", adminProduct.getAddProduct);
+router.post("/products/add", adminProduct.postAddProduct);
+router.post("/products/update/:id", adminProduct.updateProduct);
+router.post("/products/delete/:id", adminProduct.deleteProduct);
+
+router.post("/variants/add", adminProduct.addVariant);
+router.post("/variants/update/:id", adminProduct.updateVariant);
+router.post("/variants/delete/:id", adminProduct.deleteVariant);
+
+
 
 module.exports = router;
 
