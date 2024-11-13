@@ -99,12 +99,11 @@
 
       <thead>
         <tr class="border-b border-gray-700">
+          <th class="py-3 px-4">S.No</th>
           <th class="py-3 px-4">Product Name</th>
           <th class="py-3 px-4">Brand</th>
-          <th class="py-3 px-4">Gender</th>
-          <th class="py-3 px-4">Category</th>
           <th class="py-3 px-4">Created At</th>
-          <th class="py-3 px-4">Updated At</th>
+          <th class="py-3 px-4">Action</th>
 
         </tr>
       </thead>
@@ -114,10 +113,7 @@
             <td class="py-3 px-4 text-white"><%= (currentPage - 1) * 10 + index + 1 %></td>
             <td class="py-3 px-4 text-white"><%= product.productName %></td>
             <td class="py-3 px-4 text-white"><%= product.brand %></td>
-            <td class="py-3 px-4 text-white"><%= product.gender %></td>
-            <td class="py-3 px-4 text-white"><%= product.CategoriesId %></td>
             <td class="py-3 px-4 text-white"><%= new Date(product.createdAt).toLocaleDateString() %></td>
-            <td class="py-3 px-4 text-white"><%= new Date(product.updatedAt).toLocaleDateString() %></td>
             <td class="px-4 py-2 flex space-x-2">
               <button class="bg-green-500 text-white px-3 py-1 rounded-lg hover:bg-green-600" onclick="openEditModal('<%= product._id %>', '<%= product.productName %>')">Edit</button>
               <button class="bg-red-500 text-white px-3 py-1 rounded-lg hover:bg-red-600" onclick="deleteProduct('<%= product._id %>')">Delete</button>
@@ -144,13 +140,13 @@
     <!-- Pagination -->
     <div class="flex justify-center items-center space-x-4 mt-6">
       <% if (currentPage > 1) { %>
-        <a href="/admin/category?page=<%= currentPage - 1 %>" class="px-4 py-2 bg-gray-700 rounded-lg">Previous</a>
+        <a href="/admin/products?page=<%= currentPage - 1 %>" class="px-4 py-2 bg-gray-700 rounded-lg">Previous</a>
       <% } %>
       <% for (let i = 1; i <= totalPages; i++) { %>
-        <a href="/admin/category?page=<%= i %>" class="px-3 py-1 bg-gray-600 rounded-lg"><%= i %></a>
+        <a href="/admin/products?page=<%= i %>" class="px-3 py-1 bg-gray-600 rounded-lg"><%= i %></a>
       <% } %>
       <% if (currentPage < totalPages) { %>
-        <a href="/admin/category?page=<%= currentPage + 1 %>" class="px-4 py-2 bg-gray-700 rounded-lg">Next</a>
+        <a href="/admin/products?page=<%= currentPage + 1 %>" class="px-4 py-2 bg-gray-700 rounded-lg">Next</a>
       <% } %>
     </div>
   </div>

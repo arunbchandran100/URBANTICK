@@ -31,16 +31,16 @@ router.post("/category/delete/:id", adminController.deleteCategory);
 // product Routes
 const adminProduct = require("../controllers/admin/adminProductController");
 
-
 router.get("/products", adminProduct.getProducts);
 router.get("/products/add", adminProduct.getAddProduct);
 router.post("/products/add", adminProduct.postAddProduct);
 router.post("/products/update/:id", adminProduct.updateProduct);
 router.post("/products/delete/:id", adminProduct.deleteProduct);
 
-router.post("/variants/add", adminProduct.addVariant);
-router.post("/variants/update/:id", adminProduct.updateVariant);
-router.post("/variants/delete/:id", adminProduct.deleteVariant);
+router.get("/products/add/variant", adminProduct.getAddvariant);
+router.post("/products/add/variant", adminProduct.postAddvariant);
+// router.post("/products/update/:id", adminProduct.updatevariant);
+// router.post("/products/delete/:id", adminProduct.deletevariant);
 
 
 

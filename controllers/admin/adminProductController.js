@@ -46,30 +46,24 @@ exports.getAddProduct = async (req, res) => {
 
 
 
-exports.postAddProduct = (req, res) => {
+exports.postAddProduct = async (req, res) => {
   const { productName, brand, gender, categoriesId } = req.body;
 
-  // Create a new product instance
   const newProduct = new Product({
     productName,
     brand,
     gender,
-    categoriesId,
+    categoriesId
   });
 
-  // Save the product to the database
-  newProduct
-    .save()
-    .then(() => {
-      // Redirect to a success page or send a success response
-      res.redirect("/admin/products"); // Or another appropriate route
-    })
-    .catch((err) => {
-      console.error("Error adding product:", err);
-      res.status(500).send("Error adding product");
-    });
+  try {
+    const savedProduct = await newProduct.save();
+    res.redirect(`/admin/products/add/variant?productId=${savedProduct._id}`);
+  } catch (err) {
+    console.error("Error adding product:", err);
+    res.status(500).send("Error adding product");
+  }
 };
-
 
 
 
@@ -99,49 +93,90 @@ exports.deleteProduct = async (req, res) => {
   }
 };
 
+const Variant = require("../../models/variantSchema"); // Adjust the path to your Variant model as needed
 
-// Add Variant
-exports.addVariant = async (req, res) => {
+
+exports.getAddvariant = async (req, res) => {
+  const { productId } = req.query;
+  if (!productId) {
+    return res.status(400).send("Product ID is required");
+  }
+
   try {
-    const newVariant = new Variant({
-      productId: req.body.productId,
-      color: req.body.color,
-      price: req.body.price,
-      discountPrice: req.body.discountPrice,
-      discountPercentage: req.body.discountPercentage,
-      rating: req.body.rating,
-      imageUrl: req.body.imageUrl.split(','),
+    res.render("admin/adminAddvariant", {
+      pageTitle: "Add Variant",
+      path: "/admin/products/add/variant",
+      productId
     });
-    await newVariant.save();
-    res.redirect('/admin/products?message=Variant%20added%20successfully');
   } catch (err) {
-    res.status(500).send('Error adding variant');
+    console.error("Error rendering add variant form:", err);
+    res.status(500).send("Error rendering add variant form");
   }
 };
 
-// Update Variant
-exports.updateVariant = async (req, res) => {
-  try {
-    await Variant.findByIdAndUpdate(req.params.id, {
-      color: req.body.color,
-      price: req.body.price,
-      discountPrice: req.body.discountPrice,
-      discountPercentage: req.body.discountPercentage,
-      rating: req.body.rating,
-      imageUrl: req.body.imageUrl.split(','),
-    });
-    res.redirect('/admin/products?message=Variant%20updated%20successfully');
-  } catch (err) {
-    res.status(500).send('Error updating variant');
+
+const fs = require("fs");
+const multer = require("multer");
+const path = require("path");
+
+// Ensure 'uploads' folder exists
+const uploadsDir = path.join(__dirname, "../../uploads");
+if (!fs.existsSync(uploadsDir)) {
+  fs.mkdirSync(uploadsDir, { recursive: true });
+}
+
+const storage = multer.diskStorage({
+  destination: (req, file, cb) => {
+    cb(null, uploadsDir); // Save files to the 'uploads' folder
+  },
+  filename: (req, file, cb) => {
+    cb(null, Date.now() + path.extname(file.originalname)); // Use timestamp to avoid filename conflicts
+  },
+});
+
+const fileFilter = (req, file, cb) => {
+  if (file.mimetype.startsWith("image/")) {
+    cb(null, true);
+  } else {
+    cb(new Error("Please upload an image file."), false);
   }
 };
 
-// Delete Variant
-exports.deleteVariant = async (req, res) => {
-  try {
-    await Variant.findByIdAndDelete(req.params.id);
-    res.redirect('/admin/products?message=Variant%20deleted%20successfully');
-  } catch (err) {
-    res.status(500).send('Error deleting variant');
-  }
-};
+const upload = multer({
+  storage: storage,
+  fileFilter: fileFilter,
+});
+
+// Use 'upload' middleware in your route handler
+exports.postAddvariant = [
+  upload.array("imageFile", 4), // Allow up to 4 images
+  async (req, res) => {
+    try {
+      const {
+        productId,
+        color,
+        price,
+        discountPrice,
+        discountPercentage,
+        rating,
+      } = req.body;
+      const imageUrls = req.files.map((file) => `/uploads/${file.filename}`);
+
+      const newVariant = new Variant({
+        productId,
+        color,
+        price,
+        discountPrice,
+        discountPercentage,
+        rating,
+        imageUrl: imageUrls,
+      });
+
+      await newVariant.save();
+      res.redirect("/admin/products?message=Variant%20added%20successfully");
+    } catch (err) {
+      console.error("Error adding product variant:", err);
+      res.status(500).send("Error adding product variant");
+    }
+  },
+];

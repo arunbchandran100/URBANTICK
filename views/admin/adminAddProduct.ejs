@@ -6,49 +6,47 @@
   <title>Add Product</title>
   <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
 </head>
-<body class="bg-gray-100">
+<body class="bg-black text-white min-h-screen flex items-center justify-center">
 
-  <div class="container mx-auto p-8">
-    <h1 class="text-3xl font-bold mb-6">Add Product</h1>
-    <form action="/admin/products/add" method="POST" class="bg-white p-6 rounded-lg shadow-md">
+  <div class="bg-zinc-900 p-8 rounded-lg shadow-xl w-full max-w-lg">
+    <h1 class="text-3xl font-bold mb-6 text-gray-200">Add Product</h1>
+    <form action="/admin/products/add" method="POST" class="bg-zinc-800 p-6 rounded-lg shadow-lg">
       
-      <div class="mb-4">
-        <label for="productName" class="block text-gray-700">Product Name</label>
-        <input type="text" id="productName" name="productName" class="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-indigo-500" required>
+      <div class="mb-4  bg-zinc-900">
+        <label for="productName" class="block text-gray-400">Product Name</label>
+        <input type="text" id="productName" name="productName" class="mt-1 block w-full px-3 py-2 border border-gray-700 bg-zinc-900 text-black rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-indigo-500" required>
       </div>
       
       <div class="mb-4">
-        <label for="brand" class="block text-gray-700">Brand</label>
-        <input type="text" id="brand" name="brand" class="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-indigo-500" required>
+        <label for="brand" class="block text-gray-400">Brand</label>
+        <input type="text" id="brand" name="brand" class="mt-1 block w-full px-3 py-2 border border-gray-700 bg-zinc-900 text-white rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-indigo-500" required>
       </div>
       
       <div class="mb-4">
-        <label for="gender" class="block text-gray-700">Gender</label>
-        <select id="gender" name="gender" class="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-indigo-500" required>
-          <option value="male">Male</option>
-          <option value="female">Female</option>
-          <option value="unisex">Unisex</option>
+        <label for="gender" class="block text-gray-400">Gender</label>
+        <select id="gender" name="gender" class="mt-1 block w-full px-3 py-2 border border-gray-700 bg-zinc-900 text-white rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-indigo-500" required>
+          <option value="male" class="bg-zinc-900 text-white">Male</option>
+          <option value="female" class="bg-zinc-900 text-white">Female</option>
+          <option value="unisex" class="bg-zinc-900 text-white">Unisex</option>
         </select>
       </div>
       
       <div class="mb-4">
-<label for="categoriesId" class="block text-gray-700">Category</label>
-<select
-  id="categoriesId"
-  name="categoriesId"
-  class="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-indigo-500"
-  required
->
-  <% categories.forEach(category => { %>
-    <option value="<%= category._id %>"><%= category.categoriesName %></option>
-  <% }); %>
-</select>
-
-
+        <label for="categoriesId" class="block text-gray-400">Category</label>
+        <select
+          id="categoriesId"
+          name="categoriesId"
+          class="mt-1 block w-full px-3 py-2 border border-gray-700 bg-zinc-900 text-white rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-indigo-500"
+          required
+        >
+          <% categories.forEach(category => { %>
+            <option value="<%= category._id %>" class="bg-zinc-900 text-white"><%= category.categoriesName %></option>
+          <% }); %>
+        </select>
       </div>
       
       <button type="submit" class="bg-indigo-600 text-white px-4 py-2 rounded-lg hover:bg-indigo-800">
-        Add Product
+        Continue
       </button>
     </form>
   </div>
