@@ -4,156 +4,165 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Add Variant</title>
-  <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
+  <script src="https://cdn.tailwindcss.com"></script>
   <link href="https://cdnjs.cloudflare.com/ajax/libs/cropperjs/1.5.12/cropper.min.css" rel="stylesheet">
-<script src="https://cdnjs.cloudflare.com/ajax/libs/cropperjs/1.5.12/cropper.min.js"></script>
-
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/cropperjs/1.5.12/cropper.min.js"></script>
 </head>
-<body class="bg-gray-100">
+<body class="bg-black text-white min-h-screen flex items-center justify-center">
 
-  <div class="container mx-auto p-8">
-    <h1 class="text-3xl font-bold mb-6">Add Variant</h1>
-    <form action="/admin/products/add/variant" method="POST" enctype="multipart/form-data" class="bg-white p-6 rounded-lg shadow-md">
+  <div class="bg-zinc-900 p-8 rounded-lg shadow-xl w-full max-w-3xl">
+    <div class="rounded-lg shadow-xl">
+      <h1 class="text-3xl font-bold mb-6 text-slate-200">Add Variant</h1>
+    </div>
+    <form action="/admin/products/add/variant" method="POST" enctype="multipart/form-data" class=" p-6 rounded-lg shadow-md">
       
       <input type="hidden" id="productId" name="productId" value="<%= productId %>">
 
       <div class="mb-4">
-        <label for="color" class="block text-gray-700">Color</label>
-        <input type="text" id="color" name="color" class="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-indigo-500" required>
+        <label for="color" class="block text-gray-400">Color</label>
+        <input type="text" id="color" name="color" class="mt-1 block w-full px-3 py-2 border border-gray-600 bg-zinc-800 text-white rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-indigo-500" required>
       </div>
       
       <div class="mb-4">
-        <label for="price" class="block text-gray-700">Price</label>
-        <input type="number" id="price" name="price" step="0.01" class="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-indigo-500" required>
+        <label for="price" class="block text-gray-400">Price</label>
+        <input type="number" id="price" name="price" step="0.01" class="mt-1 block w-full px-3 py-2 border border-gray-600 bg-zinc-800 text-white rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-indigo-500" required>
       </div>
       
       <div class="mb-4">
-        <label for="discountPrice" class="block text-gray-700">Discount Price</label>
-        <input type="number" id="discountPrice" name="discountPrice" step="0.01" class="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-indigo-500">
+        <label for="discountPrice" class="block text-gray-400">Discount Price</label>
+        <input type="number" id="discountPrice" name="discountPrice" step="0.01" class="mt-1 block w-full px-3 py-2 border border-gray-600 bg-zinc-800 text-white rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-indigo-500">
       </div>
       
       <div class="mb-4">
-        <label for="discountPercentage" class="block text-gray-700">Discount Percentage</label>
-        <input type="number" id="discountPercentage" name="discountPercentage" step="0.01" class="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-indigo-500">
+        <label for="discountPercentage" class="block text-gray-400">Discount Percentage</label>
+        <input type="number" id="discountPercentage" name="discountPercentage" step="0.01" class="mt-1 block w-full px-3 py-2 border border-gray-600 bg-zinc-800 text-white rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-indigo-500">
       </div>
       
       <div class="mb-4">
-        <label for="rating" class="block text-gray-700">Rating</label>
-        <input type="number" id="rating" name="rating" step="0.1" min="0" max="5" class="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-indigo-500">
+        <label for="rating" class="block text-gray-400">Rating</label>
+        <input type="number" id="rating" name="rating" step="0.1" min="0" max="5" class="mt-1 block w-full px-3 py-2 border border-gray-600 bg-zinc-800 text-white rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-indigo-500">
       </div>
       
-      <!-- <div class="mb-4">
-        <label for="imageFile" class="block text-gray-700">Image Files (up to 4)</label>
-        <input type="file" id="imageFile" name="imageFile" accept="image/*" multiple class="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-indigo-500">
-      </div> -->
+      <div class="mb-4">
+        <label for="imageFile" class="block text-gray-400">Image Files (up to 4)</label>
+        <input type="file" id="imageFile" name="imageFile" accept="image/*" class="mt-1 block w-full px-3 py-2 border border-gray-600 bg-zinc-800 text-white rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-indigo-500" onchange="addImage()" required>
+        <p id="fileError" class="text-red-500 text-sm mt-2 hidden">You can only upload up to 4 images.</p>
+      </div>
 
- <div class="mb-4">
-  <label for="imageFile" class="block text-gray-700">Image Files (up to 4)</label>
-  <input type="file" id="imageFile" name="imageFile" accept="image/*" class="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-indigo-500" onchange="addImage()" required>
-  <p id="fileError" class="text-red-500 text-sm mt-2 hidden">You can only upload up to 4 images.</p>
-</div>
+      <!-- Crop Modal -->
+      <div id="cropModal" class="fixed inset-0 flex items-center justify-center bg-gray-900 bg-opacity-50 hidden">
+        <div class="bg-zinc-900 p-4 rounded-lg w-2/3 max-w-4xl shadow-xl">
+          <h2 class="text-lg font-semibold mb-4 text-slate-200">Crop Image</h2>
+          <div class="flex justify-center">
+            <img id="cropImage" class="w-full h-96 object-contain">
+          </div>
+          <div class="mt-4 flex justify-end">
+            <button type="button" onclick="closeCropModal()" class="bg-gray-400 text-white px-4 py-2 rounded mr-2">Cancel</button>
+            <button type="button" onclick="applyCrop()" class="bg-indigo-600 text-white px-4 py-2 rounded">Crop & Save</button>
+          </div>
+        </div>
+      </div>
 
-<!-- Crop Modal -->
-<div id="cropModal" class="fixed inset-0 flex items-center justify-center bg-gray-900 bg-opacity-50 hidden">
-  <div class="bg-white p-4 rounded-lg w-2/3 max-w-4xl">
-    <h2 class="text-lg font-semibold mb-4">Crop Image</h2>
-    <div class="flex justify-center">
-      <img id="cropImage" class="w-full h-96 object-contain">
-    </div>
-    <div class="mt-4 flex justify-end">
-      <button onclick="closeCropModal()" class="bg-gray-400 text-white px-4 py-2 rounded mr-2">Cancel</button>
-      <button onclick="applyCrop()" class="bg-indigo-600 text-white px-4 py-2 rounded">Crop & Save</button>
-    </div>
+      <div id="imagePreview" class="grid grid-cols-4 gap-4 mb-4">
+        <!-- Preview images with delete button will appear here -->
+      </div>
+
+      <button type="submit" class="bg-indigo-600 text-white px-4 py-2 rounded-lg hover:bg-indigo-800">
+        Add Variant
+      </button>
+    </form>
   </div>
-</div>
 
-<div id="imagePreview" class="grid grid-cols-4 gap-4 mb-4">
-  <!-- Preview images with delete button will appear here -->
-</div>
+  <script>
+    let uploadedImages = [];
+    let cropper;
+    let selectedFile;
 
-<button type="submit" class="bg-indigo-600 text-white px-4 py-2 rounded-lg hover:bg-indigo-800"> Add Variant </button>
-</form>
-</div>
 
-<script>
-let uploadedImages = [];
-let cropper;
-let selectedFile;
+    function addImage() {
+      const imageFileInput = document.getElementById('imageFile');
+      const fileError = document.getElementById('fileError');
+      const imagePreview = document.getElementById('imagePreview');
+      selectedFile = imageFileInput.files[0];
 
-function addImage() {
-  const imageFileInput = document.getElementById('imageFile');
-  const fileError = document.getElementById('fileError');
-  const imagePreview = document.getElementById('imagePreview');
-  selectedFile = imageFileInput.files[0];
-  // Reset file input
-  imageFileInput.value = '';
-  if (uploadedImages.length >= 4) {
-    fileError.classList.remove('hidden');
-    return;
-  } else {
-    fileError.classList.add('hidden');
-  }
-  // Hide the image preview when the crop modal opens
-  imagePreview.classList.add('hidden');
-  // Show the crop modal
-  openCropModal(selectedFile);
-}
+      // Reset file input
+      imageFileInput.value = '';
 
-function openCropModal(file) {
-  const cropModal = document.getElementById('cropModal');
-  const cropImage = document.getElementById('cropImage');
-  cropModal.classList.remove('hidden');
-  const reader = new FileReader();
-  reader.onload = function(e) {
-    cropImage.src = e.target.result;
-    cropper = new Cropper(cropImage, {
-      aspectRatio: 1, // Adjust as needed
-      viewMode: 1,
-    });
-  };
-  reader.readAsDataURL(file);
-}
+      if (uploadedImages.length >= 4) {
+        fileError.classList.remove('hidden');
+        return;
+      } else {
+        fileError.classList.add('hidden');
+      }
 
-function closeCropModal() {
-  const imagePreview = document.getElementById('imagePreview');
-  document.getElementById('cropModal').classList.add('hidden');
-  if (cropper) {
-    cropper.destroy();
-    cropper = null;
-  }
-  // Show the image preview again when the crop modal is closed
-  imagePreview.classList.remove('hidden');
-}
+      // Show the crop modal
+      openCropModal(selectedFile);
+    }
 
-function applyCrop() {
-  const imagePreview = document.getElementById('imagePreview');
-  // Get cropped image as Blob and preview it
-  cropper.getCroppedCanvas().toBlob((blob) => {
-    uploadedImages.push(blob);
-    const imgWrapper = document.createElement('div');
-    imgWrapper.className = 'relative';
-    const imgElement = document.createElement('img');
-    imgElement.src = URL.createObjectURL(blob);
-    imgElement.className = 'w-full h-32 object-cover rounded-lg border';
-    const deleteButton = document.createElement('button');
-    deleteButton.textContent = 'Delete';
-    deleteButton.className = 'absolute top-0 right-0 mt-1 mr-1 px-2 py-1 bg-red-600 text-white text-xs rounded-full';
-    deleteButton.onclick = function() {
-      deleteImage(imgWrapper, blob);
-    };
-    imgWrapper.appendChild(imgElement);
-    imgWrapper.appendChild(deleteButton);
-    imagePreview.appendChild(imgWrapper);
-  });
-  // Close and destroy the cropper
-  closeCropModal();
-}
+    function openCropModal(file) {
+      const cropModal = document.getElementById('cropModal');
+      const cropImage = document.getElementById('cropImage');
+      const imagePreview = document.getElementById('imagePreview');
+      cropModal.classList.remove('hidden');
+      imagePreview.classList.add('hidden'); // Hide the image previews
 
-function deleteImage(imgWrapper, file) {
-  const imagePreview = document.getElementById('imagePreview');
-  imagePreview.removeChild(imgWrapper);
-  uploadedImages = uploadedImages.filter(img => img !== file);
-}
-</script>
+      const reader = new FileReader();
+      reader.onload = function(e) {
+        cropImage.src = e.target.result;
+        cropper = new Cropper(cropImage, {
+          aspectRatio: 1, // Adjust as needed
+          viewMode: 1,
+        });
+      };
+      reader.readAsDataURL(file);
+    }
+
+    function closeCropModal() {
+      document.getElementById('cropModal').classList.add('hidden');
+      const imagePreview = document.getElementById('imagePreview');
+      imagePreview.classList.remove('hidden'); // Show the image previews again
+
+      if (cropper) {
+        cropper.destroy();
+        cropper = null;
+      }
+    }
+
+    function applyCrop() {
+      const imagePreview = document.getElementById('imagePreview');
+
+      // Get cropped image as Blob and preview it
+      cropper.getCroppedCanvas().toBlob((blob) => {
+        uploadedImages.push(blob);
+
+        const imgWrapper = document.createElement('div');
+        imgWrapper.className = 'relative';
+
+        const imgElement = document.createElement('img');
+        imgElement.src = URL.createObjectURL(blob);
+        imgElement.className = 'w-full h-32 object-cover rounded-lg border';
+
+        const deleteButton = document.createElement('button');
+        deleteButton.textContent = 'Delete';
+        deleteButton.className = 'absolute top-0 right-0 mt-1 mr-1 px-2 py-1 bg-red-600 text-white text-xs rounded-full';
+        deleteButton.onclick = function() {
+          deleteImage(imgWrapper, blob);
+        };
+
+        imgWrapper.appendChild(imgElement);
+        imgWrapper.appendChild(deleteButton);
+        imagePreview.appendChild(imgWrapper);
+      });
+
+      // Close and destroy the cropper
+      closeCropModal();
+    }
+
+    function deleteImage(imgWrapper, file) {
+      const imagePreview = document.getElementById('imagePreview');
+      imagePreview.removeChild(imgWrapper);
+      uploadedImages = uploadedImages.filter(img => img !== file);
+    }
+  </script>
 </body>
 </html>
