@@ -1,9 +1,9 @@
 // const userAuthenticated = require("../middleware/adminauthmildware");
 const Product = require("../../models/productSchema");
-
+require("dotenv").config();
 
 exports.getProducts = [
-//   userAuthenticated,
+  //   userAuthenticated,
   async (req, res) => {
     try {
       const page = parseInt(req.query.page) || 1;
@@ -15,7 +15,7 @@ exports.getProducts = [
       const totalPages = Math.ceil(totalProducts / limit);
 
       res.render("admin/adminProduct", {
-        message: req.query.message || undefined, // Fetch message from query parameters
+        message: req.query.message || undefined,  
         products,
         currentPage: page,
         totalPages,
@@ -26,8 +26,7 @@ exports.getProducts = [
   },
 ];
 
-
-const Category = require("../../models/categoryModel"); 
+const Category = require("../../models/categoryModel");
 
 exports.getAddProduct = async (req, res) => {
   try {
@@ -43,20 +42,18 @@ exports.getAddProduct = async (req, res) => {
   }
 };
 
-
-
-
 exports.postAddProduct = async (req, res) => {
   const { productName, brand, gender, categoriesId } = req.body;
+
+  try {
 
   const newProduct = new Product({
     productName,
     brand,
     gender,
-    categoriesId
+    categoriesId,
   });
 
-  try {
     const savedProduct = await newProduct.save();
     res.redirect(`/admin/products/add/variant?productId=${savedProduct._id}`);
   } catch (err) {
@@ -64,9 +61,6 @@ exports.postAddProduct = async (req, res) => {
     res.status(500).send("Error adding product");
   }
 };
-
-
-
 
 // Update Product
 exports.updateProduct = async (req, res) => {
@@ -77,9 +71,9 @@ exports.updateProduct = async (req, res) => {
       gender: req.body.gender,
       categoriesId: req.body.categoriesId,
     });
-    res.redirect('/admin/products?message=Product%20updated%20successfully');
+    res.redirect("/admin/products?message=Product%20updated%20successfully");
   } catch (err) {
-    res.status(500).send('Error updating product');
+    res.status(500).send("Error updating product");
   }
 };
 
@@ -87,15 +81,36 @@ exports.updateProduct = async (req, res) => {
 exports.deleteProduct = async (req, res) => {
   try {
     await Product.findByIdAndDelete(req.params.id);
-    res.redirect('/admin/products?message=Product%20deleted%20successfully');
+    res.redirect("/admin/products?message=Product%20deleted%20successfully");
   } catch (err) {
-    res.status(500).send('Error deleting product');
+    res.status(500).send("Error deleting product");
   }
 };
 
-const Variant = require("../../models/variantSchema"); // Adjust the path to your Variant model as needed
+const Variant = require("../../models/variantSchema");
+const cloudinary = require("cloudinary").v2;
+const multer = require("multer");
+const { CloudinaryStorage } = require("multer-storage-cloudinary");
 
 
+cloudinary.config({
+  cloud_name: process.env.CLOUDINARY_CLOUD_NAME,
+  api_key: process.env.CLOUDINARY_API_KEY,
+  api_secret: process.env.CLOUDINARY_API_SECRET,
+});
+
+// Set up Cloudinary storage
+const storage = new CloudinaryStorage({
+  cloudinary: cloudinary,
+  params: {
+    folder: "product_variants",  
+    allowed_formats: ["jpg", "jpeg", "png"],
+  },
+});
+
+const upload = multer({ storage: storage });
+
+// Route Handlers
 exports.getAddvariant = async (req, res) => {
   const { productId } = req.query;
   if (!productId) {
@@ -106,7 +121,7 @@ exports.getAddvariant = async (req, res) => {
     res.render("admin/adminAddvariant", {
       pageTitle: "Add Variant",
       path: "/admin/products/add/variant",
-      productId
+      productId,
     });
   } catch (err) {
     console.error("Error rendering add variant form:", err);
@@ -115,68 +130,37 @@ exports.getAddvariant = async (req, res) => {
 };
 
 
-const fs = require("fs");
-const multer = require("multer");
-const path = require("path");
+exports.postAddvariant = async (req, res) => {
+  try {
+    const {
+      productId,
+      color,
+      price,
+      discountPrice,
+      discountPercentage,
+      rating,
+      imageUrls, 
+    } = req.body;
 
-// Ensure 'uploads' folder exists
-const uploadsDir = path.join(__dirname, "../../uploads");
-if (!fs.existsSync(uploadsDir)) {
-  fs.mkdirSync(uploadsDir, { recursive: true });
-}
 
-const storage = multer.diskStorage({
-  destination: (req, file, cb) => {
-    cb(null, uploadsDir); // Save files to the 'uploads' folder
-  },
-  filename: (req, file, cb) => {
-    cb(null, Date.now() + path.extname(file.originalname)); // Use timestamp to avoid filename conflicts
-  },
-});
+    if (!productId || !color || !price || !imageUrls) {
+      return res.status(400).json({ error: "Missing required fields" });
+    }
 
-const fileFilter = (req, file, cb) => {
-  if (file.mimetype.startsWith("image/")) {
-    cb(null, true);
-  } else {
-    cb(new Error("Please upload an image file."), false);
+    const newVariant = new Variant({
+      productId,
+      color,
+      price,
+      discountPrice,
+      discountPercentage,
+      rating,
+      imageUrl: imageUrls, 
+    });
+
+    await newVariant.save();
+    res.status(200).json({ message: "Variant added successfully" });
+  } catch (err) {
+    console.error("Error adding product variant:", err);
+    res.status(500).json({ error: "Error adding product variant" });
   }
 };
-
-const upload = multer({
-  storage: storage,
-  fileFilter: fileFilter,
-});
-
-// Use 'upload' middleware in your route handler
-exports.postAddvariant = [
-  upload.array("imageFile", 4), // Allow up to 4 images
-  async (req, res) => {
-    try {
-      const {
-        productId,
-        color,
-        price,
-        discountPrice,
-        discountPercentage,
-        rating,
-      } = req.body;
-      const imageUrls = req.files.map((file) => `/uploads/${file.filename}`);
-
-      const newVariant = new Variant({
-        productId,
-        color,
-        price,
-        discountPrice,
-        discountPercentage,
-        rating,
-        imageUrl: imageUrls,
-      });
-
-      await newVariant.save();
-      res.redirect("/admin/products?message=Variant%20added%20successfully");
-    } catch (err) {
-      console.error("Error adding product variant:", err);
-      res.status(500).send("Error adding product variant");
-    }
-  },
-];

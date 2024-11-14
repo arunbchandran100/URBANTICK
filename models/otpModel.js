@@ -1,10 +1,13 @@
 const mongoose = require("mongoose");
 
-const otpSchema = new mongoose.Schema({
-  email: String,
-  otp: String,
-  createdAt: { type: Date, default: Date.now, expires: 28 }, // Expire after 28 seconds
-});
+const otpSchema = new mongoose.Schema(
+  {
+    email: String,
+    otp: String,
+    createdAt: { type: Date, default: Date.now, expires: 28 }, // Expire after 28 seconds
+  },
+  { timestamps: true }
+);
 
 otpSchema.index({ createdAt: 1 }, { expireAfterSeconds: 28 }); // Ensure TTL index is set
 

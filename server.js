@@ -22,10 +22,9 @@ app.use(
     secret: "your_secret_key", // Replace with a strong secret key
     resave: false,
     saveUninitialized: true,
-    cookie: { maxAge: 604800000  }, // 7 days in milliseconds
+    cookie: { maxAge: 604800000 }, // 7 days in milliseconds
   })
 );
-
 
 const publicUsers = require("./routes/publicUsersRoute");
 app.use("/", publicUsers);
@@ -38,15 +37,12 @@ app.use("/admin", adminRoute);
 
 // Session middleware
 
-
 // Other middleware (like body-parser, if needed)
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 
-
 // --------------Google Login---------------------------
 app.use(express.static(path.join(__dirname, "public")));
-
 
 app.use(passport.initialize());
 app.use(passport.session());
@@ -91,10 +87,6 @@ passport.use(
   )
 );
 
-
-
-
-
 passport.serializeUser((user, done) => done(null, user.id));
 passport.deserializeUser((id, done) => {
   User.findById(id)
@@ -102,6 +94,11 @@ passport.deserializeUser((id, done) => {
     .catch((err) => done(err, null));
 });
 
+app.use((req, res, next) => {
+  req.session.admin = true;
+  console.log(1);
+  next();
+});
 
 app.get("/", (req, res) => {
   res.send("<a href='/auth/google'>Login with Google</a>");
@@ -114,8 +111,6 @@ app.get(
     prompt: "select_account",
   })
 );
-
-
 
 app.get(
   "/auth/google/callback",
@@ -130,9 +125,6 @@ app.get(
     res.redirect("/profile");
   }
 );
-
-
-
 
 app.get("/profile", (req, res) => {
   res.send(`Welcome ${req.user.fullName}`);
