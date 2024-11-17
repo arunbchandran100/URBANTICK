@@ -35,16 +35,12 @@ const adminProduct = require("../controllers/admin/adminProductController");
 
 router.get("/products", adminProduct.getProducts);
 router.get("/products/add", adminProduct.getAddProduct);
-router.post("/products/add", adminProduct.postAddProduct);
+router.post("/products/add", uploadMiddleware,adminProduct.postAddProduct);
 router.post("/products/update/:id", adminProduct.updateProduct);
 router.post("/products/delete/:id", adminProduct.deleteProduct);
 
 router.get("/products/add/variant", adminProduct.getAddvariant);
-router.post(
-  "/products/add/variant",
-  uploadMiddleware,
-  adminProduct.postAddvariant
-);
+router.post("/products/add/variant",adminProduct.postAddvariant);
 // router.post("/products/update/:id", adminProduct.updatevariant);
 // router.post("/products/delete/:id", adminProduct.deletevariant);
 

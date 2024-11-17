@@ -1,6 +1,30 @@
 // const userAuthenticated = require("../middleware/adminauthmildware");
-const Product = require("../../models/productSchema");
 require("dotenv").config();
+const Product = require("../../models/productSchema");
+const Variant = require("../../models/variantSchema");
+const Category = require("../../models/categoryModel");
+const cloudinary = require("cloudinary").v2;
+const multer = require("multer");
+const { CloudinaryStorage } = require("multer-storage-cloudinary");
+
+
+
+cloudinary.config({
+  cloud_name: process.env.CLOUDINARY_CLOUD_NAME,
+  api_key: process.env.CLOUDINARY_API_KEY,
+  api_secret: process.env.CLOUDINARY_API_SECRET,
+});
+
+// Set up Cloudinary storage
+const storage = new CloudinaryStorage({
+  cloudinary: cloudinary,
+  params: {
+    folder: "product_variants",
+    allowed_formats: ["jpg", "jpeg", "png"],
+  },
+});
+
+const upload = multer({ storage: storage });
 
 exports.getProducts = [
   //   userAuthenticated,
@@ -26,7 +50,6 @@ exports.getProducts = [
   },
 ];
 
-const Category = require("../../models/categoryModel");
 
 exports.getAddProduct = async (req, res) => {
   try {
@@ -43,24 +66,34 @@ exports.getAddProduct = async (req, res) => {
 };
 
 exports.postAddProduct = async (req, res) => {
-  const { productName, brand, gender, categoriesId } = req.body;
-
   try {
+    const { productName, brand, gender, categoriesId, imageUrls } = req.body;
 
-  const newProduct = new Product({
-    productName,
-    brand,
-    gender,
-    categoriesId,
-  });
+    if (!productName || !brand || !gender || !imageUrls) {
+      return res.status(400).json({ error: "Missing required fields" });
+    }
+
+    const newProduct = new Product({
+      productName,
+      brand,
+      gender,
+      categoriesId,
+      imageUrl: imageUrls,
+    });
 
     const savedProduct = await newProduct.save();
-    res.redirect(`/admin/products/add/variant?productId=${savedProduct._id}`);
+
+    // Send JSON response with productId
+    res.status(200).json({
+      message: "Product added successfully",
+      productId: savedProduct._id,
+    });
   } catch (err) {
     console.error("Error adding product:", err);
-    res.status(500).send("Error adding product");
+    res.status(500).json({ error: "Error adding product" });
   }
 };
+
 
 // Update Product
 exports.updateProduct = async (req, res) => {
@@ -78,37 +111,32 @@ exports.updateProduct = async (req, res) => {
 };
 
 // Delete Product
+
+
 exports.deleteProduct = async (req, res) => {
   try {
-    await Product.findByIdAndDelete(req.params.id);
-    res.redirect("/admin/products?message=Product%20deleted%20successfully");
+    // Find and delete the product
+    const deletedProduct = await Product.findByIdAndDelete(req.params.id);
+
+    // If the product was deleted, also delete its variants
+    if (deletedProduct) {
+      await Variant.deleteMany({ productId: req.params.id });
+    }
+
+    res.redirect(
+      "/admin/products?message=Product%20and%20its%20variants%20deleted%20successfully"
+    );
   } catch (err) {
-    res.status(500).send("Error deleting product");
+    console.error("Error deleting product and its variants:", err);
+    res.status(500).send("Error deleting product and its variants");
   }
 };
 
-const Variant = require("../../models/variantSchema");
-const cloudinary = require("cloudinary").v2;
-const multer = require("multer");
-const { CloudinaryStorage } = require("multer-storage-cloudinary");
 
 
-cloudinary.config({
-  cloud_name: process.env.CLOUDINARY_CLOUD_NAME,
-  api_key: process.env.CLOUDINARY_API_KEY,
-  api_secret: process.env.CLOUDINARY_API_SECRET,
-});
 
-// Set up Cloudinary storage
-const storage = new CloudinaryStorage({
-  cloudinary: cloudinary,
-  params: {
-    folder: "product_variants",  
-    allowed_formats: ["jpg", "jpeg", "png"],
-  },
-});
 
-const upload = multer({ storage: storage });
+
 
 // Route Handlers
 exports.getAddvariant = async (req, res) => {
@@ -139,11 +167,18 @@ exports.postAddvariant = async (req, res) => {
       discountPrice,
       discountPercentage,
       rating,
-      imageUrls, 
     } = req.body;
 
+    console.log(
+      productId + " "
+      + color + " " +
+      price + " "+
+      discountPrice + "  "+
+      discountPercentage + " "+
+      rating
+    );
 
-    if (!productId || !color || !price || !imageUrls) {
+    if (!productId || !color || !price ) {
       return res.status(400).json({ error: "Missing required fields" });
     }
 
@@ -154,11 +189,10 @@ exports.postAddvariant = async (req, res) => {
       discountPrice,
       discountPercentage,
       rating,
-      imageUrl: imageUrls, 
     });
 
     await newVariant.save();
-    res.status(200).json({ message: "Variant added successfully" });
+    res.redirect("/admin/products")
   } catch (err) {
     console.error("Error adding product variant:", err);
     res.status(500).json({ error: "Error adding product variant" });

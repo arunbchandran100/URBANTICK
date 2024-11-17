@@ -115,8 +115,10 @@
             <td class="py-3 px-4 text-white"><%= product.brand %></td>
             <td class="py-3 px-4 text-white"><%= new Date(product.createdAt).toLocaleDateString() %></td>
             <td class="px-4 py-2 flex space-x-2">
-              <button class="bg-green-500 text-white px-3 py-1 rounded-lg hover:bg-green-600" onclick="openEditModal('<%= product._id %>', '<%= product.productName %>')">Edit</button>
+              <button class="bg-green-500 text-white px-3 py-1 rounded-lg hover:bg-green-600" >Edit</button>
               <button class="bg-red-500 text-white px-3 py-1 rounded-lg hover:bg-red-600" onclick="deleteProduct('<%= product._id %>')">Delete</button>
+              <button class="bg-slate-500 text-white border-gray-400 px-3 py-1 rounded-lg hover:bg-slate-700" onclick="deleteProduct('<%= product._id %>')">Add Variant</button>
+
             </td>
           </tr>
         <% }); %>

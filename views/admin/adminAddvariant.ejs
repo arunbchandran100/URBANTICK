@@ -5,11 +5,11 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Add Variant</title>
     <script src="https://cdn.tailwindcss.com"></script>
-    <link
+    <!-- <link
       href="https://cdnjs.cloudflare.com/ajax/libs/cropperjs/1.5.12/cropper.min.css"
       rel="stylesheet"
-    />
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/cropperjs/1.5.12/cropper.min.js"></script>
+    /> -->
+    <!-- <script src="https://cdnjs.cloudflare.com/ajax/libs/cropperjs/1.5.12/cropper.min.js"></script> -->
   </head>
   <body
     class="bg-black text-white min-h-screen flex items-center justify-center"
@@ -18,7 +18,10 @@
       <div class="rounded-lg shadow-xl">
         <h1 class="text-3xl font-bold mb-6 text-slate-200">Add Variant</h1>
       </div>
-      <form id="variantForm" class="p-6 rounded-lg shadow-md">
+
+      <form id="variantForm" class="p-6 rounded-lg shadow-md" method="POST" action="/admin/products/add/variant">
+        <div id="variantFormsContainer">
+
         <input
           type="hidden"
           id="productId"
@@ -88,242 +91,20 @@
           />
         </div>
 
-        <div class="mb-4">
-          <label for="imageFile" class="block text-gray-400"
-            >Image Files (up to 4)</label
-          >
-          <input
-            type="file"
-            id="imageFile"
-            name="imageFiles"
-            accept="image/*"
-            multiple
-            class="mt-1 block w-full px-3 py-2 border border-gray-600 bg-zinc-800 text-white rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-indigo-500"
-            onchange="addImage()"
-          />
-          <p id="fileError" class="text-red-500 text-sm mt-2 hidden">
-            You can only upload up to 4 images.
-          </p>
-        </div>
-
-        <!-- Crop Modal -->
-        <div
-          id="cropModal"
-          class="fixed inset-0 flex items-center justify-center bg-gray-900 bg-opacity-50 hidden z-50"
-        >
-          <div class="bg-zinc-900 p-4 rounded-lg w-2/3 max-w-4xl shadow-xl">
-            <h2 class="text-lg font-semibold mb-4 text-slate-200">
-              Crop Image
-            </h2>
-            <div class="flex justify-center">
-              <img id="cropImage" class="max-h-[500px] object-contain" />
-            </div>
-            <div class="mt-4 flex justify-end">
-              <button
-                type="button"
-                onclick="closeCropModal()"
-                class="bg-gray-400 text-white px-4 py-2 rounded mr-2 hover:bg-gray-500"
-              >
-                Cancel
-              </button>
-              <button
-                type="button"
-                onclick="applyCrop()"
-                class="bg-indigo-600 text-white px-4 py-2 rounded hover:bg-indigo-700"
-              >
-                Crop & Save
-              </button>
-            </div>
-          </div>
-        </div>
-
-        <div
-          id="imagePreview"
-          class="grid grid-cols-2 md:grid-cols-4 gap-4 mb-4"
-        >
-          <!-- Preview images will appear here -->
-        </div>
-
-        <div id="loadingIndicator" class="hidden">
-          <div class="flex items-center justify-center space-x-2 mb-4">
-            <div
-              class="animate-spin rounded-full h-6 w-6 border-b-2 border-indigo-500"
-            ></div>
-            <span class="text-gray-400">Uploading images...</span>
-          </div>
-        </div>
-
-        <button
+            <button
           type="submit"
-          class="bg-indigo-600 text-white px-4 py-2 rounded-lg hover:bg-indigo-700 transition-colors duration-200"
-        >
+          class="bg-indigo-600 text-white px-4 py-2 rounded-lg hover:bg-indigo-700 transition-colors duration-200">
           Add Variant
         </button>
+              <!-- <button type="button" class="bg-indigo-600 ml-3 text-white px-4 py-2 rounded-lg hover:bg-indigo-700 transition-colors duration-200" onclick="addNewVariantForm()">
+        Add Another Variant</button> -->
+        
       </form>
+      
     </div>
 
-    <script>
-      let uploadedImages = [];
-      let cropper;
-      let selectedFile;
+</div>
 
-      function addImage() {
-        const imageFileInput = document.getElementById("imageFile");
-        const fileError = document.getElementById("fileError");
-        const imagePreview = document.getElementById("imagePreview");
-        selectedFile = imageFileInput.files[0];
 
-        // Reset file input
-        imageFileInput.value = "";
-
-        if (uploadedImages.length >= 4) {
-          fileError.classList.remove("hidden");
-          return;
-        } else {
-          fileError.classList.add("hidden");
-        }
-
-        // Show the crop modal
-        openCropModal(selectedFile);
-      }
-
-      function openCropModal(file) {
-        const cropModal = document.getElementById("cropModal");
-        const cropImage = document.getElementById("cropImage");
-        cropModal.classList.remove("hidden");
-
-        const reader = new FileReader();
-        reader.onload = function (e) {
-          cropImage.src = e.target.result;
-          if (cropper) {
-            cropper.destroy();
-          }
-          cropper = new Cropper(cropImage, {
-            aspectRatio: 1,
-            viewMode: 1,
-            background: false,
-            zoomable: true,
-            scalable: false,
-          });
-        };
-        reader.readAsDataURL(file);
-      }
-
-      function closeCropModal() {
-        document.getElementById("cropModal").classList.add("hidden");
-        if (cropper) {
-          cropper.destroy();
-          cropper = null;
-        }
-      }
-
-      function applyCrop() {
-        if (cropper && uploadedImages.length < 4) {
-          cropper
-            .getCroppedCanvas({
-              maxWidth: 1024,
-              maxHeight: 1024,
-              fillColor: "#fff",
-            })
-            .toBlob(
-              (blob) => {
-                uploadedImages.push(blob);
-
-                // Create preview container
-                const imgWrapper = document.createElement("div");
-                imgWrapper.className = "relative group";
-
-                // Create image preview
-                const imgElement = document.createElement("img");
-                imgElement.src = URL.createObjectURL(blob);
-                imgElement.className =
-                  "w-full aspect-square object-cover rounded-lg border border-gray-600";
-
-                // Create delete button
-                const deleteButton = document.createElement("button");
-                deleteButton.className =
-                  "absolute top-2 right-2 bg-red-500 text-white rounded-full w-6 h-6 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity duration-200";
-                deleteButton.innerHTML = "×";
-                deleteButton.onclick = (e) => {
-                  e.preventDefault();
-                  deleteImage(imgWrapper, blob);
-                };
-
-                imgWrapper.appendChild(imgElement);
-                imgWrapper.appendChild(deleteButton);
-                document.getElementById("imagePreview").appendChild(imgWrapper);
-              },
-              "image/jpeg",
-              0.8
-            );
-        }
-        closeCropModal();
-      }
-
-      function deleteImage(imgWrapper, blob) {
-        imgWrapper.remove();
-        uploadedImages = uploadedImages.filter((img) => img !== blob);
-        document.getElementById("fileError").classList.add("hidden");
-      }
-
-      // Form submission
-      document
-        .getElementById("variantForm")
-        .addEventListener("submit", async function (e) {
-          e.preventDefault();
-
-          // Show loading indicator
-          const loadingIndicator = document.getElementById("loadingIndicator");
-          loadingIndicator.classList.remove("hidden");
-
-          const formData = new FormData();
-
-          // Add all the regular form fields
-          formData.append(
-            "productId",
-            document.getElementById("productId").value
-          );
-          formData.append("color", document.getElementById("color").value);
-          formData.append("price", document.getElementById("price").value);
-          formData.append(
-            "discountPrice",
-            document.getElementById("discountPrice").value || ""
-          );
-          formData.append(
-            "discountPercentage",
-            document.getElementById("discountPercentage").value || ""
-          );
-          formData.append(
-            "rating",
-            document.getElementById("rating").value || ""
-          );
-
-          // Add all the uploaded images
-          uploadedImages.forEach((blob, index) => {
-            formData.append("imageFiles", blob, `image_${index}.jpg`);
-          });
-
-          try {
-            const response = await fetch("/admin/products/add/variant", {
-              method: "POST",
-              body: formData,
-            });
-
-            const result = await response.json();
-
-            if (response.ok) {
-              window.location.href =
-                "/admin/products?message=Variant%20added%20successfully";
-            } else {
-              throw new Error(result.error || "Error adding variant");
-            }
-          } catch (error) {
-            console.error("Error:", error);
-            alert(error.message || "Error submitting form");
-          } finally {
-            loadingIndicator.classList.add("hidden");
-          }
-        });
-    </script>
   </body>
 </html>

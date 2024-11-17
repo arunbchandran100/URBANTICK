@@ -11,7 +11,6 @@ const variantSchema = new mongoose.Schema({
   discountPrice: { type: Number, required: true },
   discountPercentage: { type: Number, required: true },
   rating: { type: Number, required: true },
-  imageUrl:[String], // Array to support multiple images
 });
 
 const Variant = mongoose.model("Variant", variantSchema);
