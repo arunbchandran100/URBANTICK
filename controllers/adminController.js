@@ -41,7 +41,6 @@ exports.logout = (req, res) => {
         );
   req.session.destroy();
   res.redirect("/admin/login");
-  res.clearCookie("connect.sid"); // Clear session cookie manually
 };
 
 

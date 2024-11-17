@@ -4,7 +4,7 @@
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <link rel="stylesheet" href="style.css" />
-    <title>User login</title>
+    <title>Home Page</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <link
       rel="stylesheet"
@@ -20,7 +20,7 @@
     <div class="h-22 flex items-center justify-between px-8 bg-gray-50 border-b-2 border-gray-700">
       <!-- Left Side (Nav Links) -->
       <div class="flex space-x-6 text-slate-800 font-medium">
-        <a href="#" class="hover:text-slate-500">Home</a>
+        <a href="/home" class="hover:text-slate-500">Home</a>
         <a href="#" class="hover:text-slate-500">Shop</a>
         <a href="#" class="hover:text-slate-500">Contact Us</a>
         <a href="#" class="hover:text-slate-500">About Us</a>
@@ -34,15 +34,35 @@
       <!-- Right Side (Icons) -->
       <div class="flex space-x-8 text-slate-800 text-xl">
         <a href="#" class="hover:text-slate-500"><i class="fa-regular fa-heart"></i></a>
-        <a href="#" class="hover:text-slate-500"><i class="fa-regular fa-user"></i></a>
+        <a href="/user/login" class="hover:text-slate-500"><i class="fa-regular fa-user"></i></a>
         <a href="#" class="hover:text-slate-500"><i class="fa-solid fa-cart-shopping"></i></a>
       </div>
     </div>
 
     <!-- Page Content -->
-    <div>
-      main Content here
+    <div class=" w-full ">
+        <img src="/images/main-banner.png" alt="Banner Image" class="w-full " />
     </div>
+
+<div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-8">
+  <% products.forEach(product => { %>
+    <div class="bg-white rounded-lg shadow-md p-4">
+      <img 
+        class="w-full h-auto rounded-lg mb-4" 
+        src="<%= product.imageUrl %>" 
+        alt="<%= product.productName %>">
+      <h3 class="text-lg font-semibold text-gray-800"><%= product.productName %></h3>
+      <% if (product.discountPrice && product.discountPrice < product.price) { %>
+        <div class="text-gray-500 line-through">₹<%= product.price %></div>
+        <div class="text-xl font-bold text-gray-900">₹<%= product.discountPrice %></div>
+      <% } else { %>
+        <div class="text-xl font-bold text-gray-900">₹<%= product.price %></div>
+      <% } %>
+    </div>
+  <% }); %>
+</div>
+
+
 
     <!------------- Footer ------------>
     <footer class="bg-slate-900 text-slate-300 py-4">

@@ -27,7 +27,7 @@ app.use(
 );
 
 const publicUsers = require("./routes/publicUsersRoute");
-app.use("/", publicUsers);
+app.use("/home", publicUsers);
 
 const userRoute = require("./routes/userRoute");
 app.use("/user", userRoute);
@@ -94,11 +94,7 @@ passport.deserializeUser((id, done) => {
     .catch((err) => done(err, null));
 });
 
-app.use((req, res, next) => {
-  req.session.admin = true;
-  console.log(1);
-  next();
-});
+
 
 app.get("/", (req, res) => {
   res.send("<a href='/auth/google'>Login with Google</a>");
