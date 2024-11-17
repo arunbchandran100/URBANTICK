@@ -83,7 +83,7 @@
 
     <!-- Header -->
     <header class="flex items-center justify-between mb-8">
-      <h1 class="text-2xl font-semibold text-gray-200">Product</h1>
+      <h1 class="text-2xl font-semibold text-gray-200">Products</h1>
       <div class="flex items-center space-x-4">
         <div class="relative">
           <input type="text" placeholder="Search" class="bg-gray-800 text-white p-2 rounded pl-10 focus:outline-none">
@@ -115,10 +115,13 @@
             <td class="py-3 px-4 text-white"><%= product.brand %></td>
             <td class="py-3 px-4 text-white"><%= new Date(product.createdAt).toLocaleDateString() %></td>
             <td class="px-4 py-2 flex space-x-2">
-              <button class="bg-green-500 text-white px-3 py-1 rounded-lg hover:bg-green-600" >Edit</button>
+<button 
+   class="bg-green-600 text-white px-3 py-1 rounded-lg hover:bg-green-500"
+   onclick="openEditModal('<%= product._id %>')">
+   Edit
+</button>
               <button class="bg-red-500 text-white px-3 py-1 rounded-lg hover:bg-red-600" onclick="deleteProduct('<%= product._id %>')">Delete</button>
-              <button class="bg-slate-500 text-white border-gray-400 px-3 py-1 rounded-lg hover:bg-slate-700" onclick="deleteProduct('<%= product._id %>')">Add Variant</button>
-
+              <button class="bg-slate-500 text-white border-gray-400 px-3 py-1 rounded-lg hover:bg-slate-700" onclick="addVariant('<%= product._id %>')" >Add Variant</button>
             </td>
           </tr>
         <% }); %>
@@ -137,6 +140,47 @@
     Add Product
 </button>
 
+<!-- Edit Product details modal -->
+<div id="editModal" class="modal hidden fixed inset-0 bg-gray-500 bg-opacity-75 flex items-center justify-center">
+   <div class="modal-content bg-black text-white rounded-lg shadow-xl p-6 max-w-max w-full">
+      <h2 class="text-lg font-bold mb-4">Edit Product</h2>
+      <button onclick="closeModal()" class="absolute  top-2  right-2 bg-red-500 text-white px-3 py-1 rounded-lg hover:bg-red-600">Cancel</button>
+
+      <form id="editProductForm">
+         <!-- Product Details -->
+         <div>
+            <label for="productName">Product Name:</label>
+            <input type="text" id="productName" name="productName" class="bg-zinc-900 w-full px-4 py-2 border rounded-lg">
+         </div>
+         <div>
+            <label for="brand">Brand:</label>
+            <input type="text" id="brand" name="brand" class="bg-zinc-900 w-full px-4 py-2 border rounded-lg">
+         </div>
+         <div>
+            <label for="gender">Gender:</label>
+            <select id="gender" name="gender" class="bg-zinc-900 w-full px-4 py-2 border rounded-lg">
+               <option value="male">Male</option>
+               <option value="female">Female</option>
+               <option value="unisex">Unisex</option>
+            </select>
+         </div>
+         <!-- Photos -->
+         <div>
+            <label>Photos:</label>
+            <div id="productPhotos" class="flex gap-2">
+               <!-- Photos will be dynamically loaded here -->
+            </div>
+         </div>
+         <!-- Variants -->
+         <div id="variantsContainer">
+            <!-- Variants will be dynamically loaded here -->
+         </div>
+         <button type="submit" class="bg-green-500 text-white px-4 py-2 mt-4 rounded-lg">Save</button>
+
+      </form>
+      <!-- <button onclick="closeModal()" class="  bg-red-500 text-white px-3 py-1 rounded-lg hover:bg-red-600">Cancel</button> -->
+   </div>
+</div>
 
     </div>
     <!-- Pagination -->
@@ -154,13 +198,119 @@
   </div>
 </main>
 <script>
-  function openEditModal(id, name) {
-    // Implement modal opening and setting up the form for editing
-  }
 
-  function closeEditModal() {
-    // Implement modal closing
-  }
+  async function openEditModal(productId) {
+   const modal = document.getElementById("editModal");
+   const form = document.getElementById("editProductForm");
+   const variantsContainer = document.getElementById("variantsContainer");
+   const productPhotos = document.getElementById("productPhotos");
+
+   try {
+      const response = await fetch(`/admin/products/${productId}/details`);
+      if (!response.ok) throw new Error("Failed to fetch product details");
+
+      const data = await response.json();
+      console.log(data)
+      // Store productId in the form (as a hidden input or global variable)
+      form.setAttribute("data-product-id", productId);
+
+      // Populate product details
+      form.productName.value = data.product.productName;
+      form.brand.value = data.product.brand;
+      form.gender.value = data.product.gender;
+
+      // Populate photos
+      productPhotos.innerHTML = data.product.photos
+         .map(photo => `<img src="${photo}" class="w-16 h-16 object-cover rounded-md">`)
+         .join("");
+
+      // Populate variants
+      variantsContainer.innerHTML = data.variants
+         .map(variant => `
+            <div class="variant-item mb-2 m-2">
+               <input type="hidden" name="variantIds" value="${variant._id}">
+               <label >Color</label>
+               <input type="text" name="color" value="${variant.color}" class="bg-zinc-900  px-4 py-2 border rounded-md" placeholder="Color">
+              <label >Price</label>
+               <input type="number" name="price" value="${variant.price}" class="bg-zinc-900  px-4 py-2 border rounded-md" placeholder="Price">
+               <label >Discount Price</label>
+               <input type="number" name="discountPrice" value="${variant.discountPrice}" class="bg-zinc-900  px-4 py-2 border rounded-md" placeholder="Price">
+               <label >Discount Percentage</label>
+               <input type="number" name="discountPercentage" value="${variant.discountPercentage}" class="bg-zinc-900  px-4 py-2 border rounded-md" placeholder="Price">
+
+               <button type="button" onclick="removeVariant(this)" class="bg-red-500 text-white px-3 py-1 rounded-lg hover:bg-red-600">Remove</button>
+            </div>
+         `)
+         .join("");
+
+      modal.classList.remove("hidden");
+      
+   } catch (error) {
+      console.error("Error fetching product details:", error);
+      alert("Failed to load product details.");
+   }
+}
+
+
+function closeModal() {
+   const modal = document.getElementById("editModal");
+   modal.classList.add("hidden");
+
+   // Reset the form and other dynamic fields
+   const form = document.getElementById("editProductForm");
+   form.reset();
+   form.removeAttribute("data-product-id");
+   document.getElementById("productPhotos").innerHTML = "";
+   document.getElementById("variantsContainer").innerHTML = "";
+}
+
+
+function removeVariant(button) {
+   button.closest(".variant-item").remove();
+}
+
+document.getElementById("editProductForm").addEventListener("submit", async (event) => {
+   event.preventDefault();
+
+   const form = event.target;
+   const productId = form.getAttribute("data-product-id");
+
+   // Prepare JSON payload
+   const payload = {
+      productName: form.productName.value,
+      brand: form.brand.value,
+      gender: form.gender.value,
+      variants: Array.from(document.querySelectorAll(".variant-item")).map((item) => ({
+         _id: item.querySelector("input[name='variantIds']")?.value || null,
+         color: item.querySelector("input[name='color']").value,
+         price: item.querySelector("input[name='price']").value,
+         discountPrice: item.querySelector("input[name='discountPrice']").value,
+         discountPercentage: item.querySelector("input[name='discountPercentage']").value,
+      })),
+   };
+
+   try {
+      const response = await fetch(`/admin/products/update/${productId}`, {
+         method: "POST",
+         headers: {
+            "Content-Type": "application/json",
+         },
+         body: JSON.stringify(payload),
+      });
+
+      if (response.ok) {
+         alert("Product updated successfully!");
+         window.location.reload();
+      } else {
+         const errorData = await response.json();
+         alert(errorData.error || "Error updating product.");
+      }
+   } catch (error) {
+      console.error("Error updating product:", error);
+      alert("Failed to update product.");
+   }
+});
+
 
   function deleteProduct(id) {
     if (confirm("Are you sure you want to delete this product?")) {
@@ -172,6 +322,10 @@
         alert("Error deleting product");
       });
     }
+  }
+
+  function addVariant(productId) {
+    window.location.href = `/admin/products/add/variant?productId=${productId}`;
   }
 </script>
 

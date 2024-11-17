@@ -96,21 +96,97 @@ exports.postAddProduct = async (req, res) => {
 
 
 // Update Product
-exports.updateProduct = async (req, res) => {
-  try {
-    await Product.findByIdAndUpdate(req.params.id, {
-      productName: req.body.productName,
-      brand: req.body.brand,
-      gender: req.body.gender,
-      categoriesId: req.body.categoriesId,
-    });
-    res.redirect("/admin/products?message=Product%20updated%20successfully");
-  } catch (err) {
-    res.status(500).send("Error updating product");
+exports.getProductDetails = async (req, res) => {
+try {
+  const productId = req.params.id;
+  // console.log("Product ID:", productId);
+
+  const product = await Product.findById(productId);
+  if (!product) {
+    console.log("Product not found");
+    return res.status(404).json({ error: "Product not found" });
   }
+
+  const variants = await Variant.find({ productId });
+  // console.log("Product Details:", product);
+  // console.log("Variants:", variants);
+
+  res.status(200).json({
+    product: {
+      productName: product.productName,
+      brand: product.brand,
+      gender: product.gender,
+      photos: product.imageUrl, 
+    },
+    variants: variants.map((variant) => ({
+      _id: variant._id,
+      color: variant.color,
+      price: variant.price,
+      discountPrice: variant.discountPrice,
+      discountPercentage: variant.discountPercentage
+    })),
+  });
+} catch (error) {
+  console.error("Error fetching product details:", error);
+  res.status(500).json({ error: "Failed to fetch product details" });
+}
 };
 
-// Delete Product
+
+exports.updateProductDetails = async (req, res) => {
+  try {
+    const { productName, brand, gender, variants } = req.body;
+
+    console.log("Request Body:", req.body);
+
+    if (!productName || !brand || !gender) {
+      return res.status(400).json({ error: "Missing required fields" });
+    }
+
+    // Update product details
+    const updatedProduct = await Product.findByIdAndUpdate(
+      req.params.id,
+      { productName, brand, gender },
+      { new: true }
+    );
+
+    if (!updatedProduct) {
+      return res.status(404).json({ error: "Product not found" });
+    }
+
+    // Update or create variants
+    if (Array.isArray(variants)) {
+      for (const variant of variants) {
+        if (variant._id) {
+          // Update existing variant
+          await Variant.findByIdAndUpdate(
+            variant._id,
+            {
+              color: variant.color,
+              price: variant.price,
+              discountPrice: variant.discountPrice,
+              discountPercentage: variant.discountPercentage,
+            },
+            { new: true }
+          );
+        } else {
+          // Create new variant
+          await new Variant({
+            ...variant,
+            productId: req.params.id,
+          }).save();
+        }
+      }
+    }
+
+    res
+      .status(200)
+      .json({ message: "Product and variants updated successfully" });
+  } catch (err) {
+    console.error("Error updating product details:", err.message, err.stack);
+    res.status(500).json({ error: "Error updating product details" });
+  }
+};
 
 
 exports.deleteProduct = async (req, res) => {
@@ -169,14 +245,14 @@ exports.postAddvariant = async (req, res) => {
       rating,
     } = req.body;
 
-    console.log(
-      productId + " "
-      + color + " " +
-      price + " "+
-      discountPrice + "  "+
-      discountPercentage + " "+
-      rating
-    );
+    // console.log(
+    //   productId + " "
+    //   + color + " " +
+    //   price + " "+
+    //   discountPrice + "  "+
+    //   discountPercentage + " "+
+    //   rating
+    // );
 
     if (!productId || !color || !price ) {
       return res.status(400).json({ error: "Missing required fields" });
