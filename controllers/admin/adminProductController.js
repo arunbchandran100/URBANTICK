@@ -137,7 +137,7 @@ exports.updateProductDetails = async (req, res) => {
   try {
     const { productName, brand, gender, variants } = req.body;
 
-    console.log("Request Body:", req.body);
+    // console.log("Request Body:", req.body);
 
     if (!productName || !brand || !gender) {
       return res.status(400).json({ error: "Missing required fields" });

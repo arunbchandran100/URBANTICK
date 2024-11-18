@@ -21,7 +21,7 @@
       <!-- Left Side (Nav Links) -->
       <div class="flex space-x-6 text-slate-800 font-medium">
         <a href="/home" class="hover:text-slate-500">Home</a>
-        <a href="#" class="hover:text-slate-500">Shop</a>
+        <a href="/shopall" class="hover:text-slate-500">Shop</a>
         <a href="#" class="hover:text-slate-500">Contact Us</a>
         <a href="#" class="hover:text-slate-500">About Us</a>
       </div>
@@ -47,10 +47,13 @@
 <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-8">
   <% products.forEach(product => { %>
     <div class="bg-white rounded-lg shadow-md p-4">
-      <img 
-        class="w-full h-auto rounded-lg mb-4" 
-        src="<%= product.imageUrl %>" 
-        alt="<%= product.productName %>">
+            <a href="/product/<%= product._id %>" >
+            <img
+              class="w-full h-auto rounded-lg mb-4"
+              src="<%= product.imageUrl %>"
+              alt="<%= product.productName %>"
+            />
+            </a>
       <h3 class="text-lg font-semibold text-gray-800"><%= product.productName %></h3>
       <% if (product.discountPrice && product.discountPrice < product.price) { %>
         <div class="text-gray-500 line-through">₹<%= product.price %></div>

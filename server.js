@@ -27,7 +27,7 @@ app.use(
 );
 
 const publicUsers = require("./routes/publicUsersRoute");
-app.use("/home", publicUsers);
+app.use("/", publicUsers);
 
 const userRoute = require("./routes/userRoute");
 app.use("/user", userRoute);
