@@ -1,299 +1,257 @@
 <!DOCTYPE html>
 <html lang="en">
-
-  <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Admin Dashboard</title>
-    <script src="https://cdn.tailwindcss.com"></script>
-    <script src="https://unpkg.com/sweetalert/dist/sweetalert.min.js"></script>
-    <link rel="stylesheet"
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Admin Dashboard</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script src="https://unpkg.com/sweetalert/dist/sweetalert.min.js"></script>
+  <link
+      rel="stylesheet"
       href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.6.0/css/all.min.css"
       integrity="sha512-Kc323vGBEqzTmouAECnVceyQqyqdsSiqLQISBL29aUW4U/M7pSPA/gEUZQqv1cwx4OnYxTxve5UMg5GT6L4JJg=="
-      crossorigin="anonymous" referrerpolicy="no-referrer" />
-    <link href="https://fonts.googleapis.com/icon?family=Material+Icons"
-      rel="stylesheet">
+      crossorigin="anonymous"
+      referrerpolicy="no-referrer"
+  />
+  <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
     <style>
     /* Scrollbar styles */
     ::-webkit-scrollbar {
       width: 12px;
       height: 12px;
     }
-
     ::-webkit-scrollbar-track {
-      background: #1a202c;
-      /* Dark gray background */
+      background: #1a202c; /* Dark gray background */
     }
-
     ::-webkit-scrollbar-thumb {
-      background: #2d3748;
-      /* Slightly lighter gray for the thumb */
+      background: #2d3748; /* Slightly lighter gray for the thumb */
       border-radius: 6px;
     }
-
     ::-webkit-scrollbar-thumb:hover {
-      background: #39465c;
-      /* Light gray on hover */
+      background: #39465c; /* Light gray on hover */
     }
+
   </style>
-  </head>
+</head>
 
-  <body class="bg-black text-white min-h-screen">
-    <!-- Sidebar -->
-    <aside class="fixed top-0 left-0 w-64 h-full bg-zinc-900 p-5 shadow-lg">
-      <!-- Logo -->
-      <div class="flex items-center justify-center mb-8">
-        <img src="/images/white-nobg-background.png" alt="UrbanTick Logo"
-          class="h-12">
+
+<body class="bg-black text-white min-h-screen">
+  <!-- Sidebar -->
+  <aside class="fixed top-0 left-0 w-64 h-full bg-zinc-900 p-5 shadow-lg">
+    <!-- Logo -->
+    <div class="flex items-center justify-center mb-8">
+      <img src="/images/white-nobg-background.png" alt="UrbanTick Logo" class="h-12">
+    </div>
+    <!-- Navigation Links -->
+    <nav class="space-y-6 text-sm">
+      <a href="/admin/dashboard" class="flex items-center space-x-3 text-gray-400 hover:text-white">
+        <span class="material-icons">dashboard</span>
+        <span>Dashboard</span>
+      </a>
+      <a href="/admin/products" class="flex items-center space-x-3 text-gray-400 hover:text-white">
+        <span class="material-icons">inventory_2</span>
+        <span>Products</span>
+      </a>
+      <a href="/admin/customers" class="flex items-center space-x-3 text-gray-400 hover:text-white">
+        <span class="material-icons">people</span>
+        <span>Customers</span>
+      </a>
+      <a href="#" class="flex items-center space-x-3 text-gray-400 hover:text-white">
+        <span class="material-icons">shopping_cart</span>
+        <span>Orders</span>
+      </a>
+      <a href="#" class="flex items-center space-x-3 text-gray-400 hover:text-white">
+        <span class="material-icons">local_offer</span>
+        <span>Coupons</span>
+      </a>
+      <a href="/admin/category" class="flex items-center space-x-3 text-gray-400 hover:text-white">
+        <span class="material-icons">category</span>
+        <span>Category</span>
+      </a>
+      <a href="#" class="flex items-center space-x-3 text-gray-400 hover:text-white">
+        <span class="material-icons">star</span>
+        <span>Offers</span>
+      </a>
+      <a href="#" class="flex items-center space-x-3 text-gray-400 hover:text-white">
+        <span class="material-icons">photo</span>
+        <span>Banner</span>
+      </a>
+      <a href="#" class="flex items-center space-x-3 text-gray-400 hover:text-white">
+        <span class="material-icons">assessment</span>
+        <span>Sales Report</span>
+      </a>
+      <a href="#" class="flex items-center space-x-3 text-gray-400 hover:text-white">
+        <form action="/admin/logout" method="post">
+          <button type="submit" class="flex items-center space-x-2 px-4 py-2 bg-red-700 text-white font-semibold rounded-lg hover:bg-red-900 focus:outline-none focus:ring-2 focus:ring-red-400">
+            <span class="material-icons">logout</span>
+            <span>Logout</span>
+          </button>
+        </form>
+      </a>
+    </nav>
+  </aside>
+
+
+
+
+
+<!--------------------------------Main Category----------------------------->
+
+<main class="ml-64 p-8">
+
+    <!-- Header -->
+    <header class="flex items-center justify-between mb-8">
+      <h1 class="text-2xl font-semibold text-gray-200">Products</h1>
+      <div class="flex items-center space-x-4">
+        <div class="relative">
+          <input type="text" placeholder="Search" class="bg-gray-800 text-white p-2 rounded pl-10 focus:outline-none">
+          <span class="absolute left-3 top-2 text-gray-400">
+            <i class="material-icons">search</i>
+          </span>
+        </div>
       </div>
-      <!-- Navigation Links -->
-      <nav class="space-y-6 text-sm">
-        <a href="/admin/dashboard"
-          class="flex items-center space-x-3 text-gray-400 hover:text-white">
-          <span class="material-icons">dashboard</span>
-          <span>Dashboard</span>
-        </a>
-        <a href="/admin/products"
-          class="flex items-center space-x-3 text-gray-400 hover:text-white">
-          <span class="material-icons">inventory_2</span>
-          <span>Products</span>
-        </a>
-        <a href="/admin/customers"
-          class="flex items-center space-x-3 text-gray-400 hover:text-white">
-          <span class="material-icons">people</span>
-          <span>Customers</span>
-        </a>
-        <a href="#"
-          class="flex items-center space-x-3 text-gray-400 hover:text-white">
-          <span class="material-icons">shopping_cart</span>
-          <span>Orders</span>
-        </a>
-        <a href="#"
-          class="flex items-center space-x-3 text-gray-400 hover:text-white">
-          <span class="material-icons">local_offer</span>
-          <span>Coupons</span>
-        </a>
-        <a href="/admin/category"
-          class="flex items-center space-x-3 text-gray-400 hover:text-white">
-          <span class="material-icons">category</span>
-          <span>Category</span>
-        </a>
-        <a href="#"
-          class="flex items-center space-x-3 text-gray-400 hover:text-white">
-          <span class="material-icons">star</span>
-          <span>Offers</span>
-        </a>
-        <a href="#"
-          class="flex items-center space-x-3 text-gray-400 hover:text-white">
-          <span class="material-icons">photo</span>
-          <span>Banner</span>
-        </a>
-        <a href="#"
-          class="flex items-center space-x-3 text-gray-400 hover:text-white">
-          <span class="material-icons">assessment</span>
-          <span>Sales Report</span>
-        </a>
-        <a href="#"
-          class="flex items-center space-x-3 text-gray-400 hover:text-white">
-          <form action="/admin/logout" method="post">
-            <button type="submit"
-              class="flex items-center space-x-2 px-4 py-2 bg-red-700 text-white font-semibold rounded-lg hover:bg-red-900 focus:outline-none focus:ring-2 focus:ring-red-400">
-              <span class="material-icons">logout</span>
-              <span>Logout</span>
-            </button>
-          </form>
-        </a>
-      </nav>
-    </aside>
+    </header>
+  <!-- Customer Table -->
+  <div class="bg-zinc-800 rounded-lg p-6">
+    <table class="min-w-full text-left text-gray-400">
 
-    <!--------------------------------Main Category----------------------------->
+      <thead>
+        <tr class="border-b border-gray-700">
+          <th class="py-3 px-4">S.No</th>
+          <th class="py-3 px-4">Product Name</th>
+          <th class="py-3 px-4">Category</th>
+          <th class="py-3 px-4">Brand</th>
+          <th class="py-3 px-4">Created At</th>
+          <th class="py-3 px-4">Action</th>
 
-    <main class="ml-64 p-8">
+        </tr>
+      </thead>
+      <tbody>
+        <% products.forEach((product, index) => { %>
+          <tr class="border-b border-gray-700">
+            <td class="py-3 px-4 text-white"><%= (currentPage - 1) * 10 + index + 1 %></td>
+            <td class="py-3 px-4 text-white"><%= product.productName %></td>
+            <td class="py-3 px-4 text-white"><%= product.categoriesId.categoriesName %></td>Z
+            <td class="py-3 px-4 text-white"><%= product.brand %></td>
+            <td class="py-3 px-4 text-white"><%= new Date(product.createdAt).toLocaleDateString() %></td>
+            <td class="px-4 py-2 flex space-x-2">
 
-      <!-- Header -->
-      <header class="flex items-center justify-between mb-8">
-        <h1 class="text-2xl font-semibold text-gray-200">Products</h1>
-        <div class="flex items-center space-x-4">
-          <div class="relative">
-            <input type="text" placeholder="Search"
-              class="bg-gray-800 text-white p-2 rounded pl-10 focus:outline-none">
-            <span class="absolute left-3 top-2 text-gray-400">
-              <i class="material-icons">search</i>
-            </span>
-          </div>
-        </div>
-      </header>
-      <!-- Customer Table -->
-      <div class="bg-zinc-800 rounded-lg p-6">
-        <table class="min-w-full text-left text-gray-400">
-          <thead>
-            <tr class="border-b border-gray-700">
-              <th class="py-3 px-4">S.No</th>
-              <th class="py-3 px-4">Product Name</th>
-              <th class="py-3 px-4">Category</th>
-              <th class="py-3 px-4">Brand</th>
-              <th class="py-3 px-4">Created At</th>
-              <th class="py-3 px-4">Action</th>
-            </tr>
-          </thead>
-          <tbody>
-            <% products.forEach((product, index)=> { %>
-            <tr class="border-b border-gray-700">
-              <td class="py-3 px-4 text-white">
-                <%= (currentPage - 1) * 10 + index + 1 %>
-              </td>
-              <td class="py-3 px-4 text-white">
-                <%= product.productName %>
-              </td>
-              <td class="py-3 px-4 text-white">
-                <%= product.categoriesId.categoriesName %>
-              </td>
-              <td class="py-3 px-4 text-white">
-                <%= product.brand %>
-              </td>
-              <td class="py-3 px-4 text-white">
-                <%= new Date(product.createdAt).toLocaleDateString() %>
-              </td>
-              <td class="px-4 py-2 flex space-x-2">
-                <button
-                  class="bg-green-600 text-white px-3 py-1 rounded-lg hover:bg-green-500"
-                  onclick="openEditModal('<%= product._id %>')">
-                  Edit
-                </button>
-                <button
-                  class="bg-red-500 text-white px-3 py-1 rounded-lg hover:bg-red-600"
-                  onclick="deleteProduct('<%= product._id %>')">Delete</button>
-                <button
-                  class="bg-slate-500 text-white border-gray-400 px-3 py-1 rounded-lg hover:bg-slate-700"
-                  onclick="addVariant('<%= product._id %>')">Add
-                  Variant</button>
-              </td>
-            </tr>
-            <% }); %>
-          </tbody>
-        </table>
+              <button 
+                class="bg-green-600 text-white px-3 py-1 rounded-lg hover:bg-green-500"
+                onclick="openEditModal('<%= product._id %>')">
+                Edit
+              </button>
+              <button class="bg-red-500 text-white px-3 py-1 rounded-lg hover:bg-red-600" onclick="deleteProduct('<%= product._id %>')">Delete</button>
+              <button class="bg-slate-500 text-white border-gray-400 px-3 py-1 rounded-lg hover:bg-slate-700" onclick="addVariant('<%= product._id %>')" >Add Variant</button>
+            </td>
+          </tr>
+        <% }); %>
+      </tbody>
 
-        <div class="flex items-center justify-between mt-6 mb-2">
+    </table>
 
-          <!-- Add Category Button -->
+    <div class="flex items-center justify-between mt-6 mb-2">
 
-          <div class="flex items-center justify-between mt-6 mb-2">
+<!-- Add Category Button -->
 
-            <!-- Add Category Button -->
-            <button
-              class="bg-transparent border border-white text-white px-4 py-2 rounded-lg hover:bg-gray-700"
-              onclick="window.location.href='/admin/products/add'">
-              Add Product
-            </button>
+    <div class="flex items-center justify-between mt-6 mb-2">
 
-            <!-- Edit Product details modal -->
-            <div id="editModal"
-              class="modal hidden fixed inset-0 bg-gray-500 bg-opacity-75 flex items-center justify-center">
-              <div
-                class="modal-content bg-black text-white rounded-lg shadow-xl p-6 max-w-max w-full">
-                <h2 class="text-lg font-bold mb-4">Edit Product</h2>
-                <button onclick="closeModal()"
-                  class="absolute  top-2  right-2 bg-red-500 text-white px-3 py-1 rounded-lg hover:bg-red-600">Cancel</button>
+    <!-- Add Category Button -->
+<button class="bg-transparent border border-white text-white px-4 py-2 rounded-lg hover:bg-gray-700" onclick="window.location.href='/admin/products/add'">
+    Add Product
+</button>
 
-                <form id="editProductForm">
-                  <div class="overflow-y-auto" style="max-height: 500px">
-                    <!-- Product Details -->
-                    <div>
-                      <label for="productName">Product Name:</label>
-                      <input type="text" id="productName" name="productName"
-                        class="bg-zinc-900 w-full px-4 py-2 border rounded-lg">
-                    </div>
-                    <div>
-                      <label for="brand">Brand:</label>
-                      <input type="text" id="brand" name="brand"
-                        class="bg-zinc-900 w-full px-4 py-2 border rounded-lg">
-                    </div>
-                    <div>
-                      <label for="gender">Gender:</label>
-                      <select id="gender" name="gender"
-                        class="bg-zinc-900 w-full px-4 py-2 border rounded-lg">
-                        <option value="male">Male</option>
-                        <option value="female">Female</option>
-                        <option value="unisex">Unisex</option>
-                      </select>
-                    </div>
-                    <div>
-                      <label for="productName">Category:</label>
-                      <input type="text" id="productName" name="productName"
-                        class="bg-zinc-900 w-full px-4 py-2 border rounded-lg">
-                    </div>
-                    <!-- Photos -->
-                    <div>
-                      <label>Photos:</label>
-                      <div id="productPhotos" class="flex gap-2 mb-4">
-                        <!-- Photos will be dynamically loaded here -->
-                      </div>
-                    </div>
-                    <!-- Variants -->
-                    <div id="variantsContainer" class=" mt-2 ">
-                      <!-- Variants will be dynamically loaded here -->
-                    </div>
-                  </div>
-                  <button type="submit"
-                    class="bg-green-500 text-white px-4 py-2 mt-2 rounded-lg">Save</button>
+<!-- Edit Product details modal -->
+<div id="editModal" class="modal hidden fixed inset-0 bg-gray-500 bg-opacity-75 flex items-center justify-center">
+   <div class="modal-content bg-black text-white rounded-lg shadow-xl p-6 max-w-max w-full">
+      <h2 class="text-lg font-bold mb-4">Edit Product</h2>
+      <button onclick="closeModal()" class="absolute  top-2  right-2 bg-red-500 text-white px-3 py-1 rounded-lg hover:bg-red-600">Cancel</button>
 
-                </form>
-
-                <!-- <button onclick="closeModal()" class="  bg-red-500 text-white px-3 py-1 rounded-lg hover:bg-red-600">Cancel</button> -->
-              </div>
+      <form id="editProductForm" >
+       <div class="overflow-y-auto" style="max-height: 500px">
+        <!-- Product Details -->
+         <div>
+            <label for="productName">Product Name:</label>
+            <input type="text" id="productName" name="productName" class="bg-zinc-900 w-full px-4 py-2 border rounded-lg">
+         </div>
+         <div>
+            <label for="brand">Brand:</label>
+            <input type="text" id="brand" name="brand" class="bg-zinc-900 w-full px-4 py-2 border rounded-lg">
+         </div>
+         <div>
+            <label for="gender">Gender:</label>
+            <select id="gender" name="gender" class="bg-zinc-900 w-full px-4 py-2 border rounded-lg">
+               <option value="male">Male</option>
+               <option value="female">Female</option>
+               <option value="unisex">Unisex</option>
+            </select>
+         </div>
+         <!-- Photos -->
+         <div>
+            <label>Photos:</label>
+            <div id="productPhotos" class="flex gap-2 mb-4">
+               <!-- Photos will be dynamically loaded here -->
             </div>
+         </div>
+         <!-- Variants -->
+         <div id="variantsContainer" class=" mt-2 ">
+            <!-- Variants will be dynamically loaded here -->
+         </div>
+            </div>
+         <button type="submit" class="bg-green-500 text-white px-4 py-2 mt-2 rounded-lg">Save</button>
 
-          </div>
-          <!-- Pagination -->
-          <div class="flex justify-center items-center space-x-4 mt-6">
-            <% if (currentPage> 1) { %>
-            <a href="/admin/products?page=<%= currentPage - 1 %>"
-              class="px-4 py-2 bg-gray-700 rounded-lg">Previous</a>
-            <% } %>
-            <% for (let i=1; i <=totalPages; i++) { %>
-            <a href="/admin/products?page=<%= i %>"
-              class="px-3 py-1 bg-gray-600 rounded-lg">
-              <%= i %>
-            </a>
-            <% } %>
-            <% if (currentPage < totalPages) { %>
-            <a href="/admin/products?page=<%= currentPage + 1 %>"
-              class="px-4 py-2 bg-gray-700 rounded-lg">Next</a>
-            <% } %>
-          </div>
-        </div>
-      </main>
-      <script>
+      </form>
 
+      <!-- <button onclick="closeModal()" class="  bg-red-500 text-white px-3 py-1 rounded-lg hover:bg-red-600">Cancel</button> -->
+   </div>
+</div>
 
-    async function openEditModal(productId) {
-      const modal = document.getElementById("editModal");
-      const form = document.getElementById("editProductForm");
-      const variantsContainer = document.getElementById("variantsContainer");
-      const productPhotos = document.getElementById("productPhotos");
+    </div>
+    <!-- Pagination -->
+    <div class="flex justify-center items-center space-x-4 mt-6">
+      <% if (currentPage > 1) { %>
+        <a href="/admin/products?page=<%= currentPage - 1 %>" class="px-4 py-2 bg-gray-700 rounded-lg">Previous</a>
+      <% } %>
+      <% for (let i = 1; i <= totalPages; i++) { %>
+        <a href="/admin/products?page=<%= i %>" class="px-3 py-1 bg-gray-600 rounded-lg"><%= i %></a>
+      <% } %>
+      <% if (currentPage < totalPages) { %>
+        <a href="/admin/products?page=<%= currentPage + 1 %>" class="px-4 py-2 bg-gray-700 rounded-lg">Next</a>
+      <% } %>
+    </div>
+  </div>
+</main>
+<script>
 
-      try {
-        const response = await fetch(`/admin/products/${productId}/details`);
-        if (!response.ok) throw new Error("Failed to fetch product details");
+  
+  async function openEditModal(productId) {
+   const modal = document.getElementById("editModal");
+   const form = document.getElementById("editProductForm");
+   const variantsContainer = document.getElementById("variantsContainer");
+   const productPhotos = document.getElementById("productPhotos");
 
-        const data = await response.json();
-        console.log(data)
-        // Store productId in the form (as a hidden input or global variable)
-        form.setAttribute("data-product-id", productId);
+   try {
+      const response = await fetch(`/admin/products/${productId}/details`);
+      if (!response.ok) throw new Error("Failed to fetch product details");
 
-        // Populate product details
-        form.productName.value = data.product.productName;
-        form.brand.value = data.product.brand;
-        form.gender.value = data.product.gender;
+      const data = await response.json();
+      console.log(data)
+      // Store productId in the form (as a hidden input or global variable)
+      form.setAttribute("data-product-id", productId);
 
-        // Populate photos
-        productPhotos.innerHTML = data.product.photos
-          .map(photo => `<img src="${photo}" class="w-16 h-16 object-cover rounded-md">`)
-          .join("");
+      // Populate product details
+      form.productName.value = data.product.productName;
+      form.brand.value = data.product.brand;
+      form.gender.value = data.product.gender;
 
-        // Populate variants
-        variantsContainer.innerHTML = data.variants
-          .map(variant => `
+      // Populate photos
+      productPhotos.innerHTML = data.product.photos
+         .map(photo => `<img src="${photo}" class="w-16 h-16 object-cover rounded-md">`)
+         .join("");
+
+      // Populate variants
+      variantsContainer.innerHTML = data.variants
+         .map(variant => `
 
 
      <div class="variant-item my-4 p-4 bg-zinc-900 rounded-lg shadow-md ">
@@ -334,94 +292,93 @@
 
 
          `)
-          .join("");
+         .join("");
 
-        modal.classList.remove("hidden");
-
-      } catch (error) {
-        console.error("Error fetching product details:", error);
-        alert("Failed to load product details.");
-      }
-    }
-
-
-    function closeModal() {
-      const modal = document.getElementById("editModal");
-      modal.classList.add("hidden");
-
-      // Reset the form and other dynamic fields
-      const form = document.getElementById("editProductForm");
-      form.reset();
-      form.removeAttribute("data-product-id");
-      document.getElementById("productPhotos").innerHTML = "";
-      document.getElementById("variantsContainer").innerHTML = "";
-    }
+      modal.classList.remove("hidden");
+      
+   } catch (error) {
+      console.error("Error fetching product details:", error);
+      alert("Failed to load product details.");
+   }
+}
 
 
-    function removeVariant(button) {
-      button.closest(".variant-item").remove();
-    }
+function closeModal() {
+   const modal = document.getElementById("editModal");
+   modal.classList.add("hidden");
 
-    document.getElementById("editProductForm").addEventListener("submit", async (event) => {
-      event.preventDefault();
+   // Reset the form and other dynamic fields
+   const form = document.getElementById("editProductForm");
+   form.reset();
+   form.removeAttribute("data-product-id");
+   document.getElementById("productPhotos").innerHTML = "";
+   document.getElementById("variantsContainer").innerHTML = "";
+}
 
-      const form = event.target;
-      const productId = form.getAttribute("data-product-id");
 
-      // Prepare JSON payload
-      const payload = {
-        productName: form.productName.value,
-        brand: form.brand.value,
-        gender: form.gender.value,
-        variants: Array.from(document.querySelectorAll(".variant-item")).map((item) => ({
-          _id: item.querySelector("input[name='variantIds']")?.value || null,
-          color: item.querySelector("input[name='color']").value,
-          price: item.querySelector("input[name='price']").value,
-          discountPrice: item.querySelector("input[name='discountPrice']").value,
-          discountPercentage: item.querySelector("input[name='discountPercentage']").value,
-        })),
-      };
+function removeVariant(button) {
+   button.closest(".variant-item").remove();
+}
 
-      try {
-        const response = await fetch(`/admin/products/update/${productId}`, {
-          method: "POST",
-          headers: {
+document.getElementById("editProductForm").addEventListener("submit", async (event) => {
+   event.preventDefault();
+
+   const form = event.target;
+   const productId = form.getAttribute("data-product-id");
+
+   // Prepare JSON payload
+   const payload = {
+      productName: form.productName.value,
+      brand: form.brand.value,
+      gender: form.gender.value,
+      variants: Array.from(document.querySelectorAll(".variant-item")).map((item) => ({
+         _id: item.querySelector("input[name='variantIds']")?.value || null,
+         color: item.querySelector("input[name='color']").value,
+         price: item.querySelector("input[name='price']").value,
+         discountPrice: item.querySelector("input[name='discountPrice']").value,
+         discountPercentage: item.querySelector("input[name='discountPercentage']").value,
+      })),
+   };
+
+   try {
+      const response = await fetch(`/admin/products/update/${productId}`, {
+         method: "POST",
+         headers: {
             "Content-Type": "application/json",
-          },
-          body: JSON.stringify(payload),
-        });
+         },
+         body: JSON.stringify(payload),
+      });
 
-        if (response.ok) {
-          alert("Product updated successfully!");
-          window.location.reload();
-        } else {
-          const errorData = await response.json();
-          alert(errorData.error || "Error updating product.");
-        }
-      } catch (error) {
-        console.error("Error updating product:", error);
-        alert("Failed to update product.");
+      if (response.ok) {
+         alert("Product updated successfully!");
+         window.location.reload();
+      } else {
+         const errorData = await response.json();
+         alert(errorData.error || "Error updating product.");
       }
-    });
+   } catch (error) {
+      console.error("Error updating product:", error);
+      alert("Failed to update product.");
+   }
+});
 
 
-    function deleteProduct(id) {
-      if (confirm("Are you sure you want to delete this product?")) {
-        fetch('/admin/products/delete/' + id, {
-          method: 'POST'
-        }).then(() => {
-          window.location.reload();
-        }).catch(err => {
-          alert("Error deleting product");
-        });
-      }
+  function deleteProduct(id) {
+    if (confirm("Are you sure you want to delete this product?")) {
+      fetch('/admin/products/delete/' + id, {
+        method: 'POST'
+      }).then(() => {
+        window.location.reload();
+      }).catch(err => {
+        alert("Error deleting product");
+      });
     }
+  }
 
-    function addVariant(productId) {
-      window.location.href = `/admin/products/add/variant?productId=${productId}`;
-    }
-  </script>
+  function addVariant(productId) {
+    window.location.href = `/admin/products/add/variant?productId=${productId}`;
+  }
+</script>
 
-    </body>
-
-  </html>
+</body>
+</html>
