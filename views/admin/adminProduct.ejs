@@ -167,8 +167,9 @@
       <h2 class="text-lg font-bold mb-4">Edit Product</h2>
       <button onclick="closeModal()" class="absolute  top-2  right-2 bg-red-500 text-white px-3 py-1 rounded-lg hover:bg-red-600">Cancel</button>
 
-      <form id="editProductForm">
-         <!-- Product Details -->
+      <form id="editProductForm" >
+       <div class="overflow-y-auto" style="max-height: 500px">
+        <!-- Product Details -->
          <div>
             <label for="productName">Product Name:</label>
             <input type="text" id="productName" name="productName" class="bg-zinc-900 w-full px-4 py-2 border rounded-lg">
@@ -193,12 +194,14 @@
             </div>
          </div>
          <!-- Variants -->
-         <div id="variantsContainer" class=" mt-2 overflow-y-auto" style="max-height: 280px;">
+         <div id="variantsContainer" class=" mt-2 ">
             <!-- Variants will be dynamically loaded here -->
          </div>
-         <button type="submit" class="bg-green-500 text-white px-4 py-2 mt-4 rounded-lg">Save</button>
+            </div>
+         <button type="submit" class="bg-green-500 text-white px-4 py-2 mt-2 rounded-lg">Save</button>
 
       </form>
+
       <!-- <button onclick="closeModal()" class="  bg-red-500 text-white px-3 py-1 rounded-lg hover:bg-red-600">Cancel</button> -->
    </div>
 </div>
