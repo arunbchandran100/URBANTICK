@@ -100,7 +100,7 @@ exports.postAddProduct = async (req, res) => {
 };
 
 
-// Update Product
+//---------------Update Product----------------------
 exports.getProductDetails = async (req, res) => {
 try {
   const productId = req.params.id;
@@ -137,6 +137,7 @@ try {
 };
 
 
+//---------------POST Update Product----------------------
 exports.updateProductDetails = async (req, res) => {
   try {
     const { productName, brand, gender, variants } = req.body;
@@ -167,6 +168,7 @@ exports.updateProductDetails = async (req, res) => {
               price: variant.price,
               discountPrice: variant.discountPrice,
               discountPercentage: variant.discountPercentage,
+              rating:variant.rating
             },
             { new: true }
           );
