@@ -102,65 +102,63 @@ exports.postAddProduct = async (req, res) => {
 
 //---------------Update Product----------------------
 exports.getProductDetails = async (req, res) => {
-try {
-  const productId = req.params.id;
+  try {
+    const productId = req.params.id;
 
-  const product = await Product.findById(productId);
-  if (!product) {
-    console.log("Product not found");
-    return res.status(404).json({ error: "Product not found" });
-  }
+    const product = await Product.findById(productId);
+    if (!product) {
+      console.log("Product not found");
+      return res.status(404).json({ error: "Product not found" });
+    }
 
-  const variants = await Variant.find({ productId });
+    const variants = await Variant.find({ productId });
 
-  const categories = await Category.find();
+    const categories = await Category.find();
 
     const productCategory = await Category.findOne(
       { _id: product.categoriesId },
-      { categoriesName: 1 }  
+      { categoriesName: 1 }
     );
     // console.log(productCategory);
     //categories: categories,
-  // console.log(product.categoriesId);
-  res.status(200).json({
-    product: {
-      productName: product.productName,
-      brand: product.brand,
-      gender: product.gender,
-      photos: product.imageUrl,
-      categoryName: productCategory ? productCategory.categoriesName : null,
-    },
-    variants: variants.map((variant) => ({
-      _id: variant._id,
-      color: variant.color,
-      price: variant.price,
-      rating: variant.rating,
-      discountPrice: variant.discountPrice,
-      discountPercentage: variant.discountPercentage,
-    })),
-    categories,
-  });
-} catch (error) {
-  console.error("Error fetching product details:", error);
-  res.status(500).json({ error: "Failed to fetch product details" });
-}
+    // console.log(product.categoriesId);
+    res.status(200).json({
+      product: {
+        productName: product.productName,
+        brand: product.brand,
+        gender: product.gender,
+        photos: product.imageUrl,
+        categoryName: productCategory ? productCategory.categoriesName : null,
+      },
+      variants: variants.map((variant) => ({
+        _id: variant._id,
+        color: variant.color,
+        price: variant.price,
+        rating: variant.rating,
+        discountPrice: variant.discountPrice,
+        discountPercentage: variant.discountPercentage,
+      })),
+      categories,
+    });
+  } catch (error) {
+    console.error("Error fetching product details:", error);
+    res.status(500).json({ error: "Failed to fetch product details" });
+  }
 };
 
 
 //---------------POST Update Product----------------------
 exports.updateProductDetails = async (req, res) => {
   try {
-    const { productName, brand, gender, variants } = req.body;
+    const { productName, brand, gender, variants, categoriesId } = req.body; // Extract categoriesId from the body
 
-    // console.log("Request Body:", req.body);
-
-    if (!productName || !brand || !gender) {
+    if (!productName || !brand || !gender || !categoriesId) {
       return res.status(400).json({ error: "Missing required fields" });
     }
 
     const updatedProduct = await Product.findByIdAndUpdate(
       req.params.id,
-      { productName, brand, gender },
+      { productName, brand, gender, categoriesId },
       { new: true }
     );
 
@@ -178,7 +176,7 @@ exports.updateProductDetails = async (req, res) => {
               price: variant.price,
               discountPrice: variant.discountPrice,
               discountPercentage: variant.discountPercentage,
-              rating:variant.rating
+              rating: variant.rating
             },
             { new: true }
           );
@@ -259,7 +257,7 @@ exports.postAddvariant = async (req, res) => {
     //   rating
     // );
 
-    if (!productId || !color || !price ) {
+    if (!productId || !color || !price) {
       return res.status(400).json({ error: "Missing required fields" });
     }
 

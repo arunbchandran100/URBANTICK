@@ -4,8 +4,8 @@ const adminController = require("../controllers/adminController");
 const uploadMiddleware = require("../middleware/uploadMiddleware");
 
 router.use((req, res, next) => {
-  req.session.admin = true;
-  next();
+    req.session.admin = true;
+    next();
 });
 
 // Admin login page
@@ -33,7 +33,7 @@ const adminProduct = require("../controllers/admin/adminProductController");
 
 router.get("/products", adminProduct.getProducts);
 router.get("/products/add", adminProduct.getAddProduct);
-router.post("/products/add", uploadMiddleware,adminProduct.postAddProduct);
+router.post("/products/add", uploadMiddleware, adminProduct.postAddProduct);
 
 router.get("/products/:id/details", adminProduct.getProductDetails);
 router.post("/products/update/:id", adminProduct.updateProductDetails);
@@ -41,7 +41,7 @@ router.post("/products/update/:id", adminProduct.updateProductDetails);
 router.post("/products/delete/:id", adminProduct.deleteProduct);
 
 router.get("/products/add/variant", adminProduct.getAddvariant);
-router.post("/products/add/variant",adminProduct.postAddvariant);
+router.post("/products/add/variant", adminProduct.postAddvariant);
 // router.post("/products/update/:id", adminProduct.updatevariant);
 // router.post("/products/delete/:id", adminProduct.deletevariant);
 
