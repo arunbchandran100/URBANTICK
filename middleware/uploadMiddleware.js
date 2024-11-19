@@ -1,16 +1,14 @@
-// uploadMiddleware.js
 const cloudinary = require("cloudinary").v2;
 const multer = require("multer");
 const { CloudinaryStorage } = require("multer-storage-cloudinary");
 
-// Configure Cloudinary
 cloudinary.config({
   cloud_name: process.env.CLOUDINARY_CLOUD_NAME,
   api_key: process.env.CLOUDINARY_API_KEY,
   api_secret: process.env.CLOUDINARY_API_SECRET,
 });
 
-// Set up local storage first for handling the cropped images
+//local storage first for handling the cropped images
 const localStorage = multer.memoryStorage();
 const uploadLocal = multer({
   storage: localStorage,
@@ -23,7 +21,6 @@ const uploadLocal = multer({
 // Middleware to handle the file upload and Cloudinary upload
 const uploadMiddleware = async (req, res, next) => {
   try {
-    // First use multer to handle the file upload
     uploadLocal.array("imageFiles")(req, res, async (err) => {
       if (err) {
         console.error("Multer error:", err);
@@ -35,7 +32,6 @@ const uploadMiddleware = async (req, res, next) => {
       }
 
       try {
-        // Upload each file to Cloudinary
         const uploadPromises = req.files.map((file) => {
           return new Promise((resolve, reject) => {
             const uploadStream = cloudinary.uploader.upload_stream(
@@ -49,16 +45,13 @@ const uploadMiddleware = async (req, res, next) => {
               }
             );
 
-            // Convert buffer to stream and pipe to Cloudinary
             const bufferStream = require("stream").Readable.from(file.buffer);
             bufferStream.pipe(uploadStream);
           });
         });
 
-        // Wait for all uploads to complete
         const imageUrls = await Promise.all(uploadPromises);
 
-        // Add the URLs to the request body
         req.body.imageUrls = imageUrls;
 
         next();

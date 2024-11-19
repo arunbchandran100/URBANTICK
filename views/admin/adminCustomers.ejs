@@ -135,7 +135,6 @@
             <tr class="border-b border-gray-700">
               <th class="py-3 px-4">S.No</th>
               <!-- Added Serial Number Column -->
-              <th class="py-3 px-4">Id</th>
               <th class="py-3 px-4">Name</th>
               <th class="py-3 px-4">Email</th>
               <th class="py-3 px-4">Mobile</th>
@@ -151,7 +150,7 @@
                 <%= (currentPage - 1) * 12 + index + 1 %>
               </td>
               <!-- Adjusted Serial Number for Pagination -->
-              <td class="py-3 px-4 text-white"><%= customer._id %></td>
+
               <td class="py-3 px-4 text-white"><%= customer.fullName %></td>
               <td class="py-3 px-4 text-white"><%= customer.email %></td>
               <td class="py-3 px-4 text-white"><%= customer.mobile %></td>
@@ -217,7 +216,7 @@
           .then((response) => response.json())
           .then((data) => {
             if (data.success) {
-              location.reload(); // Refreshes the data on the page without a full page reload
+              location.reload(); 
             } else {
               alert("Error updating status");
             }

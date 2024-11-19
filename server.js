@@ -19,10 +19,10 @@ app.use("/uploads", express.static("uploads"));
 
 app.use(
   session({
-    secret: "your_secret_key", // Replace with a strong secret key
+    secret: "your_secret_key",  
     resave: false,
     saveUninitialized: true,
-    cookie: { maxAge: 604800000 }, // 7 days in milliseconds
+    cookie: { maxAge: 604800000 },  
   })
 );
 
@@ -35,9 +35,8 @@ app.use("/user", userRoute);
 const adminRoute = require("./routes/adminRoute");
 app.use("/admin", adminRoute);
 
-// Session middleware
 
-// Other middleware (like body-parser, if needed)
+
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 
@@ -56,21 +55,17 @@ passport.use(
     },
     async (accessToken, refreshToken, profile, done) => {
       try {
-        // Check if a user with the same email already exists
         let user = await User.findOne({ email: profile.emails[0].value });
 
         if (user) {
-          // Check if the user is blocked
           if (user.status === "blocked") {
             return done(null, false, {
               message: `${profile.emails[0].value} is blocked`,
             });
           }
 
-          // Update the existing user with the googleId
           user.googleId = profile.id;
         } else {
-          // Create a new user if no existing user is found
           user = new User({
             googleId: profile.id,
             fullName: profile.displayName,

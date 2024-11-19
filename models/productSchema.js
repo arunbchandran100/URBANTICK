@@ -11,7 +11,7 @@ const productSchema = new mongoose.Schema({
   },
   createdAt: { type: Date, default: Date.now },
   updatedAt: { type: Date, default: Date.now },
-  imageUrl: [String], // Array to support multiple images
+  imageUrl: [String], 
 });
 
 module.exports = mongoose.model("Product", productSchema);

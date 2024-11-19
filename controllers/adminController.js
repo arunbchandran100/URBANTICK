@@ -18,7 +18,7 @@ exports.getLogin = (req, res) => {
 
 
 exports.postLogin = (req, res) => {
-  res.clearCookie("connect.sid"); // Clear session cookie manually
+  res.clearCookie("connect.sid");  
   if (
     process.env.ADMIN_EMAIL === req.body.email &&
     process.env.ADMIN_PASSWORD === req.body.password
@@ -52,14 +52,13 @@ exports.getDashboard = [
         "Cache-Control",
         "no-store, no-cache, must-revalidate, proxy-revalidate"
       );
-    res.render("admin/adminDashboard"); // Render dashboard page
+    res.render("admin/adminDashboard");  
   },
 ];
 
-  // 
+ 
 ///////////////////Dashboard Customers-------------------
 
-// Fetch all customers
 exports.getCustomers = [
   userAuthenticated,
   async (req, res) => {
@@ -129,8 +128,6 @@ exports.updateStatus = [
 
 
 ///////////////////Dashboard Category-------------------
-
-
 const Category = require("../models/categoryModel");
 
 exports.getCategories = [
@@ -146,7 +143,7 @@ exports.getCategories = [
       const totalPages = Math.ceil(totalCategories / limit);
 
       res.render("admin/adminCategory", {
-        message: req.query.message || undefined, // Fetch message from query parameters
+        message: req.query.message || undefined,  
         categories,
         currentPage: page,
         totalPages,
@@ -161,11 +158,9 @@ exports.getCategories = [
 
 exports.addCategory = async (req, res) => {
   try {
-    // Convert the input to lowercase for case-insensitive comparison
     const categoryName = req.body.categoriesName.trim().toLowerCase();
 
-    // Check if a category with the same name (case-insensitive) already exists
-    const existingCategory = await Category.findOne({
+     const existingCategory = await Category.findOne({
       categoriesName: categoryName,
     });
     if (existingCategory) {
@@ -174,13 +169,12 @@ exports.addCategory = async (req, res) => {
       return res.render("admin/adminCategory", {
         error: "Category already exists",
         categories,
-        currentPage: 1, // Adjust based on the page the admin was on
+        currentPage: 1,  
         totalPages,
       });
     }
 
-    // Create and save the new category with lowercase name
-    const newCategory = new Category({
+     const newCategory = new Category({
       categoriesName: categoryName,
     });
 
@@ -196,6 +190,7 @@ exports.updateCategory = async (req, res) => {
   try {
     await Category.findByIdAndUpdate(req.params.id, {
       categoriesName: req.body.categoriesName,
+      
     });
     res.redirect("/admin/category");
   } catch (err) {

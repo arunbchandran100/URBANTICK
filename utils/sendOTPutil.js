@@ -1,21 +1,21 @@
 const nodemailer = require("nodemailer");
 const crypto = require("crypto");
 
-// Configure nodemailer
+
 const transporter = nodemailer.createTransport({
-  service: "Gmail", // Use your email provider
+  service: "Gmail",  
   auth: {
-    user: process.env.EMAIL, // Your email address
-    pass: process.env.PASSWORD, // Your email password
+    user: process.env.EMAIL, 
+    pass: process.env.PASSWORD,  
   },
 });
 
-// Generate OTP
+
 const generateOTP = () => {
-  return crypto.randomBytes(3).toString("hex"); // Generates a 6-digit OTP
+  return crypto.randomBytes(3).toString("hex");  
 };
 
-// Send OTP email
+
 const sendOTPEmail = async (email, otp) => {
   try {
     await transporter.sendMail({

@@ -1,4 +1,3 @@
-// Validation functions
 function validateFullName() {
   const fullName = document.getElementById("fullName").value;
   const fullNameError = document.getElementById("fullName-error");
@@ -17,7 +16,6 @@ function validateEmail() {
   const email = document.getElementById("email").value;
   const emailError = document.getElementById("email-error");
 
-  // Check if email starts with a number
   const startsWithNumber = /^[0-9]/.test(email);
 
   if (startsWithNumber) {
@@ -77,7 +75,6 @@ function validateForm() {
   );
 }
 
-// Real-time validation
 document.getElementById("fullName").addEventListener("input", validateFullName);
 document.getElementById("email").addEventListener("input", validateEmail);
 document.getElementById("password").addEventListener("input", validatePassword);
@@ -95,7 +92,7 @@ function togglePasswordVisibility(id) {
   }
 }
 
-let timer; // Declare a timer variable for countdown
+let timer; 
 
 let otpTimer;
 let otpTimeout;
@@ -141,7 +138,6 @@ async function handleSignup(event) {
 
     const data = await response.json();
     if (response.status === 200) {
-      // Standard alert replacement with SweetAlert
       swal("", data.message, "success");
 
       document.getElementById("google-auth-div").style.display = "none";
@@ -178,7 +174,7 @@ async function handleResendOTP(event) {
     if (response.status === 200) {
       swal("", data.message, "success");
 
-      startTimer(30); // Reset the timer for 30 seconds
+      startTimer(30); 
     } else {
       document.getElementById("otp-error").textContent = data.message;
     }
@@ -190,13 +186,11 @@ async function handleResendOTP(event) {
 
 
 
-// Updated startTimer function
 function startTimer(duration) {
   let timeRemaining = duration;
   const timerDisplay = document.getElementById("timer");
   const resendButton = document.getElementById("resend-otp");
 
-  // Hide the resend button when the timer starts
   resendButton.style.display = 'none';
   console.log("timer started");
   timer = setInterval(() => {
@@ -204,7 +198,6 @@ function startTimer(duration) {
       clearInterval(timer);
       timerDisplay.textContent = "You can now resend the OTP.";
       
-      // Show the resend button when the timer ends
       resendButton.style.display = 'block';
     } else {
       timeRemaining--;

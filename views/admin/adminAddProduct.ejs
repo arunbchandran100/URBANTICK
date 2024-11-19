@@ -199,18 +199,18 @@
               (blob) => {
                 uploadedImages.push(blob);
 
-                // Create preview container
+
                 const imgWrapper = document.createElement("div");
                 imgWrapper.className = "relative group";
 
-                // Create image preview
+
                 const imgElement = document.createElement("img");
                 imgElement.src = URL.createObjectURL(blob);
                 imgElement.className =
                   "w-full aspect-square object-cover rounded-lg border border-gray-600";
 
-                // Create delete button
-                const deleteButton = document.createElement("button");
+
+                  const deleteButton = document.createElement("button");
                 deleteButton.className =
                   "absolute top-2 right-2 bg-red-500 text-white rounded-full w-6 h-6 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity duration-200";
                 deleteButton.innerHTML = "×";
@@ -237,19 +237,19 @@
       }
 
 
-      // Form submission
+
       document
         .getElementById("productForm")
         .addEventListener("submit", async function (e) {
           e.preventDefault();
 
-          // Show loading indicator
+
           const loadingIndicator = document.getElementById("loadingIndicator");
           loadingIndicator.classList.remove("hidden");
 
           const formData = new FormData();
 
-          // Add all the regular form fields
+
           formData.append(
             "productName",
             document.getElementById("productName").value
@@ -259,7 +259,6 @@
           formData.append("categoriesId", document.getElementById("categoriesId").value);
 
 
-          // Add all the uploaded images
           uploadedImages.forEach((blob, index) => {
             formData.append("imageFiles", blob, `image_${index}.jpg`);
           });
@@ -273,7 +272,6 @@
   const result = await response.json();
 
   if (response.ok) {
-    // Redirect using the productId returned from the server
     window.location.href = `/admin/products/add/variant?productId=${result.productId}`;
   } else {
     throw new Error(result.error || "Error adding product");

@@ -48,37 +48,5 @@
   </footer>
 
 
-   <!-- <script>
-    document.getElementById('login-button').addEventListener('click', function() {
-      const email = document.getElementById('email').value;
-      const password = document.getElementById('password').value;
-      const emailErrorDiv = document.getElementById('email-error');
-      const passwordErrorDiv = document.getElementById('password-error');
-
-      emailErrorDiv.textContent = '';
-      passwordErrorDiv.textContent = '';
-
-      axios.post('/admin/login', {
-        email: email,
-        password: password
-      })
-      .then(response => {
-        if (response.data.success) {
-          window.location.href = '/admin/dashboard';
-        } else {
-          if (response.data.errorField === 'email') {
-            emailErrorDiv.textContent = response.data.message;
-          } else if (response.data.errorField === 'password') {
-            passwordErrorDiv.textContent = response.data.message;
-          }
-        }
-      })
-      .catch(error => {
-        console.error('Error:', error);
-      });
-    });
-  </script> -->
-
-
 </body>
 </html>

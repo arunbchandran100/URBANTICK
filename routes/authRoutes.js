@@ -18,7 +18,6 @@ router.post("/auth/google", async (req, res) => {
     const payload = ticket.getPayload();
     const { sub, name, email } = payload;
 
-    // Check if user exists in database, if not create a new user
     let user = await User.findOne({ googleId: sub });
     if (!user) {
       user = new User({

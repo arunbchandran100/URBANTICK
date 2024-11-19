@@ -13,7 +13,6 @@ otpSchema.index({ createdAt: 1 }, { expireAfterSeconds: 28 }); // Ensure TTL ind
 
 const OTP = mongoose.model("OTP", otpSchema);
 
-// Save OTP and user details temporarily
 const saveOTP = async (email, otp) => {
   const newOTP = new OTP({ email, otp });
   await newOTP.save();

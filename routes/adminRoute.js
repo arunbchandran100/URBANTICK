@@ -3,16 +3,15 @@ const router = express.Router();
 const adminController = require("../controllers/adminController");
 const uploadMiddleware = require("../middleware/uploadMiddleware");
 
-// router.use((req, res, next) => {
-//   req.session.admin = true;
-//   next();
-// });
+router.use((req, res, next) => {
+  req.session.admin = true;
+  next();
+});
 
 // Admin login page
 router.get("/login", adminController.getLogin);
 router.post("/login", adminController.postLogin);
 
-// Logout admin
 router.post("/logout", adminController.logout);
 
 // Admin dashboard
@@ -24,7 +23,6 @@ router.post("/customers/unblock/:id", adminController.unblockCustomer);
 router.post("/customers/block/:id", adminController.blockCustomer);
 router.post("/customers/updateStatus/:id", adminController.updateStatus);
 
-// Category Routes
 router.get("/category", adminController.getCategories);
 router.post("/category/add", adminController.addCategory);
 router.post("/category/update/:id", adminController.updateCategory);

@@ -47,12 +47,11 @@ exports.signupGET = (req, res) => {
   res.render("user/userSignup");
 };
 
-// Configure nodemailer
 const transporter = nodemailer.createTransport({
-  service: 'Gmail', // Use your email provider
+  service: 'Gmail',  
   auth: {
-    user: process.env.EMAIL, // Your email address
-    pass: process.env.PASSWORD, // Your email password
+    user: process.env.EMAIL,  
+    pass: process.env.PASSWORD,  
   },
 });
 
@@ -116,8 +115,8 @@ exports.resendOTP = async (req, res) => {
 
     const newOtp = generateOTP();
     console.log("resend OTP is " + newOtp)
-    otpRecord.otp = newOtp; // Update the OTP
-    otpRecord.createdAt = Date.now(); // Update the createdAt timestamp
+    otpRecord.otp = newOtp;  
+    otpRecord.createdAt = Date.now();  
     await otpRecord.save();
 
     await sendOTPEmail(email, newOtp);

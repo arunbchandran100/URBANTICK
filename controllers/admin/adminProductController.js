@@ -34,12 +34,18 @@ exports.getProducts = [
       const limit = 10;
       const skip = (page - 1) * limit;
 
-      const products = await Product.find().skip(skip).limit(limit);
+      // Populate the category field
+      const products = await Product.find()
+        .populate("categoriesId") // Populate category details
+        .skip(skip)
+        .limit(limit)
+        .lean(); // Use .lean() for faster queries and to convert Mongoose documents to plain JavaScript objects
       const totalProducts = await Product.countDocuments();
       const totalPages = Math.ceil(totalProducts / limit);
 
+      console.log(products)
       res.render("admin/adminProduct", {
-        message: req.query.message || undefined,  
+        message: req.query.message || undefined,
         products,
         currentPage: page,
         totalPages,
@@ -83,7 +89,6 @@ exports.postAddProduct = async (req, res) => {
 
     const savedProduct = await newProduct.save();
 
-    // Send JSON response with productId
     res.status(200).json({
       message: "Product added successfully",
       productId: savedProduct._id,
@@ -99,7 +104,6 @@ exports.postAddProduct = async (req, res) => {
 exports.getProductDetails = async (req, res) => {
 try {
   const productId = req.params.id;
-  // console.log("Product ID:", productId);
 
   const product = await Product.findById(productId);
   if (!product) {
@@ -108,22 +112,22 @@ try {
   }
 
   const variants = await Variant.find({ productId });
-  // console.log("Product Details:", product);
-  // console.log("Variants:", variants);
+
 
   res.status(200).json({
     product: {
       productName: product.productName,
       brand: product.brand,
       gender: product.gender,
-      photos: product.imageUrl, 
+      photos: product.imageUrl,
     },
     variants: variants.map((variant) => ({
       _id: variant._id,
       color: variant.color,
       price: variant.price,
+      rating: variant.rating,
       discountPrice: variant.discountPrice,
-      discountPercentage: variant.discountPercentage
+      discountPercentage: variant.discountPercentage,
     })),
   });
 } catch (error) {
@@ -143,7 +147,6 @@ exports.updateProductDetails = async (req, res) => {
       return res.status(400).json({ error: "Missing required fields" });
     }
 
-    // Update product details
     const updatedProduct = await Product.findByIdAndUpdate(
       req.params.id,
       { productName, brand, gender },
@@ -154,11 +157,9 @@ exports.updateProductDetails = async (req, res) => {
       return res.status(404).json({ error: "Product not found" });
     }
 
-    // Update or create variants
     if (Array.isArray(variants)) {
       for (const variant of variants) {
         if (variant._id) {
-          // Update existing variant
           await Variant.findByIdAndUpdate(
             variant._id,
             {
@@ -170,7 +171,6 @@ exports.updateProductDetails = async (req, res) => {
             { new: true }
           );
         } else {
-          // Create new variant
           await new Variant({
             ...variant,
             productId: req.params.id,
@@ -191,10 +191,8 @@ exports.updateProductDetails = async (req, res) => {
 
 exports.deleteProduct = async (req, res) => {
   try {
-    // Find and delete the product
     const deletedProduct = await Product.findByIdAndDelete(req.params.id);
 
-    // If the product was deleted, also delete its variants
     if (deletedProduct) {
       await Variant.deleteMany({ productId: req.params.id });
     }
@@ -210,11 +208,6 @@ exports.deleteProduct = async (req, res) => {
 
 
 
-
-
-
-
-// Route Handlers
 exports.getAddvariant = async (req, res) => {
   const { productId } = req.query;
   if (!productId) {

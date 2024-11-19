@@ -14,6 +14,24 @@
       referrerpolicy="no-referrer"
   />
   <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
+    <style>
+    /* Scrollbar styles */
+    ::-webkit-scrollbar {
+      width: 12px;
+      height: 12px;
+    }
+    ::-webkit-scrollbar-track {
+      background: #1a202c; /* Dark gray background */
+    }
+    ::-webkit-scrollbar-thumb {
+      background: #2d3748; /* Slightly lighter gray for the thumb */
+      border-radius: 6px;
+    }
+    ::-webkit-scrollbar-thumb:hover {
+      background: #39465c; /* Light gray on hover */
+    }
+
+  </style>
 </head>
 
 
@@ -76,7 +94,7 @@
 
 
 
-  <!-- Main Content -->
+
 <!--------------------------------Main Category----------------------------->
 
 <main class="ml-64 p-8">
@@ -101,6 +119,7 @@
         <tr class="border-b border-gray-700">
           <th class="py-3 px-4">S.No</th>
           <th class="py-3 px-4">Product Name</th>
+          <th class="py-3 px-4">Category</th>
           <th class="py-3 px-4">Brand</th>
           <th class="py-3 px-4">Created At</th>
           <th class="py-3 px-4">Action</th>
@@ -112,14 +131,16 @@
           <tr class="border-b border-gray-700">
             <td class="py-3 px-4 text-white"><%= (currentPage - 1) * 10 + index + 1 %></td>
             <td class="py-3 px-4 text-white"><%= product.productName %></td>
+            <td class="py-3 px-4 text-white"><%= product.categoriesId.categoriesName %></td>Z
             <td class="py-3 px-4 text-white"><%= product.brand %></td>
             <td class="py-3 px-4 text-white"><%= new Date(product.createdAt).toLocaleDateString() %></td>
             <td class="px-4 py-2 flex space-x-2">
-<button 
-   class="bg-green-600 text-white px-3 py-1 rounded-lg hover:bg-green-500"
-   onclick="openEditModal('<%= product._id %>')">
-   Edit
-</button>
+
+              <button 
+                class="bg-green-600 text-white px-3 py-1 rounded-lg hover:bg-green-500"
+                onclick="openEditModal('<%= product._id %>')">
+                Edit
+              </button>
               <button class="bg-red-500 text-white px-3 py-1 rounded-lg hover:bg-red-600" onclick="deleteProduct('<%= product._id %>')">Delete</button>
               <button class="bg-slate-500 text-white border-gray-400 px-3 py-1 rounded-lg hover:bg-slate-700" onclick="addVariant('<%= product._id %>')" >Add Variant</button>
             </td>
@@ -167,12 +188,12 @@
          <!-- Photos -->
          <div>
             <label>Photos:</label>
-            <div id="productPhotos" class="flex gap-2">
+            <div id="productPhotos" class="flex gap-2 mb-4">
                <!-- Photos will be dynamically loaded here -->
             </div>
          </div>
          <!-- Variants -->
-         <div id="variantsContainer">
+         <div id="variantsContainer" class=" mt-2 overflow-y-auto" style="max-height: 280px;">
             <!-- Variants will be dynamically loaded here -->
          </div>
          <button type="submit" class="bg-green-500 text-white px-4 py-2 mt-4 rounded-lg">Save</button>
@@ -199,6 +220,7 @@
 </main>
 <script>
 
+  
   async function openEditModal(productId) {
    const modal = document.getElementById("editModal");
    const form = document.getElementById("editProductForm");
@@ -227,19 +249,45 @@
       // Populate variants
       variantsContainer.innerHTML = data.variants
          .map(variant => `
-            <div class="variant-item mb-2 m-2">
-               <input type="hidden" name="variantIds" value="${variant._id}">
-               <label >Color</label>
-               <input type="text" name="color" value="${variant.color}" class="bg-zinc-900  px-4 py-2 border rounded-md" placeholder="Color">
-              <label >Price</label>
-               <input type="number" name="price" value="${variant.price}" class="bg-zinc-900  px-4 py-2 border rounded-md" placeholder="Price">
-               <label >Discount Price</label>
-               <input type="number" name="discountPrice" value="${variant.discountPrice}" class="bg-zinc-900  px-4 py-2 border rounded-md" placeholder="Price">
-               <label >Discount Percentage</label>
-               <input type="number" name="discountPercentage" value="${variant.discountPercentage}" class="bg-zinc-900  px-4 py-2 border rounded-md" placeholder="Price">
 
-               <button type="button" onclick="removeVariant(this)" class="bg-red-500 text-white px-3 py-1 rounded-lg hover:bg-red-600">Remove</button>
-            </div>
+
+     <div class="variant-item my-4 p-4 bg-zinc-900 rounded-lg shadow-md ">
+  <input type="hidden" name="variantIds" value="${variant._id}">
+
+  <div class="grid grid-cols-1 sm:grid-cols-5 gap-4 mb-4">
+    <div>
+      <label class="block text-gray-400">Color</label>
+      <input type="text" name="color" value="${variant.color}" class="mt-1 block w-full px-4 py-2 border border-gray-700 bg-zinc-900 text-white rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-indigo-500" placeholder="Color">
+    </div>
+
+    <div>
+      <label class="block text-gray-400">Price</label>
+      <input type="number" name="price" value="${variant.price}" class="mt-1 block w-full px-4 py-2 border border-gray-700 bg-zinc-900 text-white rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-indigo-500" placeholder="Price">
+    </div>
+
+    <div>
+      <label class="block text-gray-400">Discount Price</label>
+      <input type="number" name="discountPrice" value="${variant.discountPrice}" class="mt-1 block w-full px-4 py-2 border border-gray-700 bg-zinc-900 text-white rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-indigo-500" placeholder="Discount Price">
+    </div>
+
+    <div>
+      <label class="block text-gray-400">Discount Percentage</label>
+      <input type="number" name="discountPercentage" value="${variant.discountPercentage}" class="mt-1 block w-full px-4 py-2 border border-gray-700 bg-zinc-900 text-white rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-indigo-500" placeholder="Discount Percentage">
+    </div>
+
+    <div>
+      <label class="block text-gray-400">Rating</label>
+      <input type="number" name="rating" value="${variant.rating}" class="mt-1 block w-full px-4 py-2 border border-gray-700 bg-zinc-900 text-white rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-indigo-500" placeholder="Rating">
+    </div>
+  </div>
+
+  <button type="button" onclick="removeVariant(this)" class="bg-red-500 text-white px-4 py-2 rounded-lg hover:bg-red-600 focus:outline-none focus:ring-2 focus:ring-red-500 focus:ring-opacity-50">
+    Remove
+  </button>
+</div>
+
+
+
          `)
          .join("");
 

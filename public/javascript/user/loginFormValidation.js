@@ -1,9 +1,8 @@
-// Validation functions for Login Form
+// Validation for Login 
 function validateEmail() {
   const email = document.getElementById("email").value;
   const emailError = document.getElementById("email-error");
 
-  // Check if email starts with a number
   const startsWithNumber = /^[0-9]/.test(email);
 
   if (startsWithNumber) {
@@ -38,7 +37,6 @@ function validateForm() {
   validateEmail();
   validatePassword();
 
-  // Check if any error message is still displayed
   const errors = document.querySelectorAll(".error-text");
   for (let error of errors) {
     if (error.textContent !== "") return false;
@@ -46,7 +44,6 @@ function validateForm() {
   return true;
 }
 
-// Real-time validation for Login Form
 document.getElementById("email").addEventListener("input", validateEmail);
 document.getElementById("password").addEventListener("input", validatePassword);
 

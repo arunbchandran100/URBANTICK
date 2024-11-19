@@ -15,7 +15,7 @@ exports.getLogin = (req, res) => {
 };
 
 exports.postLogin = (req, res) => {
-  res.clearCookie("connect.sid"); // Clear session cookie manually
+  res.clearCookie("connect.sid");  
   if (
     process.env.ADMIN_EMAIL === req.body.email &&
     process.env.ADMIN_PASSWORD === req.body.password
@@ -37,5 +37,5 @@ exports.logout = (req, res) => {
   );
   req.session.destroy();
   res.redirect("/admin/login");
-  res.clearCookie("connect.sid"); // Clear session cookie manually
+  res.clearCookie("connect.sid");  
 };

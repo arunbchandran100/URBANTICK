@@ -10,6 +10,6 @@ exports.getDashboard = [
       "Cache-Control",
       "no-store, no-cache, must-revalidate, proxy-revalidate"
     );
-    res.render("admin/adminDashboard"); // Render dashboard page
+    res.render("admin/adminDashboard");  
   },
 ];
