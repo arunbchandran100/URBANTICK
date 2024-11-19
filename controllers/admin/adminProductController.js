@@ -43,7 +43,7 @@ exports.getProducts = [
       const totalProducts = await Product.countDocuments();
       const totalPages = Math.ceil(totalProducts / limit);
 
-      console.log(products)
+      // console.log(products)
       res.render("admin/adminProduct", {
         message: req.query.message || undefined,
         products,
@@ -113,13 +113,22 @@ try {
 
   const variants = await Variant.find({ productId });
 
+  const categories = await Category.find();
 
+    const productCategory = await Category.findOne(
+      { _id: product.categoriesId },
+      { categoriesName: 1 }  
+    );
+    // console.log(productCategory);
+    //categories: categories,
+  // console.log(product.categoriesId);
   res.status(200).json({
     product: {
       productName: product.productName,
       brand: product.brand,
       gender: product.gender,
       photos: product.imageUrl,
+      categoryName: productCategory ? productCategory.categoriesName : null,
     },
     variants: variants.map((variant) => ({
       _id: variant._id,
@@ -129,6 +138,7 @@ try {
       discountPrice: variant.discountPrice,
       discountPercentage: variant.discountPercentage,
     })),
+    categories,
   });
 } catch (error) {
   console.error("Error fetching product details:", error);

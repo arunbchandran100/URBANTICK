@@ -186,6 +186,15 @@
                <option value="unisex">Unisex</option>
             </select>
          </div>
+
+         <!-- Category -->
+         <div>
+            <label>Category:</label>
+            <div id="Categorydetails" class="flex gap-2 mb-4">
+               <!-- Category will be dynamically loaded here -->
+            </div>
+         </div>
+
          <!-- Photos -->
          <div>
             <label>Photos:</label>
@@ -233,62 +242,74 @@
    try {
       const response = await fetch(`/admin/products/${productId}/details`);
       if (!response.ok) throw new Error("Failed to fetch product details");
-
+      console.log("script" + response);
       const data = await response.json();
-      console.log(data)
-      // Store productId in the form (as a hidden input or global variable)
+      //console.log(data)
       form.setAttribute("data-product-id", productId);
 
-      // Populate product details
       form.productName.value = data.product.productName;
       form.brand.value = data.product.brand;
       form.gender.value = data.product.gender;
 
-      // Populate photos
+      Categorydetails.innerHTML = `
+            <select id="categorydetails" name="categorydetails" class="bg-zinc-900 w-full px-4 py-2 border rounded-lg">
+              ${data.categories
+                .map(category => `
+                  <option 
+                    value="${category._id}" 
+                    ${category.categoriesName === data.product.categoryName ? 'selected' : ''}
+                  >
+                    ${category.categoriesName}
+                  </option>
+                `)
+                .join("")}
+            </select>
+          `;
+
+
       productPhotos.innerHTML = data.product.photos
          .map(photo => `<img src="${photo}" class="w-16 h-16 object-cover rounded-md">`)
          .join("");
 
-      // Populate variants
       variantsContainer.innerHTML = data.variants
          .map(variant => `
 
 
-     <div class="variant-item my-4 p-4 bg-zinc-900 rounded-lg shadow-md ">
-  <input type="hidden" name="variantIds" value="${variant._id}">
+      <div class="variant-item my-4 p-4 bg-zinc-900 rounded-lg shadow-md ">
+        <input type="hidden" name="variantIds" value="${variant._id}">
 
-  <div class="grid grid-cols-1 sm:grid-cols-5 gap-4 mb-4">
-    <div>
-      <label class="block text-gray-400">Color</label>
-      <input type="text" name="color" value="${variant.color}" class="mt-1 block w-full px-4 py-2 border border-gray-700 bg-zinc-900 text-white rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-indigo-500" placeholder="Color">
-    </div>
+        <div class="grid grid-cols-1 sm:grid-cols-5 gap-4 mb-4">
+          <div>
+            <label class="block text-gray-400">Color</label>
+            <input type="text" name="color" value="${variant.color}" class="mt-1 block w-full px-4 py-2 border border-gray-700 bg-zinc-900 text-white rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-indigo-500" placeholder="Color">
+          </div>
 
-    <div>
-      <label class="block text-gray-400">Price</label>
-      <input type="number" name="price" value="${variant.price}" class="mt-1 block w-full px-4 py-2 border border-gray-700 bg-zinc-900 text-white rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-indigo-500" placeholder="Price">
-    </div>
+          <div>
+            <label class="block text-gray-400">Price</label>
+            <input type="number" name="price" value="${variant.price}" class="mt-1 block w-full px-4 py-2 border border-gray-700 bg-zinc-900 text-white rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-indigo-500" placeholder="Price">
+          </div>
 
-    <div>
-      <label class="block text-gray-400">Discount Price</label>
-      <input type="number" name="discountPrice" value="${variant.discountPrice}" class="mt-1 block w-full px-4 py-2 border border-gray-700 bg-zinc-900 text-white rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-indigo-500" placeholder="Discount Price">
-    </div>
+          <div>
+            <label class="block text-gray-400">Discount Price</label>
+            <input type="number" name="discountPrice" value="${variant.discountPrice}" class="mt-1 block w-full px-4 py-2 border border-gray-700 bg-zinc-900 text-white rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-indigo-500" placeholder="Discount Price">
+          </div>
 
-    <div>
-      <label class="block text-gray-400">Discount Percentage</label>
-      <input type="number" name="discountPercentage" value="${variant.discountPercentage}" class="mt-1 block w-full px-4 py-2 border border-gray-700 bg-zinc-900 text-white rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-indigo-500" placeholder="Discount Percentage">
-    </div>
+          <div>
+            <label class="block text-gray-400">Discount Percentage</label>
+            <input type="number" name="discountPercentage" value="${variant.discountPercentage}" class="mt-1 block w-full px-4 py-2 border border-gray-700 bg-zinc-900 text-white rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-indigo-500" placeholder="Discount Percentage">
+          </div>
 
-    <div>
-      <label class="block text-gray-400">Rating</label>
-      <input type="number" name="rating" value="${variant.rating}" min="0" max="5" step="0.1" class="mt-1 block w-full px-4 py-2 border border-gray-700 bg-zinc-900 text-white rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-indigo-500" placeholder="Rating">
-    </div>
+          <div>
+            <label class="block text-gray-400">Rating</label>
+            <input type="number" name="rating" value="${variant.rating}" min="0" max="5" step="0.1" class="mt-1 block w-full px-4 py-2 border border-gray-700 bg-zinc-900 text-white rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-indigo-500" placeholder="Rating">
+          </div>
 
-  </div>
+        </div>
 
-  <button type="button" onclick="removeVariant(this)" class="bg-red-500 text-white px-4 py-2 rounded-lg hover:bg-red-600 focus:outline-none focus:ring-2 focus:ring-red-500 focus:ring-opacity-50">
-    Remove
-  </button>
-</div>
+        <button type="button" onclick="removeVariant(this)" class="bg-red-500 text-white px-4 py-2 rounded-lg hover:bg-red-600 focus:outline-none focus:ring-2 focus:ring-red-500 focus:ring-opacity-50">
+          Remove
+        </button>
+      </div>
 
 
 
