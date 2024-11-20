@@ -23,7 +23,7 @@ router.post("/user/verify-otp", User.verifyOTP);
 router.post("/user/resend-otp", User.resendOTP);
 
 router.get("/user/profile", User.getProfilePage);
-router.post("/user/logout", User.loginPOST);
+router.post("/user/logout", User.logoutPOST);
 
 
 router.get("/home", User.home);

@@ -101,6 +101,8 @@ exports.verifyOTP = async (req, res) => {
     const newUser = new User({ fullName, email, password });
     await newUser.save();
 
+    const user = await User.findOne({ email });
+    req.session.user = user;
     await OTP.deleteOne({ email, otp });
 
     res.status(201).json({ message: "User registered successfully" });
@@ -168,7 +170,7 @@ exports.logoutPOST = (req, res) => {
         console.error("Error during logout:", err);
         return res.status(500).send("Failed to logout. Please try again.");
       }
-      res.redirect("/user/login");
+      res.redirect("/home");
     });
   } catch (error) {
     console.error("Error in logoutPOST:", error);
