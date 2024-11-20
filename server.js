@@ -64,11 +64,16 @@ passport.use(
       try {
         let user = await User.findOne({ email: profile.emails[0].value });
 
+        console.log("google user details " +user)
         if (user) {
           if (user.status === "blocked") {
             return done(null, false, {
               message: `${profile.emails[0].value} is blocked`,
             });
+            // return res.render("user/userLogin", {
+            // error: `${user.email} is blocked`,
+            // });
+
           }
 
           user.googleId = profile.id;
@@ -98,9 +103,6 @@ passport.deserializeUser((id, done) => {
 
 
 
-app.get("/", (req, res) => {
-  res.send("<a href='/auth/google'>Login with Google</a>");
-});
 
 app.get(
   "/auth/google",
@@ -110,29 +112,42 @@ app.get(
   })
 );
 
-app.get(
-  "/auth/google/callback",
-  passport.authenticate("google", {
-    failureRedirect: "/",
-    failureMessage: true,
-  }),
-  (req, res) => {
-    if (req.authInfo && req.authInfo.message) {
-      return res.render("user/userLogin", { error: req.authInfo.message });
+
+app.get("/auth/google/callback", (req, res, next) => {
+  passport.authenticate("google", (err, user, info) => {
+    if (err) {
+      return res.status(500).render("user/userLogin", {
+        error: "An error occurred during authentication.",
+      });
     }
-    res.redirect("/user/profile");
-  }
-);
 
-// app.get("/profile", (req, res) => {
-//   res.send(`Welcome ${req.user.fullName}`);
-// });
+    if (!user && info && info.message) {
+      // Display the block message
+      return res.render("user/userLogin", { error: info.message });
+    }
 
-app.get("/logout", (req, res) => {
-  req.logout(() => {
-    res.redirect("/");
-  });
+    // Successful login
+    req.logIn(user, (err) => {
+      if (err) {
+        return res.status(500).render("user/userLogin", {
+          error: "Failed to log in the user.",
+        });
+      }
+
+      // Update the session with the user data
+      req.session.user = user;
+      res.redirect("/user/profile");
+    });
+  })(req, res, next);
 });
+
+
+
+// app.get("/logout", (req, res) => {
+//   req.logout(() => {
+//     res.redirect("/");
+//   });
+// });
 
 app.listen(3000, () => {
   console.log(`Server is running at port 3000`);
