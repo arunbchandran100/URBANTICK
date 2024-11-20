@@ -26,11 +26,10 @@ app.use(
   })
 );
 
-const publicUsers = require("./routes/publicUsersRoute");
-app.use("/", publicUsers);
+
 
 const userRoute = require("./routes/userRoute");
-app.use("/user", userRoute);
+app.use("/", userRoute);
 
 const adminRoute = require("./routes/adminRoute");
 app.use("/admin", adminRoute);
