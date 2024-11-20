@@ -22,59 +22,8 @@
 
 <body class="bg-black text-white min-h-screen">
   <!-- Sidebar -->
-  <aside class="fixed top-0 left-0 w-64 h-full bg-zinc-900 p-5 shadow-lg">
-    <!-- Logo -->
-    <div class="flex items-center justify-center mb-8">
-      <img src="/images/white-nobg-background.png" alt="UrbanTick Logo" class="h-12">
-    </div>
-    <!-- Navigation Links -->
-    <nav class="space-y-6 text-sm">
-      <a href="/admin/dashboard" class="flex items-center space-x-3 text-gray-400 hover:text-white">
-        <span class="material-icons">dashboard</span>
-        <span>Dashboard</span>
-      </a>
-      <a href="/admin/products" class="flex items-center space-x-3 text-gray-400 hover:text-white">
-        <span class="material-icons">inventory_2</span>
-        <span>Products</span>
-      </a>
-      <a href="/admin/customers" class="flex items-center space-x-3 text-gray-400 hover:text-white">
-        <span class="material-icons">people</span>
-        <span>Customers</span>
-      </a>
-      <a href="#" class="flex items-center space-x-3 text-gray-400 hover:text-white">
-        <span class="material-icons">shopping_cart</span>
-        <span>Orders</span>
-      </a>
-      <a href="#" class="flex items-center space-x-3 text-gray-400 hover:text-white">
-        <span class="material-icons">local_offer</span>
-        <span>Coupons</span>
-      </a>
-      <a href="/admin/category" class="flex items-center space-x-3 text-gray-400 hover:text-white">
-        <span class="material-icons">category</span>
-        <span>Category</span>
-      </a>
-      <a href="#" class="flex items-center space-x-3 text-gray-400 hover:text-white">
-        <span class="material-icons">star</span>
-        <span>Offers</span>
-      </a>
-      <a href="#" class="flex items-center space-x-3 text-gray-400 hover:text-white">
-        <span class="material-icons">photo</span>
-        <span>Banner</span>
-      </a>
-      <a href="#" class="flex items-center space-x-3 text-gray-400 hover:text-white">
-        <span class="material-icons">assessment</span>
-        <span>Sales Report</span>
-      </a>
-      <a href="#" class="flex items-center space-x-3 text-gray-400 hover:text-white">
-        <form action="/admin/logout" method="post">
-          <button type="submit" class="flex items-center space-x-2 px-4 py-2 bg-red-700 text-white font-semibold rounded-lg hover:bg-red-900 focus:outline-none focus:ring-2 focus:ring-red-400">
-            <span class="material-icons">logout</span>
-            <span>Logout</span>
-          </button>
-        </form>
-      </a>
-    </nav>
-  </aside>
+   <%- include("partials/sidebar")  %>
+
 
 
 
