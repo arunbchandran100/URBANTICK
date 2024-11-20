@@ -4,6 +4,16 @@ const router = express.Router();
 
 const User = require("../controllers/userController");
 
+
+// app.use(
+//   session({
+//     secret: "your-secret-key",
+//     resave: false,
+//     saveUninitialized: false,
+//   })
+// );
+
+
 router.get("/user/login", User.loginGET);
 router.post("/user/login", User.loginPOST);
 
@@ -12,6 +22,8 @@ router.post("/user/signup", User.signupPOST);
 router.post("/user/verify-otp", User.verifyOTP);
 router.post("/user/resend-otp", User.resendOTP);
 
+router.get("/user/profile", User.getProfilePage);
+router.post("/user/logout", User.loginPOST);
 
 
 router.get("/home", User.home);

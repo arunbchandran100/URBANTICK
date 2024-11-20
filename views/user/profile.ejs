@@ -1,0 +1,12 @@
+<div class="user-profile">
+<h1>Welcome, <%= user.fullName.split(" ")[0] %></h1>
+
+  <form action="/user/logout" method="POST" class="mt-4">
+    <button
+      type="submit"
+      class="px-4 py-2 bg-red-500 text-white rounded hover:bg-red-600"
+    >
+      Logout
+    </button>
+  </form>
+</div>

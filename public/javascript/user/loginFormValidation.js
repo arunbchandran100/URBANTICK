@@ -23,7 +23,7 @@ function validatePassword() {
   const password = document.getElementById("password").value;
   const passwordError = document.getElementById("password-error");
   const regex =
-    /^(?=.*\d)(?=.*[a-z])(?=.*[A-Z])(?=.*[@$!%*?&])[A-Za-z\d@$!%*?&]{8,16}$/;
+    /^(?=.*\d)(?=.*[a-z])(?=.*[A-Z])(?=.*[@$!%*?&#])[A-Za-z\d@$!%*?&#]{8,16}$/;
 
   if (!regex.test(password)) {
     passwordError.textContent =

@@ -7,6 +7,8 @@ const mongoose = require("mongoose");
 const User = require("./models/userModel");
 const GoogleStrategy = require("passport-google-oauth20").Strategy;
 const path = require("path");
+const nocache = require("nocache");
+
 
 app.set("view engine", "ejs");
 app.use(express.static("public"));
@@ -17,6 +19,8 @@ app.use(express.urlencoded({ extended: true }));
 
 app.use("/uploads", express.static("uploads"));
 
+app.use(nocache());
+
 app.use(
   session({
     secret: "your_secret_key",  
@@ -25,7 +29,11 @@ app.use(
     cookie: { maxAge: 604800000 },  
   })
 );
+// const navbarUsername = require("../middleware/navbarUsername");
 
+const navbarUsername = require("./middleware/navbarUsername");
+
+app.use(navbarUsername);
 
 
 const userRoute = require("./routes/userRoute");
@@ -112,13 +120,13 @@ app.get(
     if (req.authInfo && req.authInfo.message) {
       return res.render("user/userLogin", { error: req.authInfo.message });
     }
-    res.redirect("/profile");
+    res.redirect("/user/profile");
   }
 );
 
-app.get("/profile", (req, res) => {
-  res.send(`Welcome ${req.user.fullName}`);
-});
+// app.get("/profile", (req, res) => {
+//   res.send(`Welcome ${req.user.fullName}`);
+// });
 
 app.get("/logout", (req, res) => {
   req.logout(() => {

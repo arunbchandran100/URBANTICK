@@ -1,5 +1,8 @@
 const User = require("../models/userModel"); 
 const bcrypt = require("bcryptjs");
+const userAuthenticated = require("../middleware/userauthmildware");
+
+
 
 // -------------User Login Page--------------------
 exports.loginGET = (req, res) => {
@@ -25,7 +28,10 @@ exports.loginPOST = async (req, res) => {
       return res.render("user/userLogin", { error: "Invalid credentials" });
     }
 
-    res.status(200).json({ message: "Login successful!" });
+    req.session.user = user;
+
+    // Redirect to the home page after successful login
+    res.redirect("/home");
   } catch (error) {
     console.error("Error during login:", error);
     res.status(500).json({ message: "Server error" });
@@ -70,7 +76,7 @@ exports.signupPOST = async (req, res) => {
     }
 
     const otp = generateOTP();
-    console.log("first geberated otp is "+otp)
+    console.log("first generated otp is "+otp)
     await sendOTPEmail(email, otp);
     await saveOTP(email, otp);
 
@@ -128,6 +134,47 @@ exports.resendOTP = async (req, res) => {
 };
 
 
+// -------------User Profile Page--------------------
+
+exports.getProfilePage = async (req, res) => {
+  try {
+    // Ensure the user is authenticated
+    if (!req.session.user) {
+      return res.redirect("/user/login"); // Redirect to login if not logged in
+    }
+
+    // Fetch user details using the session's userId
+    const user = await User.findById(req.session.user._id).select(
+      "fullName email status"
+    );
+
+    if (!user) {
+      return res.status(404).send("User not found");
+    }
+
+    // Render the profile page with the user details
+    res.render("user/profile", { user });
+  } catch (err) {
+    console.error("Error fetching profile page:", err);
+    res.status(500).send("Server Error");
+  }
+};
+
+
+exports.logoutPOST = (req, res) => {
+  try {
+    req.session.destroy((err) => {
+      if (err) {
+        console.error("Error during logout:", err);
+        return res.status(500).send("Failed to logout. Please try again.");
+      }
+      res.redirect("/user/login");
+    });
+  } catch (error) {
+    console.error("Error in logoutPOST:", error);
+    res.status(500).send("Server error during logout.");
+  }
+};
 
 
 //////////////////////////////////////////////////////////////////////////////////////////
@@ -221,7 +268,7 @@ exports.shopAll = async (req, res) => {
       discountPercentage: product.variants?.discountPercentage || null,
     }));
 
-    console.log(formattedProducts);
+    // console.log(formattedProducts);
     res.render("user/shopAll", { products: formattedProducts });
   } catch (err) {
     console.error("Error fetching products for Shop All page:", err.message);
