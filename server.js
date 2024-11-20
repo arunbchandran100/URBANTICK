@@ -136,7 +136,7 @@ app.get("/auth/google/callback", (req, res, next) => {
 
       // Update the session with the user data
       req.session.user = user;
-      res.redirect("/user/profile");
+      res.redirect("/home");
     });
   })(req, res, next);
 });
