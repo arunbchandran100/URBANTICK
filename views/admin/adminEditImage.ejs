@@ -19,12 +19,16 @@
 
 
   <!-- Main Content -->
-  <main class="ml-64 p-8">
+<main class="ml-64 p-8">
+   <header class="flex items-center justify-between mb-8">
+              <h1 class="text-2xl font-semibold text-gray-200">
+              Edit Product Images - <%= productName %>
+          </h1>
+   </header>
+  <!-- <main class="ml-64 p-8"> -->
     <div class="container mx-auto max-w-4xl">
-        <div class="bg-white shadow-md rounded-lg p-6">
-            <h1 class="text-2xl font-bold mb-6 text-gray-800">
-                Edit Product Images - <%= productName %>
-            </h1>
+        <div class="bg-zinc-800 rounded-lg p-6">
+
             
             <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
                 <% 
@@ -35,7 +39,7 @@
 
                 <% imageUrl.forEach((url, index) => { %>
                     <!-- Existing image display -->
-                    <div class="bg-gray-50 border rounded-lg p-4 flex flex-col items-center space-y-4 shadow-sm">
+                    <div class="bg-gray-100 border rounded-lg p-4 flex flex-col items-center space-y-4 shadow-sm">
                         <img 
                             src="<%= url %>" 
                             alt="Product Image <%= index + 1 %>" 
@@ -80,14 +84,15 @@
 
         
         
-            <div id="loadingIndicator" class="hidden">
-            <div class="flex items-center justify-center space-x-2 mb-4">
-                <div
-                class="animate-spin rounded-full h-6 w-6 border-b-2 border-indigo-500"
-                ></div>
-                <span class="text-gray-400">Uploading images...</span>
+            <div id="loadingIndicator" class="hidden fixed inset-0 flex items-center justify-center bg-black bg-opacity-60 z-50">
+                <div class="flex flex-col items-center justify-center space-y-4 p-6 rounded-lg shadow-lg bg-gray-800">
+                    <!-- Spinning Circle with Glowing Effect -->
+                    <div class="animate-spin rounded-full h-16 w-16 border-t-4 border-indigo-600 border-solid mb-4"></div>
+                    <!-- Loading Text with a subtle animation -->
+                    <span class="text-white text-lg font-semibold animate-pulse">Uploading images...</span>
+                </div>
             </div>
-            </div>
+
         </div>
     </div>
 

@@ -13,6 +13,9 @@
       crossorigin="anonymous" referrerpolicy="no-referrer" />
     <link href="https://fonts.googleapis.com/icon?family=Material+Icons"
       rel="stylesheet">
+      <!-- SweetAlert 2 CDN -->
+<script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+
     <style>
     /* Scrollbar styles */
     ::-webkit-scrollbar {
@@ -376,13 +379,27 @@
           body: JSON.stringify(payload),
         });
 
-        if (response.ok) {
-          alert("Product updated successfully!");
-          window.location.reload();
-        } else {
-          const errorData = await response.json();
-          alert(errorData.error || "Error updating product.");
-        }
+if (response.ok) {
+    // Success Alert
+    Swal.fire({
+      icon: 'success',
+      title: 'Success!',
+      text: 'Product updated successfully!',
+      confirmButtonText: 'OK',
+    }).then(() => {
+      window.location.reload();
+    });
+  } else {
+    const errorData = await response.json();
+    // Error Alert
+    Swal.fire({
+      icon: 'error',
+      title: 'Error!',
+      text: errorData.error || 'Error updating product.',
+      confirmButtonText: 'Retry',
+    });
+  }
+
       } catch (error) {
         console.error("Error updating product:", error);
         alert("Failed to update product.");

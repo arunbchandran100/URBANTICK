@@ -49,363 +49,269 @@
 
       <!-- Header -->
       <header class="flex items-center justify-between mb-8">
-        <h1 class="text-2xl font-semibold text-gray-200">Products</h1>
-        <div class="flex items-center space-x-4">
-          <div class="relative">
-            <input type="text" placeholder="Search"
-              class="bg-gray-800 text-white p-2 rounded pl-10 focus:outline-none">
-            <span class="absolute left-3 top-2 text-gray-400">
-              <i class="material-icons">search</i>
-            </span>
-          </div>
-        </div>
+        <!-- //<h1 class="text-2xl font-semibold text-gray-200">Products</h1> -->
+          <h1 class="text-2xl font-semibold text-gray-200">
+              Edit Product Images - <%= productName %>
+          </h1>
       </header>
       <!-- Customer Table -->
       <div class="bg-zinc-800 rounded-lg p-6">
-        <table class="min-w-full text-left text-gray-400">
+       <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+                <% 
+                    const maxImages = 4; // Define the maximum number of images allowed
+                    const currentCount = imageUrl.length;
+                    const missingFields = maxImages - currentCount; // Calculate how many slots are missing
+                %>
 
-          <thead>
-            <tr class="border-b border-gray-700">
-              <th class="py-3 px-4">S.No</th>
-              <th class="py-3 px-4">Product Name</th>
-              <th class="py-3 px-4">Category</th>
-              <th class="py-3 px-4">Brand</th>
-              <th class="py-3 px-4">Created At</th>
-              <th class="py-3 px-4">Action</th>
-
-            </tr>
-          </thead>
-          <tbody>
-            <% products.forEach((product, index)=> { %>
-            <tr class="border-b border-gray-700">
-              <td class="py-3 px-4 text-white">
-                <%= (currentPage - 1) * 10 + index + 1 %>
-              </td>
-              <td class="py-3 px-4 text-white">
-                <%= product.productName %>
-              </td>
-              <td class="py-3 px-4 text-white">
-                <%= product.categoriesId.categoriesName %>
-              </td>
-              <td class="py-3 px-4 text-white">
-                <%= product.brand %>
-              </td>
-              <td class="py-3 px-4 text-white">
-                <%= new Date(product.createdAt).toLocaleDateString() %>
-              </td>
-              <td class="px-4 py-2 flex space-x-2">
-
-                <button
-                  class="bg-green-600 text-white px-3 py-1 rounded-lg hover:bg-green-500"
-                  onclick="openEditModal('<%= product._id %>')">
-                  Edit
-                </button>
-                <button
-                  class="bg-red-500 text-white px-3 py-1 rounded-lg hover:bg-red-600"
-                  onclick="deleteProduct('<%= product._id %>')">Delete</button>
-                <button
-                  class="bg-slate-500 text-white border-gray-400 px-3 py-1 rounded-lg hover:bg-slate-700"
-                  onclick="addVariant('<%= product._id %>')">Add
-                  Variant</button>
-              </td>
-            </tr>
-            <% }); %>
-          </tbody>
-
-        </table>
-
-        <div class="flex items-center justify-between mt-6 mb-2">
-
-          <!-- Add Category Button -->
-
-          <div class="flex items-center justify-between mt-6 mb-2">
-
-            <!-- Add Category Button -->
-            <button
-              class="bg-transparent border border-white text-white px-4 py-2 rounded-lg hover:bg-gray-700"
-              onclick="window.location.href='/admin/products/add'">
-              Add Product
-            </button>
-
-            <!-- Edit Product details modal -->
-            <div id="editModal"
-              class="modal hidden fixed inset-0 bg-gray-500 bg-opacity-75 flex items-center justify-center">
-              <div
-                class="modal-content bg-black text-white rounded-lg shadow-xl p-6 max-w-max w-full">
-                <h2 class="text-lg font-bold mb-4">Edit Product</h2>
-                <button onclick="closeModal()"
-                  class="absolute  top-2  right-2 bg-red-500 text-white px-3 py-1 rounded-lg hover:bg-red-600">Cancel</button>
-
-                <form id="editProductForm">
-                  <div class="overflow-y-auto" style="max-height: 500px">
-                    <!-- Product Details -->
-                    <div>
-                      <label for="productName">Product Name:</label>
-                      <input type="text" id="productName" name="productName"
-                        class="bg-zinc-900 w-full px-4 py-2 border rounded-lg">
+                <% imageUrl.forEach((url, index) => { %>
+                    <!-- Existing image display -->
+                    <div class="bg-gray-50 border rounded-lg p-4 flex flex-col items-center space-y-4 shadow-sm">
+                        <img 
+                            src="<%= url %>" 
+                            alt="Product Image <%= index + 1 %>" 
+                            class="w-full h-48 object-cover rounded-md mb-4"
+                        >
+                        <form class="w-full flex flex-col items-center">
+                            <div class="flex items-center justify-center mb-4">
+                            <!-- Custom file input button -->
+                            <label for="fileInput<%= index %>" class="bg-blue-600 hover:bg-blue-700 text-white px-6 py-3 rounded-md cursor-pointer shadow-md">
+                                Choose Image
+                            </label>
+                            
+                            <input 
+                                id="fileInput<%= index %>" 
+                                type="file" 
+                                accept="image/*" 
+                                class="hidden"
+                                onchange="handleImageSelect(event, <%= index %>)"
+                            >
+                            </div>
+                        </form>
                     </div>
-                    <div>
-                      <label for="brand">Brand:</label>
-                      <input type="text" id="brand" name="brand"
-                        class="bg-zinc-900 w-full px-4 py-2 border rounded-lg">
-                    </div>
-                    <div>
-                      <label for="gender">Gender:</label>
-                      <select id="gender" name="gender"
-                        class="bg-zinc-900 w-full px-4 py-2 border rounded-lg">
-                        <option value="male">Male</option>
-                        <option value="female">Female</option>
-                        <option value="unisex">Unisex</option>
-                      </select>
-                    </div>
+                <% }); %>
 
-                    <!-- Category -->
-                    <div>
-                      <label>Category:</label>
-                      <div id="Categorydetails" class="flex gap-2 mb-4">
-                        <!-- Category will be dynamically loaded here -->
-                      </div>
+                <% for (let i = 0; i < missingFields; i++) { %>
+                    <!-- Empty slot for new image -->
+                    <div class="bg-gray-50 border rounded-lg p-4 flex flex-col items-center space-y-4 shadow-sm">
+                        <div class="w-full h-48 bg-gray-200 flex items-center justify-center rounded-md mb-4">
+                            <span class="text-gray-500">Empty Slot</span>
+                        </div>
+                        <form class="w-full flex flex-col items-center">
+                            <input 
+                                type="file" 
+                                accept="image/*" 
+                                class="file-input mb-4 border border-gray-300 rounded-md p-2 w-full"
+                                onchange="handleImageSelect(event, <%= currentCount + i %>)"
+                            >
+                        </form>
                     </div>
-
-                    <!-- Photos -->
-                    <div>
-                      <label>Photos:</label>
-                      <div id="productPhotos" class="flex gap-2 mb-4">
-                        <!-- Photos will be dynamically loaded here -->
-                      </div>
-
-                    </div>
-                    <!-- Variants -->
-                    <div id="variantsContainer" class=" mt-2 ">
-                      <!-- Variants will be dynamically loaded here -->
-                    </div>
-                  </div>
-                  <button type="submit"
-                    class="bg-green-500 text-white px-4 py-2 mt-2 rounded-lg">Save</button>
-
-                </form>
-
-                <!-- <button onclick="closeModal()" class="  bg-red-500 text-white px-3 py-1 rounded-lg hover:bg-red-600">Cancel</button> -->
-              </div>
+                <% } %>
             </div>
 
-          </div>
-          <!-- Pagination -->
-          <div class="flex justify-center items-center space-x-4 mt-6">
-            <% if (currentPage> 1) { %>
-            <a href="/admin/products?page=<%= currentPage - 1 %>"
-              class="px-4 py-2 bg-gray-700 rounded-lg">Previous</a>
-            <% } %>
-            <% for (let i=1; i <=totalPages; i++) { %>
-            <a href="/admin/products?page=<%= i %>"
-              class="px-3 py-1 bg-gray-600 rounded-lg">
-              <%= i %>
-            </a>
-            <% } %>
-            <% if (currentPage < totalPages) { %>
-            <a href="/admin/products?page=<%= currentPage + 1 %>"
-              class="px-4 py-2 bg-gray-700 rounded-lg">Next</a>
-            <% } %>
-          </div>
+        
+        
+            <div id="loadingIndicator" class="hidden">
+            <div class="flex items-center justify-center space-x-2 mb-4">
+                <div
+                class="animate-spin rounded-full h-6 w-6 border-b-2 border-indigo-500"
+                ></div>
+                <span class="text-gray-400">Uploading images...</span>
+            </div>
+            </div>
         </div>
-      </main>
-      <script>
+    </div>
 
 
-
-    async function openEditModal(productId) {
-      const modal = document.getElementById("editModal");
-      const form = document.getElementById("editProductForm");
-      const variantsContainer = document.getElementById("variantsContainer");
-      const productPhotos = document.getElementById("productPhotos");
-
-      try {
-        const response = await fetch(`/admin/products/${productId}/details`);
-        if (!response.ok) throw new Error("Failed to fetch product details");
-        console.log("script" + response);
-        const data = await response.json();
-        //console.log(data)
-        form.setAttribute("data-product-id", productId);
-
-        form.productName.value = data.product.productName;
-        form.brand.value = data.product.brand;
-        form.gender.value = data.product.gender;
-
-        Categorydetails.innerHTML = `
-            <select id="categorydetails" name="categorydetails" class="bg-zinc-900 w-full px-4 py-2 border rounded-lg">
-              ${data.categories
-            .map(category => `
-                  <option 
-                    value="${category._id}" 
-                    ${category.categoriesName === data.product.categoryName ? 'selected' : ''}
-                  >
-                    ${category.categoriesName}
-                  </option>
-                `)
-            .join("")}
-            
-            </select>
-          `;
-
-
-// Populate product photos
-          const productPhotos = document.getElementById('productPhotos');
-          productPhotos.innerHTML = data.product.photos
-            .map(photo => `<img src="${photo}" class="w-16 h-16 object-cover rounded-md">`)
-            .join("");
-
-          // Add Edit Photos button
-          productPhotos.innerHTML += `
-            <button
-              id="updatePhotosButton"
-              type="button"
-              class="bg-violet-700 text-white px-4 py-2 rounded-lg hover:bg-violet-500 mt-2"
-            >
-              Update Photos
-            </button>
-          `;
-
-          // Add event listener to the button
-          document.getElementById('updatePhotosButton').addEventListener('click', () => {
-            document.getElementById('editProductForm').action = `/admin/products/${productId}/image`;
-            document.getElementById('editProductForm').submit();
-          });
-
-
-
-
-
-        variantsContainer.innerHTML = data.variants
-          .map(variant => `
-
-
-      <div class="variant-item my-4 p-4 bg-zinc-900 rounded-lg shadow-md ">
-        <input type="hidden" name="variantIds" value="${variant._id}">
-
-        <div class="grid grid-cols-1 sm:grid-cols-5 gap-4 mb-4">
-          <div>
-            <label class="block text-gray-400">Color</label>
-            <input type="text" name="color" value="${variant.color}" class="mt-1 block w-full px-4 py-2 border border-gray-700 bg-zinc-900 text-white rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-indigo-500" placeholder="Color">
-          </div>
-
-          <div>
-            <label class="block text-gray-400">Price</label>
-            <input type="number" name="price" value="${variant.price}" class="mt-1 block w-full px-4 py-2 border border-gray-700 bg-zinc-900 text-white rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-indigo-500" placeholder="Price">
-          </div>
-
-          <div>
-            <label class="block text-gray-400">Discount Price</label>
-            <input type="number" name="discountPrice" value="${variant.discountPrice}" class="mt-1 block w-full px-4 py-2 border border-gray-700 bg-zinc-900 text-white rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-indigo-500" placeholder="Discount Price">
-          </div>
-
-          <div>
-            <label class="block text-gray-400">Discount Percentage</label>
-            <input type="number" name="discountPercentage" value="${variant.discountPercentage}" class="mt-1 block w-full px-4 py-2 border border-gray-700 bg-zinc-900 text-white rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-indigo-500" placeholder="Discount Percentage">
-          </div>
-
-          <div>
-            <label class="block text-gray-400">Rating</label>
-            <input type="number" name="rating" value="${variant.rating}" min="0" max="5" step="0.1" class="mt-1 block w-full px-4 py-2 border border-gray-700 bg-zinc-900 text-white rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-indigo-500" placeholder="Rating">
-          </div>
-
+    <!-- Crop Modal -->
+    <div 
+        id="cropperModal" 
+        class="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center hidden z-50"
+    >
+        <div class="bg-white p-4 rounded-lg shadow-lg max-w-lg w-full">
+            <h2 class="text-lg font-bold mb-4">Crop Your Image</h2>
+            <div class="cropper-container">
+                <img id="cropperImage" src="" class="max-w-full h-auto" />
+            </div>
+            <div class="flex justify-end mt-4">
+                <button 
+                    onclick="closeCropModal()" 
+                    class="bg-gray-300 hover:bg-gray-400 text-gray-800 px-4 py-2 rounded mr-2"
+                >
+                    Cancel
+                </button>
+                <button 
+                    onclick="applyCrop()" 
+                    class="bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded"
+                >
+                    Save
+                </button>
+            </div>
         </div>
+    </div>
 
-        <button type="button" onclick="removeVariant(this)" class="bg-red-500 text-white px-4 py-2 rounded-lg hover:bg-red-600 focus:outline-none focus:ring-2 focus:ring-red-500 focus:ring-opacity-50">
-          Remove
-        </button>
+    <div id="imagePreview" class="grid grid-cols-1 gap-4 mt-6"></div>
       </div>
 
 
 
-         `)
-          .join("");
+    </main>
+<script>
+    let cropper = null;
+    let selectedFile = null;
+    let currentImageIndex = null;
 
-        modal.classList.remove("hidden");
+    // Handle file selection
+    function handleImageSelect(event, index) {
+        selectedFile = event.target.files[0];
+        currentImageIndex = index;
 
-      } catch (error) {
-        console.error("Error fetching product details:", error);
-        alert("Failed to load product details.");
-      }
-    }
+        if (!selectedFile) return;
 
+        // Validate file type and size
+        const allowedTypes = ['image/jpeg', 'image/png', 'image/gif', 'image/webp'];
+        const maxSize = 10 * 1024 * 1024; // 10MB
 
-    function closeModal() {
-      const modal = document.getElementById("editModal");
-      modal.classList.add("hidden");
-
-      // Reset the form and other dynamic fields
-      const form = document.getElementById("editProductForm");
-      form.reset();
-      form.removeAttribute("data-product-id");
-      document.getElementById("productPhotos").innerHTML = "";
-      document.getElementById("variantsContainer").innerHTML = "";
-    }
-
-
-    function removeVariant(button) {
-      button.closest(".variant-item").remove();
-    }
-
-    document.getElementById("editProductForm").addEventListener("submit", async (event) => {
-      event.preventDefault();
-
-      const form = event.target;
-      const productId = form.getAttribute("data-product-id");
-      // Prepare JSON payload
-      const payload = {
-        productName: form.productName.value,
-        brand: form.brand.value,
-        gender: form.gender.value,
-        categoriesId: categorydetails.value,
-        variants: Array.from(document.querySelectorAll(".variant-item")).map((item) => ({
-          _id: item.querySelector("input[name='variantIds']")?.value || null,
-          color: item.querySelector("input[name='color']").value,
-          price: item.querySelector("input[name='price']").value,
-          discountPrice: item.querySelector("input[name='discountPrice']").value,
-          discountPercentage: item.querySelector("input[name='discountPercentage']").value,
-          rating: item.querySelector("input[name='rating']").value
-        })),
-      };
-
-      try {
-        const response = await fetch(`/admin/products/update/${productId}`, {
-          method: "POST",
-          headers: {
-            "Content-Type": "application/json",
-          },
-          body: JSON.stringify(payload),
-        });
-
-        if (response.ok) {
-          alert("Product updated successfully!");
-          window.location.reload();
-        } else {
-          const errorData = await response.json();
-          alert(errorData.error || "Error updating product.");
+        if (!allowedTypes.includes(selectedFile.type)) {
+            Swal.fire({
+                icon: 'error',
+                title: 'Invalid File Type',
+                text: 'Please upload a valid image (JPEG, PNG, GIF, WebP)'
+            });
+            event.target.value = ''; // Clear the file input
+            return;
         }
-      } catch (error) {
-        console.error("Error updating product:", error);
-        alert("Failed to update product.");
-      }
+
+        if (selectedFile.size > maxSize) {
+            Swal.fire({
+                icon: 'error',
+                title: 'File Too Large',
+                text: 'Image size should not exceed 10MB'
+            });
+            event.target.value = ''; // Clear the file input
+            return;
+        }
+
+        openCropModal();
+    }
+
+    // Open the Crop Modal
+    function openCropModal() {
+        const cropperModal = document.getElementById("cropperModal");
+        const cropperImage = document.getElementById("cropperImage");
+
+        const reader = new FileReader();
+        reader.onload = (e) => {
+            cropperImage.src = e.target.result;
+
+            if (cropper) cropper.destroy(); // Destroy any previous cropper instance
+
+            cropper = new Cropper(cropperImage, {
+                aspectRatio: 1, // Square crop
+                viewMode: 1,
+                zoomable: true,
+                scalable: false,
+                minCropBoxWidth: 100,
+                minCropBoxHeight: 100
+            });
+
+            cropperModal.classList.remove("hidden"); // Show modal
+        };
+        reader.readAsDataURL(selectedFile);
+    }
+
+    // Close the Crop Modal
+    function closeCropModal() {
+        const cropperModal = document.getElementById("cropperModal");
+        cropperModal.classList.add("hidden");
+
+        if (cropper) {
+            cropper.destroy();
+            cropper = null; // Clean up cropper instance
+        }
+    }
+
+    // Apply Crop and Save
+    async function applyCrop() {
+        if (!cropper) return;
+
+        try {
+            // Create form data for upload
+            const formData = new FormData();
+            
+            // Get cropped image as blob
+            cropper.getCroppedCanvas({
+                width: 1024,
+                height: 1024,
+                imageSmoothingEnabled: true,
+                imageSmoothingQuality: 'high'
+            }).toBlob(async (blob) => {
+                // Append blob to FormData
+                formData.append('imageFiles', blob, 'cropped-image.jpg');
+                formData.append('imageIndex', currentImageIndex);
+                // Close crop modal
+                closeCropModal();
+
+                const loadingIndicator = document.getElementById("loadingIndicator");
+                loadingIndicator.classList.remove("hidden");
+                try {
+                    // Send to server
+                    const response = await fetch(`/admin/products/<%= _id %>/image`, {
+                        method: 'POST',
+                        body: formData
+                    });
+
+                    const result = await response.json();
+
+                if (response.ok) {
+                    // Update image source
+                    const imageElements = document.querySelectorAll('img');
+                    imageElements[currentImageIndex].src = result.newImageUrl;
+
+                    loadingIndicator.classList.add("hidden");
+
+                    // Show success notification
+                    Swal.fire({
+                        icon: 'success',
+                        title: 'Image Updated',
+                        text: 'Your image has been successfully updated',
+                    }).then(() => {
+                        // Reload the page after user confirms the alert
+                        location.reload();
+                    });
+                }
+
+                    else {
+                        // Show error notification
+                        Swal.fire({
+                            icon: 'error',
+                            title: 'Upload Failed',
+                            text: result.error || 'Failed to update image'
+                        });
+                    }
+                } catch (uploadError) {
+                    console.error('Upload Error:', uploadError);
+                    Swal.fire({
+                        icon: 'error',
+                        title: 'Upload Error',
+                        text: 'An error occurred during upload'
+                    });
+                }
+            }, "image/jpeg", 0.9); // High quality JPEG
+        } catch (cropError) {
+            console.error('Crop Error:', cropError);
+            Swal.fire({
+                icon: 'error',
+                title: 'Crop Error',
+                text: 'Failed to crop image'
+            });
+        }
+    }
+
+    // Additional error handling for file input
+    document.querySelectorAll('input[type="file"]').forEach((fileInput, index) => {
+        fileInput.addEventListener('change', (event) => handleImageSelect(event, index));
     });
-
-
-    function deleteProduct(id) {
-      if (confirm("Are you sure you want to delete this product?")) {
-        fetch('/admin/products/delete/' + id, {
-          method: 'POST'
-        }).then(() => {
-          window.location.reload();
-        }).catch(err => {
-          alert("Error deleting product");
-        });
-      }
-    }
-
-    function addVariant(productId) {
-      window.location.href = `/admin/products/add/variant?productId=${productId}`;
-    }
-  </script>
+</script>
 
     </body>
 
