@@ -212,10 +212,11 @@ exports.postEditProductImage = async (req, res) => {
     product.imageUrl[imageIndex] = newImageUrl;
     const updatedProduct = await product.save();
 
-    res.status(200).json({
-      message: "Product image updated successfully",
+res.status(200).json({
+  message: "Product image updated successfully",
+  redirectUrl: "/admin/products", // Include redirect URL
+});
 
-    });
   } catch (error) {
     console.error("Comprehensive Error in Image Update:", {
       message: error.message,
