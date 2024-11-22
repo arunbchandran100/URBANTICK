@@ -39,7 +39,9 @@ router.post("/products/add", uploadMiddleware, adminProduct.postAddProduct);
 router.get("/products/:id/details", adminProduct.getProductDetails);
 router.post("/products/update/:id", adminProduct.updateProductDetails);
 
-router.post("/products/:id/image", adminProduct.deleteProductImage);
+// Admin edit Photo
+router.get("/products/:id/image", adminProduct.getEditProductImage);
+router.post("/products/:id/image", uploadMiddleware, adminProduct.postEditProductImage);
 
 
 router.post("/products/delete/:id", adminProduct.deleteProduct);

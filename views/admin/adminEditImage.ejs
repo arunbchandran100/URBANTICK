@@ -1,0 +1,91 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Edit Product Images</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+</head>
+<body class="bg-gray-100 min-h-screen p-6">
+    <div class="container mx-auto max-w-4xl">
+        <div class="bg-white shadow-md rounded-lg p-6">
+            <h1 class="text-2xl font-bold mb-6 text-gray-800">Edit Product Images - <%= productName %></h1>
+            
+            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+                <% imageUrl.forEach((url, index) => { %>
+                    <div class="bg-gray-50 border rounded-lg p-4 flex flex-col items-center space-y-4 shadow-sm">
+                        <img 
+                            src="<%= url %>" 
+                            alt="Product Image <%= index + 1 %>" 
+                            class="w-full h-48 object-cover rounded-md mb-4"
+                        >
+                        
+                    <form 
+                        action="/admin/products/<%= _id %>/image" 
+                        method="POST" 
+                        enctype="multipart/form-data"
+                        class="w-full"
+                    >
+                        <input type="hidden" name="imageIndex" value="<%= index %>">
+                        <input 
+                            type="file" 
+                            name="imageFiles" 
+                            accept="image/*" 
+
+                        >
+                        <button type="submit">Update Image</button>
+                    </form>
+                    </div>
+                <% }); %>
+            </div>
+
+            <div id="notification" class="fixed top-4 right-4 hidden">
+                <!-- Notification will be dynamically added here -->
+            </div>
+        </div>
+    </div>
+
+    <script>
+        function showNotification(message, type = 'success') {
+            const notification = document.getElementById('notification');
+            notification.innerHTML = `
+                <div class="bg-${type === 'success' ? 'green' : 'red'}-100 border border-${type === 'success' ? 'green' : 'red'}-400 text-${type === 'success' ? 'green' : 'red'}-700 px-4 py-3 rounded relative" role="alert">
+                    <span class="block sm:inline">${message}</span>
+                </div>
+            `;
+            notification.classList.remove('hidden');
+            
+            setTimeout(() => {
+                notification.classList.add('hidden');
+            }, 3000);
+        }
+
+        async function handleImageUpload(event, index) {
+            event.preventDefault();
+            const form = event.target;
+            const formData = new FormData(form);
+
+            try {
+                const response = await fetch(form.action, {
+                    method: 'POST',
+                    body: formData
+                });
+
+                const result = await response.json();
+
+                if (response.ok) {
+                    showNotification('Image updated successfully');
+                    // Optionally reload the image
+                    const imgElement = form.previousElementSibling;
+                    imgElement.src = result.newImageUrl;
+                } else {
+                    showNotification(result.error || 'Failed to update image', 'error');
+                }
+            } catch (error) {
+                console.error('Upload error:', error);
+                showNotification('An error occurred during upload', 'error');
+            }
+        }
+    </script>
+</body>
+</html>

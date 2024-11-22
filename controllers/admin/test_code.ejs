@@ -1,0 +1,79 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Edit Product</title>
+  <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
+</head>
+<body class="bg-black text-white min-h-screen flex items-center justify-center">
+
+  <div class="bg-zinc-900 p-8 rounded-lg shadow-xl w-full max-w-2xl">
+    <h1 class="text-3xl font-bold mb-6 text-slate-200">Edit Product</h1>
+    <form id="editProductForm" action="/admin/products/edit/<%= product._id %>" method="POST" class="bg-zinc-800 p-6 rounded-lg shadow-md">
+      
+      <!-- Other form fields for product details -->
+      
+      <div id="productPhotos" class="mb-4">
+        <!-- Photos will be populated here -->
+      </div>
+      
+      <button id="editPhotosButton" type="button" class="bg-violet-700 text-white px-3 py-1 rounded-lg hover:bg-violet-500">
+        Edit Photos
+      </button>
+
+      <button type="submit" class="bg-indigo-600 text-white px-4 py-2 rounded-lg hover:bg-indigo-800">
+        Save Changes
+      </button>
+    </form>
+  </div>
+
+  <script>
+    document.addEventListener('DOMContentLoaded', () => {
+      const productId = "<%= product._id %>"; // Ensure this is available
+      fetchProductDetails(productId);
+    });
+
+    async function fetchProductDetails(productId) {
+      try {
+        const response = await fetch(`/api/products/${productId}`);
+        const data = await response.json();
+
+        if (response.ok) {
+          document.getElementById('productName').value = data.product.productName;
+          document.getElementById('brand').value = data.product.brand;
+          document.getElementById('gender').value = data.product.gender;
+          
+          // Populate product photos
+          const productPhotos = document.getElementById('productPhotos');
+          productPhotos.innerHTML = data.product.photos
+            .map(photo => `<img src="${photo}" class="w-16 h-16 object-cover rounded-md">`)
+            .join("");
+
+          // Add Edit Photos button
+          productPhotos.innerHTML += `
+            <button
+              id="updatePhotosButton"
+              type="button"
+              class="bg-violet-700 text-white  py-1  hover:bg-violet-500 "
+            >
+              Update Photos
+            </button>
+          `;
+
+          // Add event listener to the button
+          document.getElementById('updatePhotosButton').addEventListener('click', () => {
+            document.getElementById('editProductForm').action = `/admin/products/${productId}/image`;
+            document.getElementById('editProductForm').submit();
+          });
+        } else {
+          console.error("Failed to fetch product details:", data.error);
+        }
+      } catch (error) {
+        console.error("Error fetching product details:", error);
+      }
+    }
+  </script>
+
+</body>
+</html>

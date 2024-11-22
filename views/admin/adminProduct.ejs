@@ -39,72 +39,9 @@
   </head>
 
   <body class="bg-black text-white min-h-screen">
-    <!-- Sidebar -->
-    <aside class="fixed top-0 left-0 w-64 h-full bg-zinc-900 p-5 shadow-lg">
-      <!-- Logo -->
-      <div class="flex items-center justify-center mb-8">
-        <img src="/images/white-nobg-background.png" alt="UrbanTick Logo"
-          class="h-12">
-      </div>
-      <!-- Navigation Links -->
-      <nav class="space-y-6 text-sm">
-        <a href="/admin/dashboard"
-          class="flex items-center space-x-3 text-gray-400 hover:text-white">
-          <span class="material-icons">dashboard</span>
-          <span>Dashboard</span>
-        </a>
-        <a href="/admin/products"
-          class="flex items-center space-x-3 text-gray-400 hover:text-white">
-          <span class="material-icons">inventory_2</span>
-          <span>Products</span>
-        </a>
-        <a href="/admin/customers"
-          class="flex items-center space-x-3 text-gray-400 hover:text-white">
-          <span class="material-icons">people</span>
-          <span>Customers</span>
-        </a>
-        <a href="#"
-          class="flex items-center space-x-3 text-gray-400 hover:text-white">
-          <span class="material-icons">shopping_cart</span>
-          <span>Orders</span>
-        </a>
-        <a href="#"
-          class="flex items-center space-x-3 text-gray-400 hover:text-white">
-          <span class="material-icons">local_offer</span>
-          <span>Coupons</span>
-        </a>
-        <a href="/admin/category"
-          class="flex items-center space-x-3 text-gray-400 hover:text-white">
-          <span class="material-icons">category</span>
-          <span>Category</span>
-        </a>
-        <a href="#"
-          class="flex items-center space-x-3 text-gray-400 hover:text-white">
-          <span class="material-icons">star</span>
-          <span>Offers</span>
-        </a>
-        <a href="#"
-          class="flex items-center space-x-3 text-gray-400 hover:text-white">
-          <span class="material-icons">photo</span>
-          <span>Banner</span>
-        </a>
-        <a href="#"
-          class="flex items-center space-x-3 text-gray-400 hover:text-white">
-          <span class="material-icons">assessment</span>
-          <span>Sales Report</span>
-        </a>
-        <a href="#"
-          class="flex items-center space-x-3 text-gray-400 hover:text-white">
-          <form action="/admin/logout" method="post">
-            <button type="submit"
-              class="flex items-center space-x-2 px-4 py-2 bg-red-700 text-white font-semibold rounded-lg hover:bg-red-900 focus:outline-none focus:ring-2 focus:ring-red-400">
-              <span class="material-icons">logout</span>
-              <span>Logout</span>
-            </button>
-          </form>
-        </a>
-      </nav>
-    </aside>
+
+  <!-- Sidebar -->
+   <%- include("partials/sidebar")  %>
 
     <!--------------------------------Main Category----------------------------->
 
@@ -236,6 +173,7 @@
                       <div id="productPhotos" class="flex gap-2 mb-4">
                         <!-- Photos will be dynamically loaded here -->
                       </div>
+
                     </div>
                     <!-- Variants -->
                     <div id="variantsContainer" class=" mt-2 ">
@@ -274,6 +212,7 @@
       <script>
 
 
+
     async function openEditModal(productId) {
       const modal = document.getElementById("editModal");
       const form = document.getElementById("editProductForm");
@@ -309,88 +248,28 @@
           `;
 
 
-        //productPhotos.innerHTML = data.product.photos
-        //  .map(photo => `<img src="${photo}" class="w-16 h-16 object-cover rounded-md">`)
-        //  .join("");
+// Populate product photos
+          const productPhotos = document.getElementById('productPhotos');
+          productPhotos.innerHTML = data.product.photos
+            .map(photo => `<img src="${photo}" class="w-16 h-16 object-cover rounded-md">`)
+            .join("");
 
+          // Add Edit Photos button
+          productPhotos.innerHTML += `
+            <button
+              id="updatePhotosButton"
+              type="button"
+              class="bg-violet-700 text-white px-4 py-2 rounded-lg hover:bg-violet-500 mt-2"
+            >
+              Update Photos
+            </button>
+          `;
 
-// Function to render photos
-function renderPhotos(productId) {
-  const productPhotos = document.getElementById("productPhotos");
-  productPhotos.innerHTML = ""; // Clear previous images
-
-  data.product.photos.forEach((photo) => {
-    const photoDiv = document.createElement("div");
-    photoDiv.className = "relative w-16 h-16 inline-block";
-
-    const img = document.createElement("img");
-    img.src = photo;
-    img.className = "w-16 h-16 object-cover rounded-md";
-
-    const changeButton = document.createElement("button");
-    changeButton.className = "absolute top-0 right-0 bg-blue-500 text-white text-xs px-1 rounded";
-    changeButton.innerText = "Change";
-    
-    // Create an input element for image selection
-    const fileInput = document.createElement("input");
-    fileInput.type = "file";
-    fileInput.accept = "image/*";
-    fileInput.style.display = "none"; // Hide the file input
-
-    // Trigger the file input when the Change button is clicked
-    changeButton.addEventListener("click", () => {
-      fileInput.click(); // Trigger the file input dialog
-    });
-
-    // Handle file selection
-    fileInput.addEventListener("change", async (event) => {
-      const file = event.target.files[0];
-      if (file) {
-        try {
-          const formData = new FormData();
-          formData.append("image", file);
-
-          // Send the image to the server to upload
-          const response = await fetch(`products/${productId}/image`, {
-            method: "POST",
-            body: formData,
+          // Add event listener to the button
+          document.getElementById('updatePhotosButton').addEventListener('click', () => {
+            document.getElementById('editProductForm').action = `/admin/products/${productId}/image`;
+            document.getElementById('editProductForm').submit();
           });
-
-          const data = await response.json();
-          if (response.ok) {
-            console.log("Image updated successfully:", data.imageUrls);
-
-            // Update the product images with the new image URL
-            const photoIndex = data.product.photos.indexOf(photo);
-            if (photoIndex > -1) {
-              data.product.photos[photoIndex] = data.imageUrls[0]; // Replace the old image
-            }
-
-            // Re-render the images after update (without refreshing the page)
-            renderPhotos(productId);
-
-            // Optionally, show a success message for the user here
-            alert("Image updated successfully!");
-
-          } else {
-            console.error("Failed to update image:", data.error);
-          }
-        } catch (error) {
-          console.error("Error uploading image:", error);
-        }
-      }
-    });
-
-    photoDiv.appendChild(img);
-    photoDiv.appendChild(changeButton);
-    photoDiv.appendChild(fileInput); // Add the hidden file input to the photoDiv
-
-    productPhotos.appendChild(photoDiv);
-  });
-}
-
-// Initial rendering of images (this should be called when the page loads with the `productId`)
-renderPhotos(productId);
 
 
 

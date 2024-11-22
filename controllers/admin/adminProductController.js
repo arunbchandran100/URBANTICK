@@ -7,8 +7,6 @@ const cloudinary = require("cloudinary").v2;
 const multer = require("multer");
 const { CloudinaryStorage } = require("multer-storage-cloudinary");
 
-
-
 cloudinary.config({
   cloud_name: process.env.CLOUDINARY_CLOUD_NAME,
   api_key: process.env.CLOUDINARY_API_KEY,
@@ -56,7 +54,6 @@ exports.getProducts = [
   },
 ];
 
-
 exports.getAddProduct = async (req, res) => {
   try {
     const categories = await Category.find();
@@ -98,7 +95,6 @@ exports.postAddProduct = async (req, res) => {
     res.status(500).json({ error: "Error adding product" });
   }
 };
-
 
 //---------------GET Update Product----------------------
 exports.getProductDetails = async (req, res) => {
@@ -146,45 +142,102 @@ exports.getProductDetails = async (req, res) => {
   }
 };
 
-//---------------DELETE Product Image----------------------
-exports.deleteProductImage = async (req, res) => {
+//---------------GET Update Product Image----------------------
+exports.getEditProductImage = async (req, res) =>{
   try {
-    const productId = req.params.id; // Product ID from the request params
-    const { imageUrl } = req.body; // Image URL to be removed from the request body
+    const productId = req.params.id;
 
-    if (!imageUrl) {
-      return res.status(400).json({ error: "Image URL is required" });
-    }
-
-    // Find the product by ID
     const product = await Product.findById(productId);
-
     if (!product) {
+      console.log("Product not found");
       return res.status(404).json({ error: "Product not found" });
     }
 
-    // Ensure imageUrl is an array
-    if (!Array.isArray(product.imageUrl)) {
-      return res.status(400).json({ error: "Invalid product image data" });
-    }
 
-    // Filter out the specified image URL
-    const updatedImageUrls = product.imageUrl.filter((url) => url !== imageUrl);
-    // console.log(updatedImageUrls);
-
-    // Update the product in the database
-    product.imageUrl = updatedImageUrls;
-    await product.save();
-
-    res.status(200).json({
-      message: "Image removed successfully",
-      imageUrls: updatedImageUrls, // Returning the updated array
-    });
+    console.log(product);
+    res.render("admin/adminEditImage",product)
   } catch (error) {
-    console.error("Error removing product image:", error.message);
-    res.status(500).json({ error: "Failed to remove product image" });
+    console.error("Error fetching product details:", error);
+    res.status(500).json({ error: "Failed to fetch product details" });
   }
 };
+
+
+
+//---------------POST Update Product Image----------------------
+
+exports.postEditProductImage = async (req, res) => {
+  try {
+    console.log("Request Body:", req.body);
+    console.log("Request Files:", req.files);
+
+    const productId = req.params.id;
+    const { imageIndex } = req.body;
+
+    // Validate input with more detailed logging
+    if (!productId) {
+      console.error("Missing Product ID");
+      return res.status(400).json({ error: "Missing product ID" });
+    }
+
+    if (imageIndex === undefined) {
+      console.error("Missing Image Index");
+      return res.status(400).json({ error: "Missing image index" });
+    }
+
+    // Find the product
+    const product = await Product.findById(productId);
+    if (!product) {
+      console.error(`Product not found with ID: ${productId}`);
+      return res.status(404).json({ error: "Product not found" });
+    }
+
+    // Check uploaded image URLs
+    if (!req.body.imageUrls || req.body.imageUrls.length === 0) {
+      console.error("No image URLs provided");
+      return res.status(400).json({
+        error: "No new image uploaded",
+        details: {
+          bodyImageUrls: req.body.imageUrls,
+          filesExist: !!req.files,
+          fileCount: req.files ? req.files.length : 0,
+        },
+      });
+    }
+
+    const newImageUrl = req.body.imageUrls[0];
+    console.log("New Image URL:", newImageUrl);
+
+    // Update image URL logic remains the same
+    product.imageUrl[imageIndex] = newImageUrl;
+    const updatedProduct = await product.save();
+
+    res.status(200).json({
+      message: "Product image updated successfully",
+
+    });
+  } catch (error) {
+    console.error("Comprehensive Error in Image Update:", {
+      message: error.message,
+      stack: error.stack,
+    });
+
+    res.status(500).json({
+      error: "Failed to update product image",
+      details: error.message,
+    });
+  }
+};
+
+// Utility function to extract public ID from Cloudinary URL
+function extractPublicIdFromUrl(url) {
+  // Extract the public ID from a Cloudinary URL
+  // Assumes Cloudinary URL format: https://res.cloudinary.com/[cloud_name]/image/upload/v[version]/[folder]/[public_id].[format]
+  const matches = url.match(/\/v\d+\/([^/]+)\.[^/.]+$/);
+  return matches ? matches[1] : null;
+}
+
+
 
 
 
@@ -192,7 +245,7 @@ exports.deleteProductImage = async (req, res) => {
 exports.updateProductDetails = async (req, res) => {
   try {
     const { productName, brand, gender, variants, categoriesId, imageUrls } =
-      req.body;  
+      req.body;
 
     if (!productName || !brand || !gender || !categoriesId) {
       return res.status(400).json({ error: "Missing required fields" });
@@ -218,7 +271,7 @@ exports.updateProductDetails = async (req, res) => {
               price: variant.price,
               discountPrice: variant.discountPrice,
               discountPercentage: variant.discountPercentage,
-              rating: variant.rating
+              rating: variant.rating,
             },
             { new: true }
           );
@@ -240,7 +293,6 @@ exports.updateProductDetails = async (req, res) => {
   }
 };
 
-
 exports.deleteProduct = async (req, res) => {
   try {
     const deletedProduct = await Product.findByIdAndDelete(req.params.id);
@@ -257,8 +309,6 @@ exports.deleteProduct = async (req, res) => {
     res.status(500).send("Error deleting product and its variants");
   }
 };
-
-
 
 exports.getAddvariant = async (req, res) => {
   const { productId } = req.query;
@@ -277,7 +327,6 @@ exports.getAddvariant = async (req, res) => {
     res.status(500).send("Error rendering add variant form");
   }
 };
-
 
 exports.postAddvariant = async (req, res) => {
   try {
@@ -313,7 +362,7 @@ exports.postAddvariant = async (req, res) => {
     });
 
     await newVariant.save();
-    res.redirect("/admin/products")
+    res.redirect("/admin/products");
   } catch (err) {
     console.error("Error adding product variant:", err);
     res.status(500).json({ error: "Error adding product variant" });
