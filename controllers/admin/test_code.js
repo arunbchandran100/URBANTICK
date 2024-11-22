@@ -7,8 +7,6 @@ const cloudinary = require("cloudinary").v2;
 const multer = require("multer");
 const { CloudinaryStorage } = require("multer-storage-cloudinary");
 
-
-
 cloudinary.config({
   cloud_name: process.env.CLOUDINARY_CLOUD_NAME,
   api_key: process.env.CLOUDINARY_API_KEY,
@@ -57,6 +55,7 @@ exports.getProducts = [
 ];
 
 
+//---------------GET ADD Product----------------------
 exports.getAddProduct = async (req, res) => {
   try {
     const categories = await Category.find();
@@ -71,6 +70,7 @@ exports.getAddProduct = async (req, res) => {
   }
 };
 
+//---------------POST ADD Product----------------------
 exports.postAddProduct = async (req, res) => {
   try {
     const { productName, brand, gender, categoriesId, imageUrls } = req.body;
@@ -99,8 +99,7 @@ exports.postAddProduct = async (req, res) => {
   }
 };
 
-
-//---------------GET Update Product----------------------
+//---------------Update Product----------------------
 exports.getProductDetails = async (req, res) => {
   try {
     const productId = req.params.id;
@@ -146,53 +145,10 @@ exports.getProductDetails = async (req, res) => {
   }
 };
 
-//---------------DELETE Product Image----------------------
-exports.deleteProductImage = async (req, res) => {
-  try {
-    const productId = req.params.id; // Product ID from the request params
-    const { imageUrl } = req.body; // Image URL to be removed from the request body
-
-    if (!imageUrl) {
-      return res.status(400).json({ error: "Image URL is required" });
-    }
-
-    // Find the product by ID
-    const product = await Product.findById(productId);
-
-    if (!product) {
-      return res.status(404).json({ error: "Product not found" });
-    }
-
-    // Ensure imageUrl is an array
-    if (!Array.isArray(product.imageUrl)) {
-      return res.status(400).json({ error: "Invalid product image data" });
-    }
-
-    // Filter out the specified image URL
-    const updatedImageUrls = product.imageUrl.filter((url) => url !== imageUrl);
-    // console.log(updatedImageUrls);
-
-    // Update the product in the database
-    product.imageUrl = updatedImageUrls;
-    await product.save();
-
-    res.status(200).json({
-      message: "Image removed successfully",
-      imageUrls: updatedImageUrls, // Returning the updated array
-    });
-  } catch (error) {
-    console.error("Error removing product image:", error.message);
-    res.status(500).json({ error: "Failed to remove product image" });
-  }
-};
-
-
-
 //---------------POST Update Product----------------------
 exports.updateProductDetails = async (req, res) => {
   try {
-    const { productName, brand, gender, variants, categoriesId, imageUrls } =
-      req.body;  
+    const { productName, brand, gender, variants, categoriesId } = req.body; // Extract categoriesId from the body
 
     if (!productName || !brand || !gender || !categoriesId) {
       return res.status(400).json({ error: "Missing required fields" });
@@ -200,7 +156,7 @@ exports.updateProductDetails = async (req, res) => {
 
     const updatedProduct = await Product.findByIdAndUpdate(
       req.params.id,
-      { productName, brand, gender, categoriesId, imageUrls },
+      { productName, brand, gender, categoriesId },
       { new: true }
     );
 
@@ -218,7 +174,7 @@ exports.updateProductDetails = async (req, res) => {
               price: variant.price,
               discountPrice: variant.discountPrice,
               discountPercentage: variant.discountPercentage,
-              rating: variant.rating
+              rating: variant.rating,
             },
             { new: true }
           );
@@ -240,7 +196,6 @@ exports.updateProductDetails = async (req, res) => {
   }
 };
 
-
 exports.deleteProduct = async (req, res) => {
   try {
     const deletedProduct = await Product.findByIdAndDelete(req.params.id);
@@ -257,8 +212,6 @@ exports.deleteProduct = async (req, res) => {
     res.status(500).send("Error deleting product and its variants");
   }
 };
-
-
 
 exports.getAddvariant = async (req, res) => {
   const { productId } = req.query;
@@ -277,7 +230,6 @@ exports.getAddvariant = async (req, res) => {
     res.status(500).send("Error rendering add variant form");
   }
 };
-
 
 exports.postAddvariant = async (req, res) => {
   try {
@@ -313,7 +265,7 @@ exports.postAddvariant = async (req, res) => {
     });
 
     await newVariant.save();
-    res.redirect("/admin/products")
+    res.redirect("/admin/products");
   } catch (err) {
     console.error("Error adding product variant:", err);
     res.status(500).json({ error: "Error adding product variant" });

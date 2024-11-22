@@ -3,10 +3,10 @@ const router = express.Router();
 const adminController = require("../controllers/adminController");
 const uploadMiddleware = require("../middleware/uploadMiddleware");
 
-// router.use((req, res, next) => {
-//     req.session.admin = true;
-//     next();
-// });
+router.use((req, res, next) => {
+    req.session.admin = true;
+    next();
+});
 
 // Admin login page
 router.get("/login", adminController.getLogin);
@@ -35,8 +35,12 @@ router.get("/products", adminProduct.getProducts);
 router.get("/products/add", adminProduct.getAddProduct);
 router.post("/products/add", uploadMiddleware, adminProduct.postAddProduct);
 
+// Admin edit products
 router.get("/products/:id/details", adminProduct.getProductDetails);
 router.post("/products/update/:id", adminProduct.updateProductDetails);
+
+router.post("/products/:id/image", adminProduct.deleteProductImage);
+
 
 router.post("/products/delete/:id", adminProduct.deleteProduct);
 

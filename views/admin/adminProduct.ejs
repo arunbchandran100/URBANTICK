@@ -304,13 +304,97 @@
                   </option>
                 `)
             .join("")}
+            
             </select>
           `;
 
 
-        productPhotos.innerHTML = data.product.photos
-          .map(photo => `<img src="${photo}" class="w-16 h-16 object-cover rounded-md">`)
-          .join("");
+        //productPhotos.innerHTML = data.product.photos
+        //  .map(photo => `<img src="${photo}" class="w-16 h-16 object-cover rounded-md">`)
+        //  .join("");
+
+
+// Function to render photos
+function renderPhotos(productId) {
+  const productPhotos = document.getElementById("productPhotos");
+  productPhotos.innerHTML = ""; // Clear previous images
+
+  data.product.photos.forEach((photo) => {
+    const photoDiv = document.createElement("div");
+    photoDiv.className = "relative w-16 h-16 inline-block";
+
+    const img = document.createElement("img");
+    img.src = photo;
+    img.className = "w-16 h-16 object-cover rounded-md";
+
+    const changeButton = document.createElement("button");
+    changeButton.className = "absolute top-0 right-0 bg-blue-500 text-white text-xs px-1 rounded";
+    changeButton.innerText = "Change";
+    
+    // Create an input element for image selection
+    const fileInput = document.createElement("input");
+    fileInput.type = "file";
+    fileInput.accept = "image/*";
+    fileInput.style.display = "none"; // Hide the file input
+
+    // Trigger the file input when the Change button is clicked
+    changeButton.addEventListener("click", () => {
+      fileInput.click(); // Trigger the file input dialog
+    });
+
+    // Handle file selection
+    fileInput.addEventListener("change", async (event) => {
+      const file = event.target.files[0];
+      if (file) {
+        try {
+          const formData = new FormData();
+          formData.append("image", file);
+
+          // Send the image to the server to upload
+          const response = await fetch(`products/${productId}/image`, {
+            method: "POST",
+            body: formData,
+          });
+
+          const data = await response.json();
+          if (response.ok) {
+            console.log("Image updated successfully:", data.imageUrls);
+
+            // Update the product images with the new image URL
+            const photoIndex = data.product.photos.indexOf(photo);
+            if (photoIndex > -1) {
+              data.product.photos[photoIndex] = data.imageUrls[0]; // Replace the old image
+            }
+
+            // Re-render the images after update (without refreshing the page)
+            renderPhotos(productId);
+
+            // Optionally, show a success message for the user here
+            alert("Image updated successfully!");
+
+          } else {
+            console.error("Failed to update image:", data.error);
+          }
+        } catch (error) {
+          console.error("Error uploading image:", error);
+        }
+      }
+    });
+
+    photoDiv.appendChild(img);
+    photoDiv.appendChild(changeButton);
+    photoDiv.appendChild(fileInput); // Add the hidden file input to the photoDiv
+
+    productPhotos.appendChild(photoDiv);
+  });
+}
+
+// Initial rendering of images (this should be called when the page loads with the `productId`)
+renderPhotos(productId);
+
+
+
+
 
         variantsContainer.innerHTML = data.variants
           .map(variant => `
