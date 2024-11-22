@@ -8,57 +8,75 @@
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/cropperjs/1.5.13/cropper.min.css" />
     <script src="https://cdnjs.cloudflare.com/ajax/libs/cropperjs/1.5.13/cropper.min.js"></script>
+    <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
+
 </head>
-<body class="bg-gray-100 min-h-screen p-6">
+
+<body class="bg-black text-white min-h-screen">
+
+  <!-- Sidebar -->
+   <%- include("partials/sidebar")  %>
+
+
+  <!-- Main Content -->
+  <main class="ml-64 p-8">
     <div class="container mx-auto max-w-4xl">
         <div class="bg-white shadow-md rounded-lg p-6">
             <h1 class="text-2xl font-bold mb-6 text-gray-800">
                 Edit Product Images - <%= productName %>
             </h1>
             
-<div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
-    <% 
-        const maxImages = 4; // Define the maximum number of images allowed
-        const currentCount = imageUrl.length;
-        const missingFields = maxImages - currentCount; // Calculate how many slots are missing
-    %>
+            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+                <% 
+                    const maxImages = 4; // Define the maximum number of images allowed
+                    const currentCount = imageUrl.length;
+                    const missingFields = maxImages - currentCount; // Calculate how many slots are missing
+                %>
 
-    <% imageUrl.forEach((url, index) => { %>
-        <!-- Existing image display -->
-        <div class="bg-gray-50 border rounded-lg p-4 flex flex-col items-center space-y-4 shadow-sm">
-            <img 
-                src="<%= url %>" 
-                alt="Product Image <%= index + 1 %>" 
-                class="w-full h-48 object-cover rounded-md mb-4"
-            >
-            <form class="w-full flex flex-col items-center">
-                <input 
-                    type="file" 
-                    accept="image/*" 
-                    class="file-input mb-4 border border-gray-300 rounded-md p-2 w-full"
-                    onchange="handleImageSelect(event, <%= index %>)"
-                >
-            </form>
-        </div>
-    <% }); %>
+                <% imageUrl.forEach((url, index) => { %>
+                    <!-- Existing image display -->
+                    <div class="bg-gray-50 border rounded-lg p-4 flex flex-col items-center space-y-4 shadow-sm">
+                        <img 
+                            src="<%= url %>" 
+                            alt="Product Image <%= index + 1 %>" 
+                            class="w-full h-48 object-cover rounded-md mb-4"
+                        >
+                        <form class="w-full flex flex-col items-center">
+                            <div class="flex items-center justify-center mb-4">
+                            <!-- Custom file input button -->
+                            <label for="fileInput<%= index %>" class="bg-blue-600 hover:bg-blue-700 text-white px-6 py-3 rounded-md cursor-pointer shadow-md">
+                                Choose Image
+                            </label>
+                            
+                            <input 
+                                id="fileInput<%= index %>" 
+                                type="file" 
+                                accept="image/*" 
+                                class="hidden"
+                                onchange="handleImageSelect(event, <%= index %>)"
+                            >
+                            </div>
+                        </form>
+                    </div>
+                <% }); %>
 
-    <% for (let i = 0; i < missingFields; i++) { %>
-        <!-- Empty slot for new image -->
-        <div class="bg-gray-50 border rounded-lg p-4 flex flex-col items-center space-y-4 shadow-sm">
-            <div class="w-full h-48 bg-gray-200 flex items-center justify-center rounded-md mb-4">
-                <span class="text-gray-500">Empty Slot</span>
+                <% for (let i = 0; i < missingFields; i++) { %>
+                    <!-- Empty slot for new image -->
+                    <div class="bg-gray-50 border rounded-lg p-4 flex flex-col items-center space-y-4 shadow-sm">
+                        <div class="w-full h-48 bg-gray-200 flex items-center justify-center rounded-md mb-4">
+                            <span class="text-gray-500">Empty Slot</span>
+                        </div>
+                        <form class="w-full flex flex-col items-center">
+                            <input 
+                                type="file" 
+                                accept="image/*" 
+                                class="file-input mb-4 border border-gray-300 rounded-md p-2 w-full"
+                                onchange="handleImageSelect(event, <%= currentCount + i %>)"
+                            >
+                        </form>
+                    </div>
+                <% } %>
             </div>
-            <form class="w-full flex flex-col items-center">
-                <input 
-                    type="file" 
-                    accept="image/*" 
-                    class="file-input mb-4 border border-gray-300 rounded-md p-2 w-full"
-                    onchange="handleImageSelect(event, <%= currentCount + i %>)"
-                >
-            </form>
-        </div>
-    <% } %>
-</div>
 
         
         
@@ -70,9 +88,7 @@
                 <span class="text-gray-400">Uploading images...</span>
             </div>
             </div>
-
         </div>
-
     </div>
 
 
@@ -104,7 +120,7 @@
     </div>
 
     <div id="imagePreview" class="grid grid-cols-1 gap-4 mt-6"></div>
-
+</main>
 
 
 <script>
@@ -232,7 +248,7 @@
                     });
                 }
 
-                     else {
+                    else {
                         // Show error notification
                         Swal.fire({
                             icon: 'error',
