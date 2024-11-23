@@ -1,4 +1,4 @@
-const userAuthenticated = require("../middleware/adminauthmildware");
+const adminAuthenticated = require("../middleware/adminauthmildware");
 const User = require("../models/userModel");  
 
 
@@ -46,7 +46,7 @@ exports.logout = (req, res) => {
 
 ///////////////////Dashboard-------------------
 exports.getDashboard = [
-  userAuthenticated,
+  adminAuthenticated,
   (req, res) => {
     res.setHeader(
         "Cache-Control",
@@ -60,7 +60,7 @@ exports.getDashboard = [
 ///////////////////Dashboard Customers-------------------
 
 exports.getCustomers = [
-  userAuthenticated,
+  adminAuthenticated,
   async (req, res) => {
     try {
       const page = parseInt(req.query.page) || 1; 
@@ -111,6 +111,7 @@ exports.blockCustomer = [
 
 
 exports.updateStatus = [
+  adminAuthenticated,
   async (req, res) => {
     try {
       const customerId = req.params.id;
@@ -131,7 +132,7 @@ exports.updateStatus = [
 const Category = require("../models/categoryModel");
 
 exports.getCategories = [
-  userAuthenticated,
+  adminAuthenticated,
   async (req, res) => {
     try {
       const page = parseInt(req.query.page) || 1;
@@ -156,7 +157,9 @@ exports.getCategories = [
 
 
 
-exports.addCategory = async (req, res) => {
+exports.addCategory = [
+  adminAuthenticated,
+    async (req, res) => {
   try {
     const categoryName = req.body.categoriesName.trim().toLowerCase();
 
@@ -183,7 +186,8 @@ exports.addCategory = async (req, res) => {
   } catch (err) {
     res.status(500).send("Error adding category");
   }
-};
+}
+];
 
 
 exports.updateCategory = async (req, res) => {

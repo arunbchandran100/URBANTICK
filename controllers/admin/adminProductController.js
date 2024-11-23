@@ -1,4 +1,4 @@
-// const userAuthenticated = require("../middleware/adminauthmildware");
+const adminAuthenticated = require("../../middleware/adminauthmildware");
 require("dotenv").config();
 const Product = require("../../models/productSchema");
 const Variant = require("../../models/variantSchema");
@@ -25,7 +25,7 @@ const storage = new CloudinaryStorage({
 const upload = multer({ storage: storage });
 
 exports.getProducts = [
-  //   userAuthenticated,
+    adminAuthenticated,
   async (req, res) => {
     try {
       const page = parseInt(req.query.page) || 1;
@@ -54,19 +54,23 @@ exports.getProducts = [
   },
 ];
 
-exports.getAddProduct = async (req, res) => {
-  try {
-    const categories = await Category.find();
-    res.render("admin/adminAddProduct", {
-      pageTitle: "Add Product",
-      path: "/admin/products/add",
-      categories: categories,
-    });
-  } catch (err) {
-    console.error("Error fetching categories:", err);
-    res.status(500).send("Error fetching categories");
+exports.getAddProduct = [
+  adminAuthenticated,
+  async (req, res) => 
+  {
+    try {
+      const categories = await Category.find();
+      res.render("admin/adminAddProduct", {
+        pageTitle: "Add Product",
+        path: "/admin/products/add",
+        categories: categories,
+      });
+    } catch (err) {
+      console.error("Error fetching categories:", err);
+      res.status(500).send("Error fetching categories");
+    }
   }
-};
+]
 
 exports.postAddProduct = async (req, res) => {
   try {
@@ -97,7 +101,9 @@ exports.postAddProduct = async (req, res) => {
 };
 
 //---------------GET Update Product----------------------
-exports.getProductDetails = async (req, res) => {
+exports.getProductDetails = [
+  adminAuthenticated,
+  async (req, res) => {
   try {
     const productId = req.params.id;
 
@@ -140,10 +146,13 @@ exports.getProductDetails = async (req, res) => {
     console.error("Error fetching product details:", error);
     res.status(500).json({ error: "Failed to fetch product details" });
   }
-};
+},
+];
 
 //---------------GET Update Product Image----------------------
-exports.getEditProductImage = async (req, res) =>{
+exports.getEditProductImage = [
+  adminAuthenticated,
+  async (req, res) =>{
   try {
     const productId = req.params.id;
 
@@ -160,7 +169,8 @@ exports.getEditProductImage = async (req, res) =>{
     console.error("Error fetching product details:", error);
     res.status(500).json({ error: "Failed to fetch product details" });
   }
-};
+},
+]
 
 
 
