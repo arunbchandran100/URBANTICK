@@ -1,0 +1,63 @@
+      <!-- Sidebar -->
+      <div class="w-1/6 space-y-6 bg-stone-100 p-4 shadow-md">
+        <h2 class="text-xl font-bold mb-4">My Account</h2>
+        <ul class="space-y-8">
+          <li>
+            <a
+              href="/user/profile"
+              class="flex space-x-3 items-center text-gray-700 hover:text-blue-500"
+            >
+              <span class="material-icons mr-2">person</span> Personal Information
+            </a>
+          </li>
+          <li>
+            <a
+              href="#"
+              class="flex items-center text-gray-700 hover:text-blue-500"
+            >
+              <span class="material-icons mr-2">location_on</span> Address
+            </a>
+          </li>
+          <li>
+            <a
+              href="#"
+              class="flex items-center text-gray-700 hover:text-blue-500"
+            >
+              <span class="material-icons mr-2">shopping_cart</span> Order
+            </a>
+          </li>
+          <li>
+            <a
+              href="#"
+              class="flex items-center text-gray-700 hover:text-blue-500"
+            >
+              <span class="material-icons mr-2">account_balance_wallet</span> Wallet
+            </a>
+          </li>
+          <li>
+            <a
+              href="#"
+              class="flex items-center text-gray-700 hover:text-blue-500"
+            >
+              <span class="material-icons mr-2">card_giftcard</span> Coupon
+            </a>
+          </li>
+          <li>
+            <a
+              href="#"
+              class="flex items-center text-gray-700 hover:text-blue-500"
+            >
+              <span class="material-icons mr-2">lock</span> Password Change
+            </a>
+          </li>
+        </ul>
+        <!-- Logout Button -->
+        <form action="/user/logout" method="POST" class="mt-4">
+          <button
+            type="submit"
+            class="flex items-center px-4 py-2 bg-red-500 text-white rounded hover:bg-red-600"
+          >
+            <span class="material-icons mr-2">logout</span> Logout
+          </button>
+        </form>
+      </div>

@@ -136,49 +136,6 @@ exports.resendOTP = async (req, res) => {
 };
 
 
-// -------------User Profile Page--------------------
-
-exports.getProfilePage = async (req, res) => {
-  try {
-    // Ensure the user is authenticated
-    if (!req.session.user) {
-      return res.redirect("/user/login"); // Redirect to login if not logged in
-    }
-
-    // Fetch user details using the session's userId
-    const user = await User.findById(req.session.user._id).select(
-      "fullName email status"
-    );
-
-    if (!user) {
-      return res.status(404).send("User not found");
-    }
-
-    // Render the profile page with the user details
-    res.render("user/profile", { user });
-  } catch (err) {
-    console.error("Error fetching profile page:", err);
-    res.status(500).send("Server Error");
-  }
-};
-
-
-exports.logoutPOST = (req, res) => {
-  try {
-    req.session.destroy((err) => {
-      if (err) {
-        console.error("Error during logout:", err);
-        return res.status(500).send("Failed to logout. Please try again.");
-      }
-      res.redirect("/home");
-    });
-  } catch (error) {
-    console.error("Error in logoutPOST:", error);
-    res.status(500).send("Server error during logout.");
-  }
-};
-
-
 //////////////////////////////////////////////////////////////////////////////////////////
 
 

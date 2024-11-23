@@ -64,7 +64,7 @@ passport.use(
       try {
         let user = await User.findOne({ email: profile.emails[0].value });
 
-        console.log("google user details " +user)
+        // console.log("google user details " +user)
         if (user) {
           if (user.status === "blocked") {
             return done(null, false, {
