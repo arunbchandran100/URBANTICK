@@ -59,8 +59,8 @@ exports.shopAll = async (req, res) => {
     }
 };
 
-//-------------------- Filtering---------
 
+//-------------------- Filtering---------
 exports.filterProducts = async (req, res) => {
     try {
         // console.log(222222);
@@ -112,8 +112,8 @@ exports.filterProducts = async (req, res) => {
         }
 
 
-        // console.log(2222);
-        // console.log(sort);
+        console.log(2222);
+        console.log(sort);
         // Determine sorting order
         let sortCriteria = {};
         if (sort === "priceLowToHigh") {
@@ -128,41 +128,41 @@ exports.filterProducts = async (req, res) => {
 
 
         const products = await Product.aggregate([
-            {
-                $lookup: {
-                    from: "variants",
-                    localField: "_id",
-                    foreignField: "productId",
-                    as: "variants",
-                },
+          {
+            $lookup: {
+              from: "variants",
+              localField: "_id",
+              foreignField: "productId",
+              as: "variants",
             },
-            {
-                $unwind: {
-                    path: "$variants",
-                    preserveNullAndEmptyArrays: true,
-                },
+          },
+          {
+            $unwind: {
+              path: "$variants",
+              preserveNullAndEmptyArrays: true,
             },
-            {
-                $match: matchCriteria,
+          },
+          {
+            $match: matchCriteria,
+          },
+          ...(Object.keys(sortCriteria).length > 0
+            ? [{ $sort: sortCriteria }]
+            : []),
+          {
+            $project: {
+              _id: 1,
+              brand: 1,
+              productName: 1,
+              imageUrl: 1,
+              "variants.color": 1,
+              "variants.rating": 1,
+              "variants.price": 1,
+              "variants.discountPrice": 1,
+              "variants.discountPercentage": 1,
+              "variants.stock": 1,
+              categoriesId: 1,
             },
-            {
-                $sort: sortCriteria, // Apply sorting
-            },
-            {
-                $project: {
-                    _id: 1,
-                    brand: 1,
-                    productName: 1,
-                    imageUrl: 1,
-                    "variants.color": 1,
-                    "variants.rating": 1,
-                    "variants.price": 1,
-                    "variants.discountPrice": 1,
-                    "variants.discountPercentage": 1,
-                    "variants.stock": 1,
-                    categoriesId: 1,
-                },
-            },
+          },
         ]);
 
         const formattedProducts = products.map((product) => ({
