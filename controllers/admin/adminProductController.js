@@ -139,6 +139,7 @@ exports.getProductDetails = [
         rating: variant.rating,
         discountPrice: variant.discountPrice,
         discountPercentage: variant.discountPercentage,
+        quantity: variant.quantity,
       })),
       categories,
     });
@@ -255,8 +256,15 @@ function extractPublicIdFromUrl(url) {
 //---------------POST Update Product----------------------
 exports.updateProductDetails = async (req, res) => {
   try {
-    const { productName, brand, gender, variants, categoriesId, imageUrls } =
-      req.body;
+    const {
+      productName,
+      brand,
+      gender,
+      variants,
+      categoriesId,
+      imageUrls,
+      quantity,
+    } = req.body;
 
     if (!productName || !brand || !gender || !categoriesId) {
       return res.status(400).json({ error: "Missing required fields" });
@@ -283,6 +291,7 @@ exports.updateProductDetails = async (req, res) => {
               discountPrice: variant.discountPrice,
               discountPercentage: variant.discountPercentage,
               rating: variant.rating,
+              quantity: variant.quantity,
             },
             { new: true }
           );
@@ -348,6 +357,7 @@ exports.postAddvariant = async (req, res) => {
       discountPrice,
       discountPercentage,
       rating,
+      quantity,
     } = req.body;
 
     // console.log(
@@ -370,6 +380,7 @@ exports.postAddvariant = async (req, res) => {
       discountPrice,
       discountPercentage,
       rating,
+      quantity,
     });
 
     await newVariant.save();
