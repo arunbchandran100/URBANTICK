@@ -1,4 +1,5 @@
 const Product = require("../../models/productSchema");
+const Category = require("../../models/categoryModel");
 const Variant = require("../../models/variantSchema");
 const mongoose = require("mongoose"); // Import mongoose
 
@@ -57,12 +58,12 @@ exports.shopAll = async (req, res) => {
 };
 
 //-------------------- Filtering---------
+
 exports.filterProducts = async (req, res) => {
     try {
-        const { gender, brand, color, minPrice, maxPrice } = req.query;
+        const { gender, brand, color, minPrice, maxPrice, category } = req.query;
         const matchCriteria = {};
 
-        // Add price range criteria
         if (minPrice || maxPrice) {
             matchCriteria["variants.discountPrice"] = {};
             if (minPrice) {
@@ -73,24 +74,25 @@ exports.filterProducts = async (req, res) => {
             }
         }
 
-        // Add gender criteria
         if (gender) {
-            matchCriteria.gender = gender; // Assuming `gender` is a field in your product model
+            matchCriteria.gender = gender; 
         }
 
-        // Add brand criteria
         if (brand) {
-            matchCriteria.brand = brand; // Assuming `brand` is a field in your product model
+            matchCriteria.brand = brand;
         }
 
-        // Add color criteria
         if (color) {
             matchCriteria["variants.color"] = color;
         }
 
+        if (category) {
+            matchCriteria.categoriesId = new mongoose.Types.ObjectId(category);
+        }
+
         console.log("Match criteria:", matchCriteria);
 
-        // Aggregate query to fetch filtered products
+
         const products = await Product.aggregate([
             {
                 $lookup: {
@@ -120,6 +122,7 @@ exports.filterProducts = async (req, res) => {
                     "variants.price": 1,
                     "variants.discountPrice": 1,
                     "variants.discountPercentage": 1,
+                    categoriesId: 1,  
                 },
             },
         ]);
@@ -136,6 +139,7 @@ exports.filterProducts = async (req, res) => {
             rating: product.variants?.rating || null,
             discountPrice: product.variants?.discountPrice || null,
             discountPercentage: product.variants?.discountPercentage || null,
+            categoryId: product.categoriesId,  
         }));
 
         console.log("Filtered products:", formattedProducts);
@@ -146,9 +150,11 @@ exports.filterProducts = async (req, res) => {
     }
 };
 
+
+
 exports.getFilterOptions = async (req, res) => {
     try {
-        const brands = await Product.distinct("brand"); // Assuming `brand` exists in the product model
+        const brands = await Product.distinct("brand");
         const colors = await Product.aggregate([
             {
                 $lookup: {
@@ -175,7 +181,14 @@ exports.getFilterOptions = async (req, res) => {
             },
         ]);
 
-        res.status(200).json({ brands, colors: colors[0]?.uniqueColors || [] });
+        const categories = await Category.find({}, { _id: 1, categoriesName: 1 });
+
+        // console.log(categories);
+        res.status(200).json({
+            brands,
+            colors: colors[0]?.uniqueColors || [],
+            categories, // Send all available categories
+        });
     } catch (error) {
         console.error("Error fetching filter options:", error);
         res.status(500).json({ error: "Failed to fetch filter options" });
