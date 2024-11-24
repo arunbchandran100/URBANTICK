@@ -52,7 +52,7 @@ router.get("/user/address/:userId", userProfileController.getUserAddresses);
 // router.put("/user/address/:id", userProfileController.updateAddress);
 
 // Delete an address
-// router.delete("/user/address/:id", userProfileController.deleteAddress);
+router.delete("/user/address/:id", userProfileController.deleteAddress);
 
 module.exports = router;
 

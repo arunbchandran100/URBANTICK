@@ -3,10 +3,7 @@ require("dotenv").config();
 const Product = require("../../models/productSchema");
 const Variant = require("../../models/variantSchema");
 const Category = require("../../models/categoryModel");
-const User = require("../../models/userModel"); 
-
-
-
+const User = require("../../models/userModel");
 
 // -------------GET User Profile Page--------------------
 exports.getPersonalInformation = async (req, res) => {
@@ -32,8 +29,6 @@ exports.getPersonalInformation = async (req, res) => {
   }
 };
 
-
-
 // -------------POST User Profile Page--------------------
 exports.updatePersonalInformation = async (req, res) => {
   try {
@@ -41,7 +36,6 @@ exports.updatePersonalInformation = async (req, res) => {
       return res.status(401).json({ error: "Unauthorized access" });
     }
     const { fullName, mobile } = req.body;
-
 
     const user = await User.findByIdAndUpdate(
       req.session.user._id,
@@ -59,8 +53,6 @@ exports.updatePersonalInformation = async (req, res) => {
     res.status(500).json({ error: "Server Error" });
   }
 };
-
-
 
 // -------------User Logout--------------------
 exports.logoutPOST = (req, res) => {
@@ -113,14 +105,10 @@ exports.getUserAddresses = async (req, res) => {
   }
 };
 
-
-
-
-
 // Add new address
 exports.addAddress = async (req, res) => {
   try {
-    console.log(22222);
+    // console.log(22222);
     // Get userId from session
     const userId = req.session.user._id;
 
@@ -188,4 +176,20 @@ exports.addAddress = async (req, res) => {
   }
 };
 
+// -----------Delete address-------------------------
+exports.deleteAddress = async (req, res) => {
+  try {
+    const { id } = req.params;
+    const result = await Address.findByIdAndDelete(id);
 
+    // console.log("the result is " + result);
+    if (result) {
+      res.status(200).json({ message: "Address deleted successfully" });
+    } else {
+      res.status(404).json({ message: "Address not found" });
+    }
+  } catch (err) {
+    console.error("Error deleting address:", err);
+    res.status(500).json({ error: "Server error." });
+  }
+};
