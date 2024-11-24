@@ -52,9 +52,12 @@ exports.shopAll = async (req, res) => {
   }
 };
 
+
+//--------------------Price Filtering---------
 exports.filterProductsByPrice = async (req, res) => {
   try {
-    const maxPrice = parseInt(req.query.maxPrice, 10);
+    const minPrice = parseInt(req.query.minPrice, 10) || 0; // Default to 0 if not provided
+    const maxPrice = parseInt(req.query.maxPrice, 10) || Infinity; // Default to no upper limit if not provided
 
     // Aggregate to join products and variants, then filter by maxPrice
     const products = await Product.aggregate([
@@ -74,7 +77,7 @@ exports.filterProductsByPrice = async (req, res) => {
       },
       {
         $match: {
-          "variants.discountPrice": { $lte: maxPrice }, // Filter by discountPrice
+          "variants.discountPrice": { $gte: minPrice, $lte: maxPrice }, // Filter by price range
         },
       },
       {
@@ -103,7 +106,7 @@ exports.filterProductsByPrice = async (req, res) => {
     }));
     console.log(formattedProducts);
     // Send the filtered products as JSON
-    res.status(200).json({ products: formattedProducts  });
+    res.status(200).json({ products: formattedProducts });
   } catch (error) {
     console.error("Error filtering products:", error);
     res.status(500).json({ error: "Failed to filter products" });
