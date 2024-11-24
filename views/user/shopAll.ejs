@@ -154,6 +154,8 @@
     const brandSelect = document.getElementById("brand");
     const colorSelect = document.getElementById("color");
     const categorySelect = document.getElementById("category");
+    const stockFilter = document.getElementById("stockFilter");
+
 
     const filterButton = document.getElementById("applyFilter");
 
@@ -197,15 +199,22 @@
       const gender = document.getElementById("gender").value;
       const brand = brandSelect.value;
       const color = colorSelect.value;
+      
       const minPrice = document.getElementById("minPrice").value;
       const maxPrice = document.getElementById("maxPrice").value;
       const category = categorySelect.value;
+          const stockFilter = document.getElementById("stockFilter");
 
-      //console.log(2222);
-      //console.log(minPrice);
+      const stockStatus = stockFilter.value;
+      const productGrid = document.querySelector(".grid");
+
+
+
+      console.log(2222);
+      console.log(stockFilter);
       try {
         const response = await fetch(
-          `/products/filter?gender=${gender}&brand=${brand}&color=${color}&category=${category}&minPrice=${minPrice}&maxPrice=${maxPrice}`
+          `/products/filter?gender=${gender}&brand=${brand}&color=${color}&category=${category}&minPrice=${minPrice}&maxPrice=${maxPrice}&stockStatus=${stockStatus}`
         );
         const data = await response.json();
 
@@ -240,6 +249,9 @@
                   `
                 : `<div class="text-xl font-bold text-gray-900">Price Not Available</div>`
               }
+              <div class="text-sm ${product.stock > 0 ? "text-green-600" : "text-red-600"}">
+                ${product.stock > 0 ? "In Stock" : "Out of Stock"}
+              </div>
               <div class="flex justify-between items-center mt-4">
                 <a href="#" class="hover:text-slate-500"><i class="fa-regular fa-heart"></i></a>
               </div>

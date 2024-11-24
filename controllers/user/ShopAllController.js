@@ -6,47 +6,49 @@ const mongoose = require("mongoose"); // Import mongoose
 exports.shopAll = async (req, res) => {
     try {
         const products = await Product.aggregate([
-            {
-                $lookup: {
-                    from: "variants",
-                    localField: "_id",
-                    foreignField: "productId",
-                    as: "variants",
-                },
+          {
+            $lookup: {
+              from: "variants",
+              localField: "_id",
+              foreignField: "productId",
+              as: "variants",
             },
-            {
-                $unwind: {
-                    path: "$variants",
-                    preserveNullAndEmptyArrays: true,
-                },
+          },
+          {
+            $unwind: {
+              path: "$variants",
+              preserveNullAndEmptyArrays: true,
             },
-            {
-                $project: {
-                    _id: 1,
-                    brand: 1,
-                    productName: 1,
-                    imageUrl: 1,
-                    "variants.color": 1,
-                    "variants.price": 1,
-                    "variants.rating": 1,
-                    "variants.discountPrice": 1,
-                    "variants.discountPercentage": 1,
-                },
+          },
+          {
+            $project: {
+              _id: 1,
+              brand: 1,
+              productName: 1,
+              imageUrl: 1,
+              "variants.color": 1,
+              "variants.price": 1,
+              "variants.rating": 1,
+              "variants.discountPrice": 1,
+              "variants.discountPercentage": 1,
+              "variants.stock": 1,
             },
+          },
         ]);
 
         const formattedProducts = products.map((product) => ({
-            _id: product._id,
-            brand: product.brand,
-            productName: product.productName,
-            imageUrl:
-                Array.isArray(product.imageUrl) && product.imageUrl.length > 0
-                    ? product.imageUrl[0]
-                    : "/images/default-product.jpg",
-            price: product.variants?.price || null,
-            rating: product.variants?.rating || null,
-            discountPrice: product.variants?.discountPrice || null,
-            discountPercentage: product.variants?.discountPercentage || null,
+          _id: product._id,
+          brand: product.brand,
+          productName: product.productName,
+          imageUrl:
+            Array.isArray(product.imageUrl) && product.imageUrl.length > 0
+              ? product.imageUrl[0]
+              : "/images/default-product.jpg",
+          price: product.variants?.price || null,
+          rating: product.variants?.rating || null,
+          discountPrice: product.variants?.discountPrice || null,
+          discountPercentage: product.variants?.discountPercentage || null,
+          stock: product.variants.stock,
         }));
 
         // console.log(formattedProducts);
@@ -61,6 +63,7 @@ exports.shopAll = async (req, res) => {
 
 exports.filterProducts = async (req, res) => {
     try {
+        console.log(222222);
       const {
         gender,
         brand,
@@ -99,12 +102,18 @@ exports.filterProducts = async (req, res) => {
       }
 
       // Filter by stock status
-      if (stockStatus === "inStock") {
-        filters.push({ "variants.stock": { $gt: 0 } }); // Only products with stock > 0
-      } else if (stockStatus === "outOfStock") {
-        filters.push({ "variants.stock": { $lte: 0 } }); // Only products with stock <= 0
-      }
-      console.log("Match criteria:", matchCriteria);
+// Filter by stock status
+if (stockStatus) {
+  matchCriteria["variants.stock"] = {};
+  if (stockStatus === "inStock") {
+    matchCriteria["variants.stock"].$gt = 0;
+  } else if (stockStatus === "outOfStock") {
+    matchCriteria["variants.stock"].$lte = 0;
+  }
+}
+
+    
+    //   console.log("Match criteria:", stockStatus);
 
       const products = await Product.aggregate([
         {
@@ -154,6 +163,7 @@ exports.filterProducts = async (req, res) => {
         discountPrice: product.variants?.discountPrice || null,
         discountPercentage: product.variants?.discountPercentage || null,
         categoryId: product.categoriesId,
+        stock: product.variants.stock,
       }));
 
       console.log("Filtered products:", formattedProducts);
@@ -252,6 +262,7 @@ exports.searchProducts = async (req, res) => {
           "variants.discountPrice": 1,
           "variants.discountPercentage": 1,
           categoriesId: 1,
+          "variants.stock": 1,
         },
       },
     ]);
@@ -271,6 +282,7 @@ exports.searchProducts = async (req, res) => {
       discountPrice: product.variants?.discountPrice || null,
       discountPercentage: product.variants?.discountPercentage || null,
       categoryId: product.categoriesId,
+      stock: product.variants.stock,
     }));
 
     console.log("Searched products:", formattedProducts);
