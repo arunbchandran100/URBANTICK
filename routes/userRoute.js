@@ -32,11 +32,29 @@ router.get("/home", User.home);
 router.get("/shopall", User.shopAll);
 router.get("/product/:id", User.viewProduct);
 
+
 //User Dashboard 
 //--------------------User Personal info Dashboard --------------------
 router.get("/user/profile", userProfileController.getPersonalInformation);
 router.post("/user/profile", userProfileController.updatePersonalInformation);
 
+
+//--------------------User Address info Dashboard --------------------
+// Add a new address
+router.post("/user/address/add", userProfileController.addAddress);
+
+// Get all addresses for a user
+router.get("/user/address/:userId", userProfileController.getUserAddresses);
+
+
+
+// // Update an address
+// router.put("/user/address/:id", userProfileController.updateAddress);
+
+// Delete an address
+// router.delete("/user/address/:id", userProfileController.deleteAddress);
+
+module.exports = router;
 
 
 

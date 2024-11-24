@@ -4,59 +4,20 @@ const addressSchema = new mongoose.Schema(
   {
     userId: {
       type: mongoose.Schema.Types.ObjectId,
-      ref: "User", // Reference to the User collection
+      ref: "Users", // Reference to the User model
       required: true,
     },
-    name: {
-      type: String,
-      required: true,
-      trim: true,
-    },
-    houseName: {
-      type: String,
-      required: true,
-      trim: true,
-    },
-    localityStreet: {
-      type: String,
-      required: true,
-      trim: true,
-    },
-    townCity: {
-      type: String,
-      required: true,
-      trim: true,
-    },
-    mobileNumber: {
-      type: Number,
-      required: true,
-      validate: {
-        validator: (v) => /^[0-9]{10}$/.test(v),
-        message: "Mobile number must be 10 digits.",
-      },
-    },
-    state: {
-      type: String,
-      required: true,
-      trim: true,
-    },
-    country: {
-      type: String,
-      required: true,
-      trim: true,
-    },
-    pincode: {
-      type: Number,
-      required: true,
-      validate: {
-        validator: (v) => /^[0-9]{6}$/.test(v),
-        message: "Pincode must be 6 digits.",
-      },
-    },
+    Name: { type: String, required: true },
+    HouseName: { type: String, required: true },
+    LocalityStreet: { type: String, required: true },
+    TownCity: { type: String, required: true },
+    MobileNumber: { type: Number, required: true },
+    state: { type: String, required: true },
+    country: { type: String, required: true },
+    pincode: { type: Number, required: true },
   },
   { timestamps: true }
-); // Automatically adds createdAt and updatedAt fields
+);
 
 const Address = mongoose.model("Address", addressSchema);
-
 module.exports = Address;

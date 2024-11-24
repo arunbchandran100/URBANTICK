@@ -1,0 +1,316 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>My Account</title>
+    <!-- Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://cdn.jsdelivr.net/npm/axios/dist/axios.min.js"></script>
+
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+
+    <!-- Material Icons -->
+    <link
+      href="https://fonts.googleapis.com/icon?family=Material+Icons"
+      rel="stylesheet"
+    />
+    <link rel="stylesheet" href="style.css" />
+    <link
+      rel="stylesheet"
+      href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.6.0/css/all.min.css"
+      integrity="sha512-Kc323vGBEqzTmouAECnVceyQqyqdsSiqLQISBL29aUW4U/M7pSPA/gEUZQqv1cwx4OnYxTxve5UMg5GT6L4JJg=="
+      crossorigin="anonymous"
+      referrerpolicy="no-referrer"
+    />
+  </head>
+  <body class="bg-gray-50">
+    <div class="w-3/4 bg-white p-6 shadow-md">
+      <h2 class="text-xl font-bold mb-6">Your Addresses</h2>
+
+      <!-- Add Address Form (Initially hidden) -->
+      <div id="addAddressForm" class="mt-8 hidden">
+        <h3 class="text-lg font-bold mb-4">Add New Address</h3>
+        <form id="addAddressFormContent" class="space-y-4">
+          <!-- Hidden input for userId -->
+          <input type="hidden" id="userId" value="<%= locals.user?._id %>" />
+
+          <div>
+            <label for="Name" class="block text-gray-700"
+              >Full Name <span class="text-red-500">*</span></label
+            >
+            <input
+              type="text"
+              id="Name"
+              name="Name"
+              class="w-full px-4 py-2 border border-gray-300 rounded-full focus:outline-none focus:ring-2 focus:ring-blue-500"
+              placeholder="Enter your full name"
+              required
+              minlength="3"
+              maxlength="50"
+            />
+            <span id="nameError" class="text-red-500 text-sm hidden"
+              >Please enter a valid name (3-50 characters)</span
+            >
+          </div>
+
+          <div>
+            <label for="HouseName" class="block text-gray-700"
+              >House Name/Number <span class="text-red-500">*</span></label
+            >
+            <input
+              type="text"
+              id="HouseName"
+              name="HouseName"
+              class="w-full px-4 py-2 border border-gray-300 rounded-full focus:outline-none focus:ring-2 focus:ring-blue-500"
+              placeholder="Enter house name or number"
+              required
+              minlength="1"
+              maxlength="100"
+            />
+            <span id="houseError" class="text-red-500 text-sm hidden"
+              >Please enter a valid house name/number</span
+            >
+          </div>
+
+          <div>
+            <label for="LocalityStreet" class="block text-gray-700"
+              >Street/Locality <span class="text-red-500">*</span></label
+            >
+            <input
+              type="text"
+              id="LocalityStreet"
+              name="LocalityStreet"
+              class="w-full px-4 py-2 border border-gray-300 rounded-full focus:outline-none focus:ring-2 focus:ring-blue-500"
+              placeholder="Enter street name or locality"
+              required
+              minlength="3"
+              maxlength="100"
+            />
+            <span id="streetError" class="text-red-500 text-sm hidden"
+              >Please enter a valid street/locality</span
+            >
+          </div>
+
+          <div>
+            <label for="TownCity" class="block text-gray-700"
+              >Town/City <span class="text-red-500">*</span></label
+            >
+            <input
+              type="text"
+              id="TownCity"
+              name="TownCity"
+              class="w-full px-4 py-2 border border-gray-300 rounded-full focus:outline-none focus:ring-2 focus:ring-blue-500"
+              placeholder="Enter town or city"
+              required
+              minlength="2"
+              maxlength="50"
+            />
+            <span id="cityError" class="text-red-500 text-sm hidden"
+              >Please enter a valid town/city</span
+            >
+          </div>
+
+          <div>
+            <label for="MobileNumber" class="block text-gray-700"
+              >Mobile Number <span class="text-red-500">*</span></label
+            >
+            <input
+              type="tel"
+              id="MobileNumber"
+              name="MobileNumber"
+              class="w-full px-4 py-2 border border-gray-300 rounded-full focus:outline-none focus:ring-2 focus:ring-blue-500"
+              placeholder="Enter 10-digit mobile number"
+              required
+              pattern="[0-9]{10}"
+            />
+            <span id="mobileError" class="text-red-500 text-sm hidden"
+              >Please enter a valid 10-digit mobile number</span
+            >
+          </div>
+
+          <div>
+            <label for="state" class="block text-gray-700"
+              >State <span class="text-red-500">*</span></label
+            >
+            <input
+              type="text"
+              id="state"
+              name="state"
+              class="w-full px-4 py-2 border border-gray-300 rounded-full focus:outline-none focus:ring-2 focus:ring-blue-500"
+              placeholder="Enter state"
+              required
+              minlength="2"
+              maxlength="50"
+            />
+            <span id="stateError" class="text-red-500 text-sm hidden"
+              >Please enter a valid state</span
+            >
+          </div>
+
+          <div>
+            <label for="country" class="block text-gray-700"
+              >Country <span class="text-red-500">*</span></label
+            >
+            <input
+              type="text"
+              id="country"
+              name="country"
+              class="w-full px-4 py-2 border border-gray-300 rounded-full focus:outline-none focus:ring-2 focus:ring-blue-500"
+              placeholder="Enter country"
+              required
+              minlength="2"
+              maxlength="50"
+            />
+            <span id="countryError" class="text-red-500 text-sm hidden"
+              >Please enter a valid country</span
+            >
+          </div>
+
+          <div>
+            <label for="pincode" class="block text-gray-700"
+              >Pincode <span class="text-red-500">*</span></label
+            >
+            <input
+              type="text"
+              id="pincode"
+              name="pincode"
+              class="w-full px-4 py-2 border border-gray-300 rounded-full focus:outline-none focus:ring-2 focus:ring-blue-500"
+              placeholder="Enter 6-digit pincode"
+              required
+              pattern="[0-9]{6}"
+            />
+            <span id="pincodeError" class="text-red-500 text-sm hidden"
+              >Please enter a valid 6-digit pincode</span
+            >
+          </div>
+
+          <div>
+            <button
+              type="submit"
+              class="w-full px-4 py-2 bg-black text-white rounded-full hover:bg-gray-800"
+            >
+              Save Address
+            </button>
+          </div>
+        </form>
+      </div>
+
+      <% if (addresses && addresses.length > 0) { %> <%
+      addresses.forEach(address => { %>
+      <div class="bg-white p-4 rounded-lg shadow-sm border border-gray-200">
+        <p><strong>Name:</strong> <%= address.Name %></p>
+        <p><strong>House:</strong> <%= address.HouseName %></p>
+        <p><strong>Street/Locality:</strong> <%= address.LocalityStreet %></p>
+        <p><strong>Town/City:</strong> <%= address.TownCity %></p>
+        <p><strong>State:</strong> <%= address.state %></p>
+        <p><strong>Country:</strong> <%= address.country %></p>
+        <p><strong>Pincode:</strong> <%= address.pincode %></p>
+        <p><strong>Mobile:</strong> <%= address.MobileNumber %></p>
+
+        <div class="mt-2 space-x-2">
+          <a
+            href="/user/address/edit/<%= address._id %>"
+            class="text-blue-500 hover:underline"
+            >Edit</a
+          >
+          <a
+            href="/user/address/delete/<%= address._id %>"
+            class="text-red-500 hover:underline"
+            >Delete</a
+          >
+        </div>
+      </div>
+      <% }); %> <% } else { %>
+      <div class="bg-gray-100 p-4 rounded-lg">
+        <p>
+          No addresses found.
+          <a href="#addAddressForm" class="text-blue-500">Add New Address</a>
+        </p>
+      </div>
+      <% } %>
+
+      <p class="mt-4">
+        <a
+          href="#"
+          id="showAddAddressForm"
+          class="bg-violet-700 text-white px-4 py-2 rounded-lg hover:bg-violet-500"
+          >Add New Address</a
+        >
+      </p>
+    </div>
+
+    <script>
+      document.addEventListener("DOMContentLoaded", () => {
+        const showAddAddressForm =
+          document.getElementById("showAddAddressForm");
+        const addAddressForm = document.getElementById("addAddressForm");
+
+        if (showAddAddressForm) {
+          showAddAddressForm.addEventListener("click", (e) => {
+            e.preventDefault();
+            addAddressForm.classList.remove("hidden"); // Show the form
+          });
+        }
+      });
+
+      // Form validation and submission handling
+      document
+        .getElementById("addAddressFormContent")
+        .addEventListener("submit", async function (e) {
+          e.preventDefault();
+
+          // Reset all error messages
+          document
+            .querySelectorAll(".text-red-500")
+            .forEach((el) => el.classList.add("hidden"));
+
+          // Validate all fields
+          let isValid = true;
+
+          // Prepare form data
+          const formData = {
+            userId: document.getElementById("userId").value,
+            Name: document.getElementById("Name").value.trim(),
+            HouseName: document.getElementById("HouseName").value.trim(),
+            LocalityStreet: document
+              .getElementById("LocalityStreet")
+              .value.trim(),
+            TownCity: document.getElementById("TownCity").value.trim(),
+            MobileNumber: document.getElementById("MobileNumber").value.trim(),
+            state: document.getElementById("state").value.trim(),
+            country: document.getElementById("country").value.trim(),
+            pincode: document.getElementById("pincode").value.trim(),
+          };
+
+          try {
+            const response = await axios.post("/user/address/add", formData);
+
+            if (response.status === 201) {
+              Swal.fire({
+                title: "Success!",
+                text: "Address added successfully",
+                icon: "success",
+                confirmButtonText: "OK",
+              }).then(async (result) => {
+                // Hide the form
+                document
+                  .getElementById("addAddressFormContent")
+                  .classList.add("hidden");
+
+                window.location.reload();
+              });
+            }
+          } catch (error) {
+            console.error("Error adding address:", error);
+            Swal.fire({
+              title: "Error",
+              text: "Failed to add address. Please try again later.",
+              icon: "error",
+              confirmButtonText: "OK",
+            });
+          }
+        });
+    </script>
+  </body>
+</html>
