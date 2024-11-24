@@ -11,7 +11,7 @@ const variantSchema = new mongoose.Schema({
   discountPrice: { type: Number, required: true },
   discountPercentage: { type: Number, required: true },
   rating: { type: Number, required: true },
-  quantity:{ type: Number, required: true },
+  stock: { type: Number, required: true },
 });
 
 const Variant = mongoose.model("Variant", variantSchema);

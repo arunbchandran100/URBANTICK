@@ -139,7 +139,7 @@ exports.getProductDetails = [
         rating: variant.rating,
         discountPrice: variant.discountPrice,
         discountPercentage: variant.discountPercentage,
-        quantity: variant.quantity,
+        stock: variant.stock,
       })),
       categories,
     });
@@ -263,7 +263,7 @@ exports.updateProductDetails = async (req, res) => {
       variants,
       categoriesId,
       imageUrls,
-      quantity,
+      stock,
     } = req.body;
 
     if (!productName || !brand || !gender || !categoriesId) {
@@ -291,7 +291,7 @@ exports.updateProductDetails = async (req, res) => {
               discountPrice: variant.discountPrice,
               discountPercentage: variant.discountPercentage,
               rating: variant.rating,
-              quantity: variant.quantity,
+              stock: variant.stock,
             },
             { new: true }
           );
@@ -357,7 +357,7 @@ exports.postAddvariant = async (req, res) => {
       discountPrice,
       discountPercentage,
       rating,
-      quantity,
+      stock,
     } = req.body;
 
     // console.log(
@@ -380,7 +380,7 @@ exports.postAddvariant = async (req, res) => {
       discountPrice,
       discountPercentage,
       rating,
-      quantity,
+      stock,
     });
 
     await newVariant.save();
