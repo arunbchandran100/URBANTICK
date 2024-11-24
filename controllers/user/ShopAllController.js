@@ -56,32 +56,58 @@ exports.shopAll = async (req, res) => {
     }
 };
 
-//--------------------Price Filtering---------
-exports.filterProductsByPrice = async (req, res) => {
+//-------------------- Filtering---------
+exports.filterProducts = async (req, res) => {
     try {
-        const minPrice = parseInt(req.query.minPrice, 10) || 0;
-        const maxPrice = parseInt(req.query.maxPrice, 10) || Infinity;
+        const { gender, brand, color, minPrice, maxPrice } = req.query;
+        const matchCriteria = {};
 
-        // Aggregate to join products and variants, then filter by maxPrice
+        // Add price range criteria
+        if (minPrice || maxPrice) {
+            matchCriteria["variants.discountPrice"] = {};
+            if (minPrice) {
+                matchCriteria["variants.discountPrice"].$gte = parseFloat(minPrice);
+            }
+            if (maxPrice) {
+                matchCriteria["variants.discountPrice"].$lte = parseFloat(maxPrice);
+            }
+        }
+
+        // Add gender criteria
+        if (gender) {
+            matchCriteria.gender = gender; // Assuming `gender` is a field in your product model
+        }
+
+        // Add brand criteria
+        if (brand) {
+            matchCriteria.brand = brand; // Assuming `brand` is a field in your product model
+        }
+
+        // Add color criteria
+        if (color) {
+            matchCriteria["variants.color"] = color;
+        }
+
+        console.log("Match criteria:", matchCriteria);
+
+        // Aggregate query to fetch filtered products
         const products = await Product.aggregate([
             {
                 $lookup: {
-                    from: "variants", // Name of the variants collection
-                    localField: "_id", // Field in the products collection
-                    foreignField: "productId", // Field in the variants collection
-                    as: "variants", // Name of the joined array
+                    from: "variants",
+                    localField: "_id",
+                    foreignField: "productId",
+                    as: "variants",
                 },
             },
             {
                 $unwind: {
-                    path: "$variants", // Unwind the variants array
-                    preserveNullAndEmptyArrays: true, // Keep products even if they have no variants
+                    path: "$variants",
+                    preserveNullAndEmptyArrays: true,
                 },
             },
             {
-                $match: {
-                    "variants.discountPrice": { $gte: minPrice, $lte: maxPrice }, // Filter by price range
-                },
+                $match: matchCriteria,
             },
             {
                 $project: {
@@ -111,11 +137,47 @@ exports.filterProductsByPrice = async (req, res) => {
             discountPrice: product.variants?.discountPrice || null,
             discountPercentage: product.variants?.discountPercentage || null,
         }));
-        console.log(formattedProducts);
-        // Send the filtered products as JSON
+
+        console.log("Filtered products:", formattedProducts);
         res.status(200).json({ products: formattedProducts });
     } catch (error) {
         console.error("Error filtering products:", error);
         res.status(500).json({ error: "Failed to filter products" });
+    }
+};
+
+exports.getFilterOptions = async (req, res) => {
+    try {
+        const brands = await Product.distinct("brand"); // Assuming `brand` exists in the product model
+        const colors = await Product.aggregate([
+            {
+                $lookup: {
+                    from: "variants",
+                    localField: "_id",
+                    foreignField: "productId",
+                    as: "variants",
+                },
+            },
+            {
+                $unwind: "$variants",
+            },
+            {
+                $group: {
+                    _id: null,
+                    uniqueColors: { $addToSet: "$variants.color" },
+                },
+            },
+            {
+                $project: {
+                    _id: 0,
+                    uniqueColors: 1,
+                },
+            },
+        ]);
+
+        res.status(200).json({ brands, colors: colors[0]?.uniqueColors || [] });
+    } catch (error) {
+        console.error("Error fetching filter options:", error);
+        res.status(500).json({ error: "Failed to fetch filter options" });
     }
 };

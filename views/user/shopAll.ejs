@@ -25,17 +25,45 @@
         </h2>
 
         <!-- Filter Section -->
-        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div class="flex items-center space-x-4 mb-8">
+        <div class="filter-container p-4 bg-gray-100 rounded-lg">
+          <!-- Gender Filter -->
+          <label for="gender" class="block mb-2 font-semibold">Gender</label>
+          <select id="gender" class="border border-gray-300 rounded-lg px-4 py-2 w-full mb-4">
+            <option value="">All</option>
+            <option value="male">Male</option>
+            <option value="female">Female</option>
+            <option value="unisex">Unisex</option>
+          </select>
+
+          <!-- Brand Filter -->
+          <label for="brand" class="block mb-2 font-semibold">Brand</label>
+          <select id="brand" class="border border-gray-300 rounded-lg px-4 py-2 w-full mb-4">
+            <option value="">All</option>
+            <!-- Brands will be dynamically populated -->
+          </select>
+
+          <!-- Color Filter -->
+          <label for="color" class="block mb-2 font-semibold">Color</label>
+          <select id="color" class="border border-gray-300 rounded-lg px-4 py-2 w-full mb-4">
+            <option value="">All</option>
+            <!-- Colors will be dynamically populated -->
+          </select>
+
+          <!-- Price Range -->
+          <label for="color" class="block mb-2 font-semibold">Price</label>
+          <div class="flex items-center space-x-4 mb-4">
             <input type="number" id="minPrice" class="border border-gray-300 rounded-lg px-4 py-2 w-32"
-              placeholder="Min Price" min="0" />
+              placeholder="Min Price" />
             <input type="number" id="maxPrice" class="border border-gray-300 rounded-lg px-4 py-2 w-32"
-              placeholder="Max Price" min="0" />
-            <button id="filterButton" class="px-4 py-2 bg-blue-600 text-white rounded-lg">
-              Filter
-            </button>
+              placeholder="Max Price" />
           </div>
+
+          <!-- Filter Button -->
+          <button id="applyFilter" class="px-4 py-2 bg-blue-600 text-white rounded-lg">
+            Apply Filters
+          </button>
         </div>
+
 
         <!-- Product Grid -->
         <div id="productGrid" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
@@ -73,7 +101,6 @@
                       ₹<%= product.price %>
                     </div>
               </div>
-
               <% } else { %>
                 <div class="text-xl font-bold text-gray-900">
                   Price Not Available
@@ -93,47 +120,74 @@
 </body>
 
 <script>
-  document
-    .getElementById("filterButton")
-    .addEventListener("click", async () => {
+  document.addEventListener("DOMContentLoaded", async () => {
+    const brandSelect = document.getElementById("brand");
+    const colorSelect = document.getElementById("color");
+    const filterButton = document.getElementById("applyFilter");
+
+
+
+    // Fetch brands and colors to populate dropdowns
+    try {
+      const response = await fetch("/products/filter-options");
+      const data = await response.json();
+
+      if (data.brands) {
+        data.brands.forEach(brand => {
+          brandSelect.insertAdjacentHTML("beforeend", `<option value="${brand}">${brand}</option>`);
+        });
+      }
+
+      if (data.colors) {
+        data.colors.forEach(color => {
+          colorSelect.insertAdjacentHTML("beforeend", `<option value="${color}">${color}</option>`);
+        });
+      }
+    } catch (error) {
+      console.error("Error fetching filter options:", error);
+    }
+
+    // Handle filter button click
+    filterButton.addEventListener("click", async () => {
+      const gender = document.getElementById("gender").value;
+      const brand = brandSelect.value;
+      const color = colorSelect.value;
       const minPrice = document.getElementById("minPrice").value;
       const maxPrice = document.getElementById("maxPrice").value;
 
-      // Make an Ajax request to filter products
-      fetch(`/products/filter?minPrice=${minPrice}&maxPrice=${maxPrice}`, {
-        method: "GET",
-      })
-        .then((response) => response.json())
-        .then((data) => {
-          const productGrid = document.getElementById("productGrid");
-          productGrid.innerHTML = ""; // Clear existing products
+      //console.log(2222);
+      //console.log(minPrice);
+      try {
+        const response = await fetch(
+          `/products/filter?gender=${gender}&brand=${brand}&color=${color}&minPrice=${minPrice}&maxPrice=${maxPrice}`
+        );
+        const data = await response.json();
 
-          // Dynamically add filtered products
+        if (data.products) {
+          const productGrid = document.querySelector(".grid");
+          productGrid.innerHTML = ""; // Clear current products
+
+          // Render filtered products
           data.products.forEach((product) => {
             const productCard = `
             <div class="bg-white rounded-lg shadow-md p-4 flex flex-col">
               <a href="/product/${product._id}">
-                <img class="w-full h-auto rounded-lg mb-4" src="${product.imageUrl
-              }" alt="${product.productName}" />
+                <img class="w-full h-auto rounded-lg mb-4" src="${product.imageUrl}" alt="${product.productName}" />
               </a>
 
-              <h3 class="text-lg font-semibold text-gray-800"><span class="font-bold " >${product.brand
-              } </span> <span class="text-gray-800">${product.productName}
-              </h3>
-                            <!-- Rating -->
+              <h3 class="text-lg font-semibold text-gray-800"><span class="font-bold">${product.brand}</span> <span class="text-gray-800">${product.productName}</span></h3>
               <div class="text-yellow-500 flex items-center">
                 <i class="fa fa-star"></i>
                 <span></span>
                 <p class="mr-2 text-gray-800 font-medium">
-                   ${" "+product.rating}
-              </p>
-            </div>
+                   ${" " + product.rating}
+                </p>
+              </div>
               ${product.price && product.discountPrice
                 ? `
                   <div class="flex gap-2">
                     <div class="text-xl font-bold text-gray-900">₹${product.discountPrice}</div>
                     <div class="text-gray-500 line-through mt-1">₹${product.price}</div>
-                    
                   </div>
                   `
                 : `<div class="text-xl font-bold text-gray-900">Price Not Available</div>`
@@ -144,9 +198,12 @@
             </div>`;
             productGrid.innerHTML += productCard;
           });
-        })
-        .catch((error) => console.error("Error fetching products:", error));
+        }
+      } catch (error) {
+        console.error("Error filtering products:", error);
+      }
     });
+  });
 </script>
 
 </html>
