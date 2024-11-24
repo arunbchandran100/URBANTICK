@@ -49,7 +49,12 @@ router.get("/user/address/:userId", userProfileController.getUserAddresses);
 
 
 // // Update an address
-// router.put("/user/address/:id", userProfileController.updateAddress);
+// router.put("/user/address/edit/:id", userProfileController.updateAddress);
+router.get("/user/address/edit/:id", userProfileController.getEditAddress);
+router.post("/user/address/edit/:id", userProfileController.updateAddress);
+
+
+
 
 // Delete an address
 router.delete("/user/address/:id", userProfileController.deleteAddress);

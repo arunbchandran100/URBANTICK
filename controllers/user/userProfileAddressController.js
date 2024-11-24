@@ -4,6 +4,10 @@ const Product = require("../../models/productSchema");
 const Variant = require("../../models/variantSchema");
 const Category = require("../../models/categoryModel");
 const User = require("../../models/userModel");
+const mongoose = require("mongoose"); // Import mongoose
+const Address = require("../../models/addressModel");
+
+
 
 // -------------GET User Profile Page--------------------
 exports.getPersonalInformation = async (req, res) => {
@@ -28,6 +32,7 @@ exports.getPersonalInformation = async (req, res) => {
     res.status(500).send("Server Error");
   }
 };
+
 
 // -------------POST User Profile Page--------------------
 exports.updatePersonalInformation = async (req, res) => {
@@ -54,6 +59,7 @@ exports.updatePersonalInformation = async (req, res) => {
   }
 };
 
+
 // -------------User Logout--------------------
 exports.logoutPOST = (req, res) => {
   try {
@@ -70,13 +76,9 @@ exports.logoutPOST = (req, res) => {
   }
 };
 
-const mongoose = require("mongoose"); // Import mongoose
 
-const Address = require("../../models/addressModel");
 
-// Add a new address
-// Address Controller
-
+// -----------GET User Addresses-------------------------
 exports.getUserAddresses = async (req, res) => {
   try {
     // Get userId from session
@@ -105,14 +107,12 @@ exports.getUserAddresses = async (req, res) => {
   }
 };
 
-// Add new address
+// -----------Add New Address-------------------------
 exports.addAddress = async (req, res) => {
   try {
     // console.log(22222);
-    // Get userId from session
     const userId = req.session.user._id;
 
-    // Validate required fields
     const requiredFields = [
       "Name",
       "HouseName",
@@ -132,21 +132,18 @@ exports.addAddress = async (req, res) => {
       }
     }
 
-    // Validate mobile number (10 digits)
     if (!/^\d{10}$/.test(req.body.MobileNumber)) {
       return res.status(400).json({
         error: "Mobile number must be 10 digits",
       });
     }
 
-    // Validate pincode (6 digits)
     if (!/^\d{6}$/.test(req.body.pincode)) {
       return res.status(400).json({
         error: "Pincode must be 6 digits",
       });
     }
 
-    // Create new address
     const address = new Address({
       userId,
       Name: req.body.Name,
@@ -159,10 +156,8 @@ exports.addAddress = async (req, res) => {
       pincode: Number(req.body.pincode),
     });
 
-    // Save address to database
     await address.save();
 
-    // Send success response
     res.status(201).json({
       message: "Address added successfully",
       address,
@@ -175,6 +170,7 @@ exports.addAddress = async (req, res) => {
     });
   }
 };
+
 
 // -----------Delete address-------------------------
 exports.deleteAddress = async (req, res) => {
@@ -192,4 +188,47 @@ exports.deleteAddress = async (req, res) => {
     console.error("Error deleting address:", err);
     res.status(500).json({ error: "Server error." });
   }
+};
+
+
+
+// Fetch a single address by ID
+exports.getEditAddress = async (req, res) => {
+    try {
+        const { id } = req.params; // Extract address ID from the route
+        const address = await Address.findById(id);
+
+        if (!address) {
+            return res.status(404).json({ error: 'Address not found' });
+        }
+
+        res.status(200).json(address); // Return address as JSON for the modal
+    } catch (err) {
+        console.error('Error fetching address:', err);
+        res.status(500).json({ error: 'Failed to fetch address' });
+    }
+};
+
+
+// Update the address
+exports.updateAddress = async (req, res) => {
+    try {
+        const { id } = req.params; // Extract address ID from the route
+        const updatedData = req.body; // Data from the modal form
+
+        const updatedAddress = await Address.findByIdAndUpdate(
+            id,
+            updatedData,
+            { new: true } // Return the updated document
+        );
+
+        if (!updatedAddress) {
+            return res.status(404).json({ error: 'Address not found' });
+        }
+
+        res.status(200).json({ message: 'Address updated successfully', address: updatedAddress });
+    } catch (err) {
+        console.error('Error updating address:', err);
+        res.status(500).json({ error: 'Failed to update address' });
+    }
 };
