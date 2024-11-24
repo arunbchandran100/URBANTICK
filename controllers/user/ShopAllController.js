@@ -59,7 +59,6 @@ exports.shopAll = async (req, res) => {
     }
 };
 
-
 //-------------------- Filtering---------
 exports.filterProducts = async (req, res) => {
     try {
@@ -111,7 +110,6 @@ exports.filterProducts = async (req, res) => {
             }
         }
 
-
         console.log(2222);
         console.log(sort);
         // Determine sorting order
@@ -126,43 +124,42 @@ exports.filterProducts = async (req, res) => {
             sortCriteria = { createdAt: -1 };
         }
 
-
         const products = await Product.aggregate([
-          {
-            $lookup: {
-              from: "variants",
-              localField: "_id",
-              foreignField: "productId",
-              as: "variants",
+            {
+                $lookup: {
+                    from: "variants",
+                    localField: "_id",
+                    foreignField: "productId",
+                    as: "variants",
+                },
             },
-          },
-          {
-            $unwind: {
-              path: "$variants",
-              preserveNullAndEmptyArrays: true,
+            {
+                $unwind: {
+                    path: "$variants",
+                    preserveNullAndEmptyArrays: true,
+                },
             },
-          },
-          {
-            $match: matchCriteria,
-          },
-          ...(Object.keys(sortCriteria).length > 0
-            ? [{ $sort: sortCriteria }]
-            : []),
-          {
-            $project: {
-              _id: 1,
-              brand: 1,
-              productName: 1,
-              imageUrl: 1,
-              "variants.color": 1,
-              "variants.rating": 1,
-              "variants.price": 1,
-              "variants.discountPrice": 1,
-              "variants.discountPercentage": 1,
-              "variants.stock": 1,
-              categoriesId: 1,
+            {
+                $match: matchCriteria,
             },
-          },
+            ...(Object.keys(sortCriteria).length > 0
+                ? [{ $sort: sortCriteria }]
+                : []),
+            {
+                $project: {
+                    _id: 1,
+                    brand: 1,
+                    productName: 1,
+                    imageUrl: 1,
+                    "variants.color": 1,
+                    "variants.rating": 1,
+                    "variants.price": 1,
+                    "variants.discountPrice": 1,
+                    "variants.discountPercentage": 1,
+                    "variants.stock": 1,
+                    categoriesId: 1,
+                },
+            },
         ]);
 
         const formattedProducts = products.map((product) => ({
@@ -188,8 +185,6 @@ exports.filterProducts = async (req, res) => {
         res.status(500).json({ error: "Failed to filter products" });
     }
 };
-
-
 
 exports.getFilterOptions = async (req, res) => {
     try {
@@ -233,7 +228,6 @@ exports.getFilterOptions = async (req, res) => {
         res.status(500).json({ error: "Failed to fetch filter options" });
     }
 };
-
 
 exports.searchProducts = async (req, res) => {
     try {
@@ -282,7 +276,6 @@ exports.searchProducts = async (req, res) => {
             },
         ]);
 
-
         const formattedProducts = products.map((product) => ({
             _id: product._id,
             brand: product.brand,
@@ -302,7 +295,6 @@ exports.searchProducts = async (req, res) => {
 
         console.log("Searched products:", formattedProducts);
         res.status(200).json({ products: formattedProducts });
-
     } catch (error) {
         console.error("Error searching products:", error);
         res.status(500).json({ error: "Failed to search products" });
