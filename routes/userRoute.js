@@ -35,6 +35,7 @@ router.get("/home", User.home);
 
 //--------------------SHOP ALL Page --------------------
 router.get("/shopall", ShopAllController.shopAll);
+router.get("/products/filter", ShopAllController.filterProductsByPrice);
 
 
 

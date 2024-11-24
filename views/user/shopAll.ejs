@@ -26,13 +26,35 @@
         <h2 class="text-3xl font-bold text-gray-900 mb-8 text-center">
           Shop All
         </h2>
+
+        <!-- Filter Section -->
+        <div class="mb-8">
+          <label
+            for="priceRange"
+            class="block text-sm font-medium text-gray-700 mb-2"
+            >Filter by Price:</label
+          >
+          <input
+            type="range"
+            id="priceRange"
+            min="0"
+            max="10000"
+            step="500"
+            value="10000"
+            class="w-full"
+          />
+          <div class="text-right text-gray-600" id="priceValue">
+            Max Price: ₹20000
+          </div>
+        </div>
+
+        <!-- Product Grid -->
         <div
+          id="productGrid"
           class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6"
         >
-          <!-- Loop through the products array -->
+          <!-- Dynamic product rendering here -->
           <% products.forEach(product => { %>
-          <!-- Wrap each product card inside an <a> tag -->
-
           <div class="bg-white rounded-lg shadow-md p-4 flex flex-col">
             <a href="/product/<%= product._id %>">
               <img
@@ -45,23 +67,27 @@
               <%= product.productName %>
             </h3>
             <% if (product.price && product.discountPrice) { %>
-            <div class="text-gray-500 line-through">₹<%= product.price %></div>
-            <div class="text-xl font-bold text-gray-900">
-              ₹<%= product.discountPrice %>
+            <div class="flex gap-2">
+              <div class="text-xl font-bold text-gray-900">
+                ₹<%= product.discountPrice %>
+              </div>
+
+              <div class="text-gray-500 line-through mt-1">
+                ₹<%= product.price %>
+              </div>
             </div>
+
             <% } else { %>
             <div class="text-xl font-bold text-gray-900">
               Price Not Available
             </div>
             <% } %>
             <div class="flex justify-between items-center mt-4">
-              <div></div>
               <a href="#" class="hover:text-slate-500"
                 ><i class="fa-regular fa-heart"></i
               ></a>
             </div>
           </div>
-
           <% }) %>
         </div>
       </div>
@@ -70,4 +96,57 @@
     <!------------- Footer ------------>
     <%- include("partials/footer") %>
   </body>
+
+  <script>
+    document
+      .getElementById("priceRange")
+      .addEventListener("input", function () {
+        const maxPrice = this.value;
+        document.getElementById(
+          "priceValue"
+        ).textContent = `Max Price: ₹${maxPrice}`;
+
+        // Make an Ajax request to filter products
+        fetch(`/products/filter?maxPrice=${maxPrice}`, {
+          method: "GET",
+        })
+          .then((response) => response.json())
+          .then((data) => {
+            const productGrid = document.getElementById("productGrid");
+            productGrid.innerHTML = ""; // Clear existing products
+
+            // Dynamically add filtered products
+            data.products.forEach((product) => {
+              const productCard = `
+            <div class="bg-white rounded-lg shadow-md p-4 flex flex-col">
+              <a href="/product/${product._id}">
+                <img class="w-full h-auto rounded-lg mb-4" src="${
+                  product.imageUrl
+                }" alt="${product.productName}" />
+              </a>
+              <h3 class="text-lg font-semibold text-gray-800">${
+                product.productName
+              }</h3>
+              ${
+                          
+                product.price && product.discountPrice
+                  ? `
+                  <div class="flex gap-2">
+                    <div class="text-xl font-bold text-gray-900">₹${product.discountPrice}</div>
+                    <div class="text-gray-500 line-through mt-1">₹${product.price}</div>
+                    
+                  </div>
+                  `
+                  : `<div class="text-xl font-bold text-gray-900">Price Not Available</div>`
+              }
+              <div class="flex justify-between items-center mt-4">
+                <a href="#" class="hover:text-slate-500"><i class="fa-regular fa-heart"></i></a>
+              </div>
+            </div>`;
+              productGrid.innerHTML += productCard;
+            });
+          })
+          .catch((error) => console.error("Error fetching products:", error));
+      });
+  </script>
 </html>
