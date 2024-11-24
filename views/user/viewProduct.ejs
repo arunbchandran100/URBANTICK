@@ -14,170 +14,183 @@
       referrerpolicy="no-referrer"
     />
     <style>
-  #imageZoom {
-    width: 100%;
-    position: relative;
-    cursor: zoom-in;
-  }
-  #imageZoom img {
-    width: 100%;
-    height: auto;
-    object-fit: cover;
-  }
-  #imageZoom::after {
-    display: var(--display);
-    content: '';
-    width: 100%;
-    height: 100%;
-    background-color: black;
-    background-image: var(--url);
-    background-size: 200%;
-    background-position: var(--zoom-x) var(--zoom-y);
-    position: absolute;
-    left: 0;
-    top: 0;
-    pointer-events: none;
-  }
-</style>
+      #imageZoom {
+        width: 100%;
+        position: relative;
+        cursor: zoom-in;
+      }
+      #imageZoom img {
+        width: 100%;
+        height: auto;
+        object-fit: cover;
+      }
+      #imageZoom::after {
+        display: var(--display);
+        content: "";
+        width: 100%;
+        height: 100%;
+        background-color: black;
+        background-image: var(--url);
+        background-size: 200%;
+        background-position: var(--zoom-x) var(--zoom-y);
+        position: absolute;
+        left: 0;
+        top: 0;
+        pointer-events: none;
+      }
+    </style>
   </head>
 
   <body class="bg-gray-100">
-  <!------------ Navbar ---------->
-    <%- include("partials/navBar")  %>
+    <!------------ Navbar ---------->
+    <%- include("partials/navBar") %>
     <div class="mt-16"></div>
 
-
     <!-- Page Content -->
-<div class="max-w-7xl mx-auto py-12 px-4 sm:px-6 lg:px-8">
-  <div class="flex flex-wrap md:flex-nowrap">
-<div class="flex flex-col md:flex-row space-x-4">
- <!-- Thumbnails -->
-<div class=" w-1/5 md:w-1/6 space-y-4">
-  <% product.imageUrl.forEach((image, index) => { %>
-    <img
-      src="<%= image %>"
-      alt="<%= product.productName %> Thumbnail <%= index + 1 %>"
-      class="w-full h-auto rounded-md shadow-md cursor-pointer border-2 border-transparent hover:border-gray-400"
-      onclick="updateMainImage('<%= image %>')"
-    />
-  <% }) %>
-</div>
+    <div class="max-w-7xl mx-auto py-12 px-4 sm:px-6 lg:px-8">
+      <div class="flex flex-wrap md:flex-nowrap">
+        <div class="flex flex-col md:flex-row space-x-4">
+          <!-- Thumbnails -->
+          <div class="w-1/5 md:w-1/6 space-y-4">
+            <% product.imageUrl.forEach((image, index) => { %>
+            <img
+              src="<%= image %>"
+              alt="<%= product.productName %> Thumbnail <%= index + 1 %>"
+              class="w-full h-auto rounded-md shadow-md cursor-pointer border-2 border-transparent hover:border-gray-400"
+              onclick="updateMainImage('<%= image %>')"
+            />
+            <% }) %>
+          </div>
 
-<!-- Main Image with Zoom -->
-<div class=" w-4/5 ">
-  <div 
-    id="imageZoom" 
-    class="relative"
-    style="
-      --url: url(<%= product.imageUrl[0] %>);
-      --zoom-x: 0%; --zoom-y: 0%;
-      --display: none;
-    "
-  >
-    <img
-      id="main-product-image"
-      src="<%= product.imageUrl[0] %>"
-      alt="<%= product.productName %> Main Image"
-      class="w-full h-auto rounded-md shadow-md"
-    />
-  </div>
-</div>
+          <!-- Main Image with Zoom -->
+          <div class="w-4/5">
+            <div
+              id="imageZoom"
+              class="relative"
+              style="
+                --url: url(<%= product.imageUrl[0] %>);
+                --zoom-x: 0%;
+                --zoom-y: 0%;
+                --display: none;
+              "
+            >
+              <img
+                id="main-product-image"
+                src="<%= product.imageUrl[0] %>"
+                alt="<%= product.productName %> Main Image"
+                class="w-full h-auto rounded-md shadow-md"
+              />
+            </div>
+          </div>
 
-    <!-- Right Section: Product Details -->
-<div class="w-full md:w-2/3 md:pl-12">
-  <h1 class="text-2xl font-bold text-gray-800"><%= product.productName %></h1>
+          <!-- Right Section: Product Details -->
+          <div class="w-full md:w-2/3 md:pl-12">
+            <h1 class="text-2xl font-bold text-gray-800">
+              <%= product.productName %>
+            </h1>
 
-  <!-- Pricing -->
-  <div class="flex items-center space-x-4 my-4">
-    <p class="text-lg text-gray-800 font-bold">
-      ₹<%= product.variants[0]?.discountPrice || 'N/A' %>
-    </p>
-    <p class="text-gray-500 line-through">
-      ₹<%= product.variants[0]?.price || 'N/A' %>
-    </p>
-    <p class="text-green-600 font-semibold">
-      <%= product.variants[0]?.discountPercentage || 0 %>% off
-    </p>
-  </div>
+            <!-- Pricing -->
+            <div class="flex items-center space-x-4 my-4">
+              <p class="text-lg text-gray-800 font-bold">
+                ₹<%= product.variants[0]?.discountPrice || 'N/A' %>
+              </p>
+              <p class="text-gray-500 line-through">
+                ₹<%= product.variants[0]?.price || 'N/A' %>
+              </p>
+              <p class="text-green-600 font-semibold">
+                <%= product.variants[0]?.discountPercentage || 0 %>% off
+              </p>
+            </div>
 
-  <!-- Rating -->
-  <div class="text-yellow-500 flex items-center">
-    <p class="mr-2 text-gray-800 font-medium">
-      <%= product.variants[0]?.rating || 'No rating' %>
-    </p>
-    <i class="fa fa-star"></i>
-    <span class="ml-1 text-gray-500">426 reviews</span>
-  </div>
+            <!-- Rating -->
+            <div class="text-yellow-500 flex items-center">
+              <i class="fa fa-star"></i>
+              <p class="mr-2 text-gray-800 font-medium">
+                <%="  "+ product.variants[0]?.rating || 'No rating' %>
+              </p>
+              <span class="ml-1 text-gray-500">426 reviews</span>
+            </div>
 
-  <!-- Product Details -->
-  <div class="mt-6">
-    <h2 class="text-lg font-bold text-gray-800">Product Details</h2>
-    <ul class="text-gray-600 mt-4 space-y-2">
-      <li>
-        Gender: <span class="font-semibold text-gray-800"><%= product.gender %></span>
-      </li>
-      <li>
-        Brand: <span class="font-semibold text-gray-800"><%= product.brand %></span>
-      </li>
-    </ul>
-  </div>
+            <!-- Product Details -->
+            <div class="mt-6">
+              <h2 class="text-lg font-bold text-gray-800">Product Details</h2>
+              <ul class="text-gray-600 mt-4 space-y-2">
+                <li>
+                  Gender:
+                  <span class="font-semibold text-gray-800"
+                    ><%= product.gender %></span
+                  >
+                </li>
+                <li>
+                  Brand:
+                  <span class="font-semibold text-gray-800"
+                    ><%= product.brand %></span
+                  >
+                </li>
+              </ul>
+            </div>
 
-  <!-- Select Color -->
-  <div class="mt-6">
-    <label for="color" class="block font-medium text-gray-700">Select Color</label>
-    <select id="color" class="mt-2 px-4 py-2 border rounded-lg shadow-sm">
-      <% product.variants.forEach(variant => { %>
-        <option><%= variant.color || 'N/A' %></option>
-      <% }) %>
-    </select>
-  </div>
+            <!-- Select Color -->
+            <div class="mt-6">
+              <label for="color" class="block font-medium text-gray-700"
+                >Select Color</label
+              >
+              <select
+                id="color"
+                class="mt-2 px-4 py-2 border rounded-lg shadow-sm"
+              >
+                <% product.variants.forEach(variant => { %>
+                <option><%= variant.color || 'N/A' %></option>
+                <% }) %>
+              </select>
+            </div>
 
-  <!-- Action Buttons -->
-  <div class="mt-8 flex space-x-4">
-    <button class="px-6 py-3 bg-black text-white rounded-lg font-bold shadow-md hover:bg-gray-800">
-      Buy Now
-    </button>
-    <button class="px-6 py-3 bg-gray-200 rounded-lg font-bold shadow-md hover:bg-gray-300">
-      Add To Cart
-    </button>
-  </div>
-</div>
-
-  </div>
-</div>
-</div>
+            <!-- Action Buttons -->
+            <div class="mt-8 flex space-x-4">
+              <button
+                class="px-6 py-3 bg-black text-white rounded-lg font-bold shadow-md hover:bg-gray-800"
+              >
+                Buy Now
+              </button>
+              <button
+                class="px-6 py-3 bg-gray-200 rounded-lg font-bold shadow-md hover:bg-gray-300"
+              >
+                Add To Cart
+              </button>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
     <!------------- Footer ------------>
-    <%- include("partials/footer")  %>
-    
-<script>
-// JavaScript for zoom functionality
-const imageZoom = document.getElementById('imageZoom');
+    <%- include("partials/footer") %>
 
-// Handle mousemove for zoom
-imageZoom.addEventListener('mousemove', (event) => {
-  imageZoom.style.setProperty('--display', 'block');
-  const pointer = {
-    x: (event.offsetX * 100) / imageZoom.offsetWidth,
-    y: (event.offsetY * 100) / imageZoom.offsetHeight,
-  };
-  imageZoom.style.setProperty('--zoom-x', pointer.x + '%');
-  imageZoom.style.setProperty('--zoom-y', pointer.y + '%');
-});
+    <script>
+      // JavaScript for zoom functionality
+      const imageZoom = document.getElementById("imageZoom");
 
-// Hide zoom on mouseout
-imageZoom.addEventListener('mouseout', () => {
-  imageZoom.style.setProperty('--display', 'none');
-});
+      // Handle mousemove for zoom
+      imageZoom.addEventListener("mousemove", (event) => {
+        imageZoom.style.setProperty("--display", "block");
+        const pointer = {
+          x: (event.offsetX * 100) / imageZoom.offsetWidth,
+          y: (event.offsetY * 100) / imageZoom.offsetHeight,
+        };
+        imageZoom.style.setProperty("--zoom-x", pointer.x + "%");
+        imageZoom.style.setProperty("--zoom-y", pointer.y + "%");
+      });
 
-// Update main image and zoom background
-function updateMainImage(imageUrl) {
-  const mainImage = document.getElementById('main-product-image');
-  mainImage.src = imageUrl;
-  imageZoom.style.setProperty('--url', `url(${imageUrl})`);
-}
+      // Hide zoom on mouseout
+      imageZoom.addEventListener("mouseout", () => {
+        imageZoom.style.setProperty("--display", "none");
+      });
 
-</script>
-
-
+      // Update main image and zoom background
+      function updateMainImage(imageUrl) {
+        const mainImage = document.getElementById("main-product-image");
+        mainImage.src = imageUrl;
+        imageZoom.style.setProperty("--url", `url(${imageUrl})`);
+      }
+    </script>
   </body>
 </html>
