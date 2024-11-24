@@ -37,6 +37,8 @@ router.get("/home", User.home);
 router.get("/shopall", ShopAllController.shopAll);
 router.get("/products/filter", ShopAllController.filterProducts);
 router.get("/products/filter-options", ShopAllController.getFilterOptions);
+router.get("/products/search", ShopAllController.searchProducts);
+
 
 
 

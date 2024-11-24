@@ -194,3 +194,76 @@ exports.getFilterOptions = async (req, res) => {
         res.status(500).json({ error: "Failed to fetch filter options" });
     }
 };
+
+
+exports.searchProducts = async (req, res) => {
+  try {
+    const { query } = req.query; // Get the search query from request parameters
+
+    if (!query) {
+      return res.status(400).json({ error: "Search query is required" });
+    }
+
+    const searchRegex = new RegExp(query, "i"); // Case-insensitive search
+
+    const products = await Product.aggregate([
+      {
+        $lookup: {
+          from: "variants",
+          localField: "_id",
+          foreignField: "productId",
+          as: "variants",
+        },
+      },
+      {
+        $unwind: {
+          path: "$variants",
+          preserveNullAndEmptyArrays: true,
+        },
+      },
+      {
+        $match: {
+          $or: [{ productName: searchRegex }, { brand: searchRegex }],
+        },
+      },
+      {
+        $project: {
+          _id: 1,
+          productName: 1,
+          brand: 1,
+          imageUrl: 1,
+          "variants.color": 1,
+          "variants.price": 1,
+          "variants.rating": 1,
+          "variants.discountPrice": 1,
+          "variants.discountPercentage": 1,
+          categoriesId: 1,
+        },
+      },
+    ]);
+
+
+    const formattedProducts = products.map((product) => ({
+      _id: product._id,
+      brand: product.brand,
+      productName: product.productName,
+      imageUrl:
+        Array.isArray(product.imageUrl) && product.imageUrl.length > 0
+          ? product.imageUrl[0]
+          : "/images/default-product.jpg",
+      price: product.variants?.price || null,
+      rating: product.variants?.rating || null,
+      rating: product.variants?.rating || null,
+      discountPrice: product.variants?.discountPrice || null,
+      discountPercentage: product.variants?.discountPercentage || null,
+      categoryId: product.categoriesId,
+    }));
+
+    console.log("Searched products:", formattedProducts);
+    res.status(200).json({ products: formattedProducts });
+
+  } catch (error) {
+    console.error("Error searching products:", error);
+    res.status(500).json({ error: "Failed to search products" });
+  }
+};
