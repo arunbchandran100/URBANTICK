@@ -4,6 +4,8 @@ const router = express.Router();
 
 const User = require("../controllers/userController");
 const userProfileController = require("../controllers/user/userProfileAddressController");
+const ShopAllController = require("../controllers/user/ShopAllController");
+
 
 // app.use(
 //   session({
@@ -27,41 +29,38 @@ router.post("/user/resend-otp", User.resendOTP);
 router.post("/user/logout", userProfileController.logoutPOST);
 
 
-//--------------------Public User Side --------------------
+//--------------------Home Page --------------------
 router.get("/home", User.home);
-router.get("/shopall", User.shopAll);
+
+
+//--------------------SHOP ALL Page --------------------
+router.get("/shopall", ShopAllController.shopAll);
+
+
+
+//--------------------View Product Page --------------------
 router.get("/product/:id", User.viewProduct);
 
 
 //User Dashboard 
-//--------------------User Personal info Dashboard --------------------
+//-------------------- Personal info Dashboard --------------------
 router.get("/user/profile", userProfileController.getPersonalInformation);
 router.post("/user/profile", userProfileController.updatePersonalInformation);
 
 
-//--------------------User Address info Dashboard --------------------
-// Add a new address
+//-------------------- Address info Dashboard --------------------
+// Add address
 router.post("/user/address/add", userProfileController.addAddress);
 
-// Get all addresses for a user
+// Get all addresses
 router.get("/user/address/:userId", userProfileController.getUserAddresses);
 
-
-
-// // Update an address
-// router.put("/user/address/edit/:id", userProfileController.updateAddress);
+// Update an address
 router.get("/user/address/edit/:id", userProfileController.getEditAddress);
 router.post("/user/address/edit/:id", userProfileController.updateAddress);
-
-
-
 
 // Delete an address
 router.delete("/user/address/:id", userProfileController.deleteAddress);
 
 module.exports = router;
 
-
-
-
-module.exports = router;

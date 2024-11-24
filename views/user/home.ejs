@@ -16,40 +16,42 @@
   </head>
 
   <body class="bg-gray-100">
-
     <!------------ Navbar ---------->
-    <%- include("partials/navBar")  %>
+    <%- include("partials/navBar") %>
     <div class="mt-16"></div>
 
     <!-- Page Content -->
-    <div class=" w-full mt-16 ">
-        <img src="/images/main-banner.png" alt="Banner Image" class="w-full " />
+    <div class="w-full mt-16">
+      <img src="/images/main-banner.png" alt="Banner Image" class="w-full" />
     </div>
 
     <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-8">
-      <% products.forEach(product => { %>
-        <div class="bg-white rounded-lg shadow-md p-4">
-                <a href="/product/<%= product._id %>" >
-                <img
-                  class="w-full h-auto rounded-lg mb-4"
-                  src="<%= product.imageUrl %>"
-                  alt="<%= product.productName %>"
-                />
-                </a>
-          <h3 class="text-lg font-semibold text-gray-800"><%= product.productName %></h3>
-          <% if (product.discountPrice && product.discountPrice < product.price) { %>
-            <div class="text-gray-500 line-through">₹<%= product.price %></div>
-            <div class="text-xl font-bold text-gray-900">₹<%= product.discountPrice %></div>
-          <% } else { %>
-            <div class="text-xl font-bold text-gray-900">₹<%= product.price %></div>
-          <% } %>
+      <% let i = 0; %> <% products.forEach(product => { %> <% if (i < 4) { %>
+      <div class="bg-white rounded-lg shadow-md p-4">
+        <a href="/product/<%= product._id %>">
+          <img
+            class="w-full h-auto rounded-lg mb-4"
+            src="<%= product.imageUrl %>"
+            alt="<%= product.productName %>"
+          />
+        </a>
+        <h3 class="text-lg font-semibold text-gray-800">
+          <%= product.productName %>
+        </h3>
+        <% if (product.discountPrice && product.discountPrice < product.price) {
+        %>
+        <div class="text-gray-500 line-through">₹<%= product.price %></div>
+        <div class="text-xl font-bold text-gray-900">
+          ₹<%= product.discountPrice %>
         </div>
-      <% }); %>
+        <% } else { %>
+        <div class="text-xl font-bold text-gray-900">₹<%= product.price %></div>
+        <% } %>
+      </div>
+      <% i++; %> <% } %> <% }); %>
     </div>
 
-
-
     <!------------- Footer ------------>
-    <%- include("partials/footer")  %>
+    <%- include("partials/footer") %>
   </body>
 </html>

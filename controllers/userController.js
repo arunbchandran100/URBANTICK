@@ -1,14 +1,11 @@
-const User = require("../models/userModel"); 
+const User = require("../models/userModel");
 const bcrypt = require("bcryptjs");
 const userAuthenticated = require("../middleware/userauthmildware");
-
-
 
 // -------------User Login Page--------------------
 exports.loginGET = (req, res) => {
   res.render("user/userLogin");
 };
-
 
 exports.loginPOST = async (req, res) => {
   try {
@@ -38,33 +35,23 @@ exports.loginPOST = async (req, res) => {
   }
 };
 
-
-
-
-
 // -------------User Signup Page--------------------
 const { OTP, saveOTP } = require("../models/otpModel");
 const nodemailer = require("nodemailer");
 const { generateOTP, sendOTPEmail } = require("../utils/sendOTPutil");
 const crypto = require("crypto");
 
-
 exports.signupGET = (req, res) => {
   res.render("user/userSignup");
 };
 
 const transporter = nodemailer.createTransport({
-  service: 'Gmail',  
+  service: "Gmail",
   auth: {
-    user: process.env.EMAIL,  
-    pass: process.env.PASSWORD,  
+    user: process.env.EMAIL,
+    pass: process.env.PASSWORD,
   },
 });
-
-
-
-
-
 
 // Generate and send OTP, save OTP to database
 exports.signupPOST = async (req, res) => {
@@ -76,7 +63,7 @@ exports.signupPOST = async (req, res) => {
     }
 
     const otp = generateOTP();
-    console.log("first generated otp is "+otp)
+    console.log("first generated otp is " + otp);
     await sendOTPEmail(email, otp);
     await saveOTP(email, otp);
 
@@ -85,8 +72,6 @@ exports.signupPOST = async (req, res) => {
     res.status(500).json({ message: "Server error" });
   }
 };
-
-
 
 // Verify OTP and save user data to database
 exports.verifyOTP = async (req, res) => {
@@ -111,8 +96,6 @@ exports.verifyOTP = async (req, res) => {
   }
 };
 
-
-
 exports.resendOTP = async (req, res) => {
   try {
     const { email } = req.body;
@@ -122,9 +105,9 @@ exports.resendOTP = async (req, res) => {
     }
 
     const newOtp = generateOTP();
-    console.log("resend OTP is " + newOtp)
-    otpRecord.otp = newOtp;  
-    otpRecord.createdAt = Date.now();  
+    console.log("resend OTP is " + newOtp);
+    otpRecord.otp = newOtp;
+    otpRecord.createdAt = Date.now();
     await otpRecord.save();
 
     await sendOTPEmail(email, newOtp);
@@ -135,9 +118,7 @@ exports.resendOTP = async (req, res) => {
   }
 };
 
-
 //////////////////////////////////////////////////////////////////////////////////////////
-
 
 const Product = require("../models/productSchema");
 const Variant = require("../models/variantSchema");
@@ -181,56 +162,6 @@ exports.home = async (req, res) => {
     res.render("user/home", { products: formattedProducts });
   } catch (err) {
     console.error("Error fetching products:", err.message);
-    res.status(500).send("Server Error");
-  }
-};
-
-exports.shopAll = async (req, res) => {
-  try {
-    const products = await Product.aggregate([
-      {
-        $lookup: {
-          from: "variants",
-          localField: "_id",
-          foreignField: "productId",
-          as: "variants",
-        },
-      },
-      {
-        $unwind: {
-          path: "$variants",
-          preserveNullAndEmptyArrays: true,
-        },
-      },
-      {
-        $project: {
-          _id: 1,
-          productName: 1,
-          imageUrl: 1,
-          "variants.color": 1,
-          "variants.price": 1,
-          "variants.discountPrice": 1,
-          "variants.discountPercentage": 1,
-        },
-      },
-    ]);
-
-    const formattedProducts = products.map((product) => ({
-      _id: product._id,
-      productName: product.productName,
-      imageUrl:
-        Array.isArray(product.imageUrl) && product.imageUrl.length > 0
-          ? product.imageUrl[0]
-          : "/images/default-product.jpg",
-      price: product.variants?.price || null,
-      discountPrice: product.variants?.discountPrice || null,
-      discountPercentage: product.variants?.discountPercentage || null,
-    }));
-
-    // console.log(formattedProducts);
-    res.render("user/shopAll", { products: formattedProducts });
-  } catch (err) {
-    console.error("Error fetching products for Shop All page:", err.message);
     res.status(500).send("Server Error");
   }
 };
@@ -293,4 +224,3 @@ exports.viewProduct = async (req, res) => {
     res.status(500).send("Server Error");
   }
 };
-

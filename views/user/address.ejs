@@ -62,7 +62,7 @@
                   class="text-red-500">*</span></label>
               <input type="text" id="HouseName" name="HouseName"
                 class="w-full px-4 py-2 border border-gray-300 rounded-full focus:outline-none focus:ring-2 focus:ring-blue-500"
-                placeholder="Enter house name or number" required minlength="1" maxlength="100" />
+                placeholder="Enter house name or number" required minlength="3" maxlength="100" />
               <span id="houseError" class="text-red-500 text-sm hidden">Please enter a valid house name/number</span>
             </div>
 
@@ -79,7 +79,7 @@
               <label for="TownCity" class="block text-gray-700">Town/City <span class="text-red-500">*</span></label>
               <input type="text" id="TownCity" name="TownCity"
                 class="w-full px-4 py-2 border border-gray-300 rounded-full focus:outline-none focus:ring-2 focus:ring-blue-500"
-                placeholder="Enter town or city" required minlength="2" maxlength="50" />
+                placeholder="Enter town or city" required minlength="3" maxlength="50" />
               <span id="cityError" class="text-red-500 text-sm hidden">Please enter a valid town/city</span>
             </div>
 
@@ -97,7 +97,7 @@
               <label for="state" class="block text-gray-700">State <span class="text-red-500">*</span></label>
               <input type="text" id="state" name="state"
                 class="w-full px-4 py-2 border border-gray-300 rounded-full focus:outline-none focus:ring-2 focus:ring-blue-500"
-                placeholder="Enter state" required minlength="2" maxlength="50" />
+                placeholder="Enter state" required minlength="3" maxlength="50" />
               <span id="stateError" class="text-red-500 text-sm hidden">Please enter a valid state</span>
             </div>
 
@@ -186,158 +186,121 @@
                 class="fixed inset-0 bg-gray-900 bg-opacity-50 hidden flex items-center justify-center">
                 <div class="bg-white w-3/4 md:w-1/2 p-6 rounded-lg">
                   <h2 class="text-lg font-semibold text-gray-700">Edit Address</h2>
-<div class="flex justify-center items-center">
-  <div class="bg-white p-6 rounded-lg shadow-lg w-full max-w-4xl">
-    <form id="editAddressForm">
-      <input type="hidden" id="editAddressId" />
+                  <div class="flex justify-center items-center">
+                    <div class="bg-white p-6 rounded-lg shadow-lg w-full max-w-4xl">
+                      <form id="editAddressForm">
+                        <input type="hidden" id="editAddressId" />
 
-      <!-- Input Fields -->
-      <div class="grid grid-cols-1 sm:grid-cols-2 gap-6">
-        <!-- Full Name -->
-        <div>
-          <label for="editName" class="block text-sm font-medium text-gray-700">Full Name <span class="text-red-500">*</span></label>
-          <input
-            type="text"
-            id="editName"
-            class="mt-1 block w-full px-4 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
-            placeholder="Enter your full name"
-            required
-            minlength="3"
-            maxlength="50"
-          />
-          <span id="nameError" class="text-red-500 text-sm hidden">Please enter a valid name (3-50 characters)</span>
-        </div>
+                        <!-- Input Fields -->
+                        <div class="grid grid-cols-1 sm:grid-cols-2 gap-6">
+                          <!-- Full Name -->
+                          <div>
+                            <label for="editName" class="block text-sm font-medium text-gray-700">Full Name <span
+                                class="text-red-500">*</span></label>
+                            <input type="text" id="editName"
+                              class="mt-1 block w-full px-4 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+                              placeholder="Enter your full name" required minlength="3" maxlength="50" />
+                            <span id="nameError" class="text-red-500 text-sm hidden">Please enter a valid name (3-50
+                              characters)</span>
+                          </div>
 
-        <!-- House Name/Number -->
-        <div>
-          <label for="editHouseName" class="block text-sm font-medium text-gray-700">House Name/Number <span class="text-red-500">*</span></label>
-          <input
-            type="text"
-            id="editHouseName"
-            class="mt-1 block w-full px-4 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
-            placeholder="Enter house name or number"
-            required
-            minlength="1"
-            maxlength="100"
-          />
-          <span id="houseError" class="text-red-500 text-sm hidden">Please enter a valid house name/number</span>
-        </div>
+                          <!-- House Name/Number -->
+                          <div>
+                            <label for="editHouseName" class="block text-sm font-medium text-gray-700">House Name/Number
+                              <span class="text-red-500">*</span></label>
+                            <input type="text" id="editHouseName"
+                              class="mt-1 block w-full px-4 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+                              placeholder="Enter house name or number" required minlength="1" maxlength="100" />
+                            <span id="houseError" class="text-red-500 text-sm hidden">Please enter a valid house
+                              name/number</span>
+                          </div>
 
-        <!-- Locality/Street -->
-        <div>
-          <label for="editLocalityStreet" class="block text-sm font-medium text-gray-700">Street/Locality <span class="text-red-500">*</span></label>
-          <input
-            type="text"
-            id="editLocalityStreet"
-            class="mt-1 block w-full px-4 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
-            placeholder="Enter street name or locality"
-            required
-            minlength="3"
-            maxlength="100"
-          />
-          <span id="streetError" class="text-red-500 text-sm hidden">Please enter a valid street/locality</span>
-        </div>
+                          <!-- Locality/Street -->
+                          <div>
+                            <label for="editLocalityStreet"
+                              class="block text-sm font-medium text-gray-700">Street/Locality <span
+                                class="text-red-500">*</span></label>
+                            <input type="text" id="editLocalityStreet"
+                              class="mt-1 block w-full px-4 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+                              placeholder="Enter street name or locality" required minlength="3" maxlength="100" />
+                            <span id="streetError" class="text-red-500 text-sm hidden">Please enter a valid
+                              street/locality</span>
+                          </div>
 
-        <!-- Town/City -->
-        <div>
-          <label for="editTownCity" class="block text-sm font-medium text-gray-700">Town/City <span class="text-red-500">*</span></label>
-          <input
-            type="text"
-            id="editTownCity"
-            class="mt-1 block w-full px-4 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
-            placeholder="Enter town or city"
-            required
-            minlength="2"
-            maxlength="50"
-          />
-          <span id="cityError" class="text-red-500 text-sm hidden">Please enter a valid town/city</span>
-        </div>
+                          <!-- Town/City -->
+                          <div>
+                            <label for="editTownCity" class="block text-sm font-medium text-gray-700">Town/City <span
+                                class="text-red-500">*</span></label>
+                            <input type="text" id="editTownCity"
+                              class="mt-1 block w-full px-4 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+                              placeholder="Enter town or city" required minlength="2" maxlength="50" />
+                            <span id="cityError" class="text-red-500 text-sm hidden">Please enter a valid
+                              town/city</span>
+                          </div>
 
-        <!-- Mobile Number -->
-        <div>
-          <label for="editMobileNumber" class="block text-sm font-medium text-gray-700">Mobile Number <span class="text-red-500">*</span></label>
-          <input
-            type="tel"
-            id="editMobileNumber"
-            class="mt-1 block w-full px-4 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
-            placeholder="Enter 10-digit mobile number"
-            required
-            pattern="[0-9]{10}"
-          />
-          <span id="mobileError" class="text-red-500 text-sm hidden">Please enter a valid 10-digit mobile number</span>
-        </div>
+                          <!-- Mobile Number -->
+                          <div>
+                            <label for="editMobileNumber" class="block text-sm font-medium text-gray-700">Mobile Number
+                              <span class="text-red-500">*</span></label>
+                            <input type="tel" id="editMobileNumber"
+                              class="mt-1 block w-full px-4 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+                              placeholder="Enter 10-digit mobile number" required pattern="[0-9]{10}" />
+                            <span id="mobileError" class="text-red-500 text-sm hidden">Please enter a valid 10-digit
+                              mobile number</span>
+                          </div>
 
-        <!-- State -->
-        <div>
-          <label for="editstate" class="block text-sm font-medium text-gray-700">State <span class="text-red-500">*</span></label>
-          <input
-            type="text"
-            id="editstate"
-            class="mt-1 block w-full px-4 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
-            placeholder="Enter state"
-            required
-            minlength="2"
-            maxlength="50"
-          />
-          <span id="stateError" class="text-red-500 text-sm hidden">Please enter a valid state</span>
-        </div>
+                          <!-- State -->
+                          <div>
+                            <label for="editstate" class="block text-sm font-medium text-gray-700">State <span
+                                class="text-red-500">*</span></label>
+                            <input type="text" id="editstate"
+                              class="mt-1 block w-full px-4 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+                              placeholder="Enter state" required minlength="2" maxlength="50" />
+                            <span id="stateError" class="text-red-500 text-sm hidden">Please enter a valid state</span>
+                          </div>
 
-        <!-- Country -->
-        <div>
-          <label for="editcountry" class="block text-sm font-medium text-gray-700">Country <span class="text-red-500">*</span></label>
-          <input
-            type="text"
-            id="editcountry"
-            class="mt-1 block w-full px-4 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
-            placeholder="Enter country"
-            required
-            minlength="2"
-            maxlength="50"
-          />
-          <span id="countryError" class="text-red-500 text-sm hidden">Please enter a valid country</span>
-        </div>
+                          <!-- Country -->
+                          <div>
+                            <label for="editcountry" class="block text-sm font-medium text-gray-700">Country <span
+                                class="text-red-500">*</span></label>
+                            <input type="text" id="editcountry"
+                              class="mt-1 block w-full px-4 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+                              placeholder="Enter country" required minlength="2" maxlength="50" />
+                            <span id="countryError" class="text-red-500 text-sm hidden">Please enter a valid
+                              country</span>
+                          </div>
 
-        <!-- Pincode -->
-        <div>
-          <label for="editpincode" class="block text-sm font-medium text-gray-700">Pincode <span class="text-red-500">*</span></label>
-          <input
-            type="text"
-            id="editpincode"
-            class="mt-1 block w-full px-4 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
-            placeholder="Enter 6-digit pincode"
-            required
-            pattern="[0-9]{6}"
-          />
-          <span id="pincodeError" class="text-red-500 text-sm hidden">Please enter a valid 6-digit pincode</span>
-        </div>
-      </div>
+                          <!-- Pincode -->
+                          <div>
+                            <label for="editpincode" class="block text-sm font-medium text-gray-700">Pincode <span
+                                class="text-red-500">*</span></label>
+                            <input type="text" id="editpincode"
+                              class="mt-1 block w-full px-4 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+                              placeholder="Enter 6-digit pincode" required pattern="[0-9]{6}" />
+                            <span id="pincodeError" class="text-red-500 text-sm hidden">Please enter a valid 6-digit
+                              pincode</span>
+                          </div>
+                        </div>
 
-      <!-- Action Buttons -->
-      <div class="mt-6 flex justify-end space-x-4">
-        <button
-          type="button"
-          class="px-4 py-2 bg-gray-400 text-white rounded-md hover:bg-gray-500"
-          onclick="closeEditModal()"
-        >
-          Cancel
-        </button>
-        <button
-          type="submit"
-          class="px-4 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700"
-        >
-          Save
-        </button>
-      </div>
-    </form>
-  </div>
-</div>
-
-
-
+                        <!-- Action Buttons -->
+                        <div class="mt-6 flex justify-end space-x-4">
+                          <button type="button" class="px-4 py-2 bg-gray-400 text-white rounded-md hover:bg-gray-500"
+                            onclick="closeEditModal()">
+                            Cancel
+                          </button>
+                          <button type="submit" class="px-4 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700">
+                            Save
+                          </button>
+                        </div>
+                      </form>
+                    </div>
+                  </div>
                 </div>
               </div>
       </div>
     </div>
+
+
     <!--------------------------Script------------------------------>
     <script>
       const notyf = new Notyf({

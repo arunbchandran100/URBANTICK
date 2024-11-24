@@ -16,50 +16,58 @@
   </head>
 
   <body class="bg-gray-100">
-  <!------------ Navbar ---------->
     <!------------ Navbar ---------->
-    <%- include("partials/navBar")  %>
+    <%- include("partials/navBar") %>
     <div class="mt-16"></div>
 
-
     <!-- Page Content -->
-<div class="py-12 bg-gray-50">
-  <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-    <h2 class="text-3xl font-bold text-gray-900 mb-8 text-center">Shop All</h2>
-    <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
-      <!-- Loop through the products array -->
-      <% products.forEach(product => { %>
-        <!-- Wrap each product card inside an <a> tag -->
-        
+    <div class="py-12 bg-gray-50">
+      <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+        <h2 class="text-3xl font-bold text-gray-900 mb-8 text-center">
+          Shop All
+        </h2>
+        <div
+          class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6"
+        >
+          <!-- Loop through the products array -->
+          <% products.forEach(product => { %>
+          <!-- Wrap each product card inside an <a> tag -->
+
           <div class="bg-white rounded-lg shadow-md p-4 flex flex-col">
-            <a href="/product/<%= product._id %>" >
-            <img
-              class="w-full h-auto rounded-lg mb-4"
-              src="<%= product.imageUrl %>"
-              alt="<%= product.productName %>"
-            />
+            <a href="/product/<%= product._id %>">
+              <img
+                class="w-full h-auto rounded-lg mb-4"
+                src="<%= product.imageUrl %>"
+                alt="<%= product.productName %>"
+              />
             </a>
-            <h3 class="text-lg font-semibold text-gray-800"><%= product.productName %></h3>
+            <h3 class="text-lg font-semibold text-gray-800">
+              <%= product.productName %>
+            </h3>
             <% if (product.price && product.discountPrice) { %>
-              <div class="text-gray-500 line-through">₹<%= product.price %></div>
-              <div class="text-xl font-bold text-gray-900">₹<%= product.discountPrice %></div>
+            <div class="text-gray-500 line-through">₹<%= product.price %></div>
+            <div class="text-xl font-bold text-gray-900">
+              ₹<%= product.discountPrice %>
+            </div>
             <% } else { %>
-              <div class="text-xl font-bold text-gray-900">Price Not Available</div>
+            <div class="text-xl font-bold text-gray-900">
+              Price Not Available
+            </div>
             <% } %>
             <div class="flex justify-between items-center mt-4">
-              <div></div> 
-              <a href="#" class="hover:text-slate-500"><i class="fa-regular fa-heart"></i></a>
+              <div></div>
+              <a href="#" class="hover:text-slate-500"
+                ><i class="fa-regular fa-heart"></i
+              ></a>
             </div>
           </div>
 
-      <% }) %>
+          <% }) %>
+        </div>
+      </div>
     </div>
-  </div>
-</div>
-
-
 
     <!------------- Footer ------------>
-    <%- include("partials/footer")  %>
+    <%- include("partials/footer") %>
   </body>
 </html>
