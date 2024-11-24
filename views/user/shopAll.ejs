@@ -130,6 +130,14 @@
                   </select>
                 </div>
               </div>
+
+              <!-- Reset Button -->
+<div class="mt-6">
+  <button id="resetButton" class="px-4 py-2 bg-zinc-800 text-white rounded-lg transform transition-transform duration-300 ease-in-out hover:bg-zinc-600 hover:scale-105 active:bg-zinc-700 active:scale-95">
+    Reset Filters
+  </button>
+</div>
+
             </div>
           </div>
 
@@ -326,6 +334,31 @@ document.addEventListener("DOMContentLoaded", async () => {
       console.error("Error updating products:", error);
     }
   }
+
+  // Add event listener for reset button
+  const resetButton = document.getElementById("resetButton");
+  resetButton.addEventListener("click", () => {
+    // Reset filter elements
+    elements.brand.value = "";
+    elements.color.value = "";
+    elements.category.value = "";
+    elements.gender.value = "";
+    elements.stockFilter.value = "";
+    elements.sortFilter.value = "default";
+    elements.minPrice.value = "";
+    elements.maxPrice.value = "";
+    elements.searchInput.value = "";
+    
+    // Update products with default filters
+    updateProducts();
+    
+    // Add animation for button click
+    resetButton.classList.add("animate-pulse");
+    setTimeout(() => {
+      resetButton.classList.remove("animate-pulse");
+    }, 500);
+  });
+
 
   // Handle search
   async function handleSearch() {
