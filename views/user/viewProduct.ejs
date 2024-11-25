@@ -89,27 +89,35 @@
               <%= product.productName %>
             </h1>
 
-            <!-- Pricing -->
-            <div class="flex items-center space-x-4 my-4">
-              <p class="text-lg text-gray-800 font-bold">
-                ₹<%= product.variants[0]?.discountPrice || 'N/A' %>
-              </p>
-              <p class="text-gray-500 line-through">
-                ₹<%= product.variants[0]?.price || 'N/A' %>
-              </p>
-              <p class="text-green-600 font-semibold">
-                <%= product.variants[0]?.discountPercentage || 0 %>% off
-              </p>
-            </div>
+<!-- Pricing -->
+<div class="flex items-center space-x-4 my-4">
+  <p class="text-lg text-gray-800 font-bold variant-price">₹<%= product.variants[0]?.discountPrice || 'N/A' %></p>
+  <p class="text-gray-500 line-through variant-original-price">₹<%= product.variants[0]?.price || 'N/A' %></p>
+  <p class="text-green-600 font-semibold variant-discount"><%= product.variants[0]?.discountPercentage || 0 %>% off</p>
+</div>
 
-            <!-- Rating -->
-            <div class="text-yellow-500 flex items-center">
-              <i class="fa fa-star"></i>
-              <p class="mr-2 text-gray-800 font-medium">
-                <%="  "+ product.variants[0]?.rating || 'No rating' %>
-              </p>
-              <span class="ml-1 text-gray-500">426 reviews</span>
-            </div>
+<!-- Rating -->
+<div class="text-yellow-500 flex items-center">
+  <i class="fa fa-star"></i>
+  <p class="mr-2 text-gray-800 font-medium variant-rating"><%= product.variants[0]?.rating || 'No rating' %></p>
+  <span class="ml-1 text-gray-500">426 reviews</span>
+</div>
+
+<!-- Stock Status -->
+<div class="variant-stock mt-2">
+  <% if (product.variants[0].stock == 0) { %>
+    <div class="font-semibold text-red-600 bg-red-100 border border-red-600 rounded-lg p-2" style="width: fit-content;">
+      Out of Stock
+    </div>
+    
+  <% } else { %>
+    <div class="text-green-500">In Stock</div>
+  <% } %>
+</div>
+
+
+
+
 
             <!-- Product Details -->
             <div class="mt-6">
@@ -130,20 +138,18 @@
               </ul>
             </div>
 
-            <!-- Select Color -->
-            <div class="mt-6">
-              <label for="color" class="block font-medium text-gray-700"
-                >Select Color</label
-              >
-              <select
-                id="color"
-                class="mt-2 px-4 py-2 border rounded-lg shadow-sm"
-              >
-                <% product.variants.forEach(variant => { %>
-                <option><%= variant.color || 'N/A' %></option>
-                <% }) %>
-              </select>
-            </div>
+<!-- Select Color -->
+<div class="mt-6">
+  <label for="color" class="block font-medium text-gray-700">Select Color</label>
+  <select id="color" class="mt-2 px-4 py-2 border rounded-lg shadow-sm">
+    <% product.variants.forEach(variant => { %>
+    <option value="<%= variant.color %>"><%= variant.color || 'N/A' %></option>
+    <% }) %>
+  </select>
+</div>
+<!-- Add a data attribute to an element (hidden or visible) -->
+<div id="product-details" data-product-id="<%= product._id %>"></div>
+
 
             <!-- Action Buttons -->
             <div class="mt-8 flex space-x-4">
@@ -191,6 +197,53 @@
         mainImage.src = imageUrl;
         imageZoom.style.setProperty("--url", `url(${imageUrl})`);
       }
+
+ 
+
+
+// Function to update variant details
+function updateVariantDetails(variant) {
+  document.querySelector(".variant-price").textContent = `₹${variant.discountPrice || 'N/A'}`;
+  document.querySelector(".variant-original-price").textContent = `₹${variant.price || 'N/A'}`;
+  document.querySelector(".variant-discount").textContent = `${variant.discountPercentage || 0}% off`;
+  document.querySelector(".variant-rating").textContent = variant.rating ? `${variant.rating} stars` : "No rating";
+  // Update stock status with appropriate styling
+  const stockElement = document.querySelector(".variant-stock");
+  if (variant.stock > 0) {
+    stockElement.innerHTML = '<div class="text-green-500">In Stock</div>';
+  } else {
+    stockElement.innerHTML = '<div class="font-semibold text-red-600 bg-red-100 border border-red-600 rounded-lg p-2" style="width: fit-content;">Out of Stock</div>';
+  }}
+
+// Event listener for color change
+document.getElementById("color").addEventListener("change", function () {
+  const selectedColor = this.value;
+
+  // Retrieve the productId from the data attribute
+  const productDetails = document.getElementById("product-details");
+  const productId = productDetails.getAttribute("data-product-id");
+
+  if (!productId) {
+    console.error("Product ID is missing.");
+    return;
+  }
+
+  console.log("Selected color is: " + selectedColor);
+  console.log("Product ID is: " + productId);
+
+  // Fetch the variant details
+  fetch(`/product/getcolor/variant?productId=${productId}&color=${selectedColor}`)
+    .then((response) => response.json())
+    .then((variant) => {
+      if (variant.imageUrl) updateMainImage(variant.imageUrl); // Update main image
+      updateVariantDetails(variant); // Update other details
+    })
+    .catch((error) => console.error("Error fetching variant details:", error));
+});
+
+  // Initial setup to show the first variant details
+
+
     </script>
   </body>
 </html>

@@ -44,6 +44,9 @@ router.get("/products/search", ShopAllController.searchProducts);
 
 //--------------------View Product Page --------------------
 router.get("/product/:id", User.viewProduct);
+// Route to get variant details by color
+router.get("/product/getcolor/variant", User.getVariantDetails);
+
 
 
 //User Dashboard 

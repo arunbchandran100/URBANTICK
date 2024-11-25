@@ -186,6 +186,7 @@ exports.viewProduct = async (req, res) => {
       },
       {
         $project: {
+          _id: 1,
           productName: 1,
           imageUrl: 1,
           gender: 1,
@@ -195,6 +196,7 @@ exports.viewProduct = async (req, res) => {
           "variants.discountPercentage": 1,
           "variants.rating": 1,
           "variants.color": 1,
+          "variants.stock":1,
         },
       },
     ]);
@@ -205,6 +207,7 @@ exports.viewProduct = async (req, res) => {
 
     // Format product data
     const formattedProduct = {
+      _id: product[0]._id, // Ensure _id is accessible
       productName: product[0].productName,
       imageUrl: product[0].imageUrl,
       gender: product[0].gender,
@@ -215,6 +218,7 @@ exports.viewProduct = async (req, res) => {
         discountPercentage: variant.discountPercentage || "N/A",
         rating: variant.rating || "No rating",
         color: variant.color || "Unknown",
+        stock: variant.stock,
       })),
     };
 
@@ -222,5 +226,40 @@ exports.viewProduct = async (req, res) => {
   } catch (err) {
     console.error("Error fetching product:", err.message);
     res.status(500).send("Server Error");
+  }
+};
+
+
+
+exports.getVariantDetails = async (req, res) => {
+  try {
+    console.log(2222222);
+    const { productId, color } = req.query;
+
+    // Validate inputs
+    if (!productId || !color) {
+      return res.status(400).json({ message: "Missing productId or color." });
+    }
+
+    if (!mongoose.Types.ObjectId.isValid(productId)) {
+      return res.status(400).json({ message: "Invalid Product ID." });
+    }
+
+    // Fetch the variant directly from the Variant collection
+    const variant = await Variant.findOne({
+      productId: productId, // Match the productId
+      color: { $regex: new RegExp(`^${color}$`, "i") }, // Case-insensitive color match
+    });
+
+    if (!variant) {
+      return res.status(404).json({ message: "Variant not found." });
+    }
+
+    console.log(variant);
+    // Respond with the variant details
+    res.json(variant);
+  } catch (error) {
+    console.error("Error fetching variant details:", error);
+    res.status(500).json({ message: "Server error. Please try again later." });
   }
 };
