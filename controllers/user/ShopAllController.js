@@ -37,18 +37,19 @@ exports.shopAll = async (req, res) => {
         ]);
 
         const formattedProducts = products.map((product) => ({
-            _id: product._id,
-            brand: product.brand,
-            productName: product.productName,
-            imageUrl:
-                Array.isArray(product.imageUrl) && product.imageUrl.length > 0
-                    ? product.imageUrl[0]
-                    : "/images/default-product.jpg",
-            price: product.variants?.price || null,
-            rating: product.variants?.rating || null,
-            discountPrice: product.variants?.discountPrice || null,
-            discountPercentage: product.variants?.discountPercentage || null,
-            stock: product.variants.stock,
+          _id: product._id,
+          brand: product.brand,
+          productName: product.productName,
+          imageUrl:
+            Array.isArray(product.imageUrl) && product.imageUrl.length > 0
+              ? product.imageUrl[0]
+              : "/images/default-product.jpg",
+          color: product.variants?.color,
+          price: product.variants?.price || null,
+          rating: product.variants?.rating || null,
+          discountPrice: product.variants?.discountPrice || null,
+          discountPercentage: product.variants?.discountPercentage || null,
+          stock: product.variants.stock,
         }));
 
         // console.log(formattedProducts);
@@ -110,8 +111,8 @@ exports.filterProducts = async (req, res) => {
             }
         }
 
-        console.log(2222);
-        console.log(sort);
+        // console.log(2222);
+        // console.log(sort);
         // Determine sorting order
         let sortCriteria = {};
         if (sort === "priceLowToHigh") {
@@ -163,19 +164,20 @@ exports.filterProducts = async (req, res) => {
         ]);
 
         const formattedProducts = products.map((product) => ({
-            _id: product._id,
-            brand: product.brand,
-            productName: product.productName,
-            imageUrl:
-                Array.isArray(product.imageUrl) && product.imageUrl.length > 0
-                    ? product.imageUrl[0]
-                    : "/images/default-product.jpg",
-            price: product.variants?.price || null,
-            rating: product.variants?.rating || null,
-            discountPrice: product.variants?.discountPrice || null,
-            discountPercentage: product.variants?.discountPercentage || null,
-            categoryId: product.categoriesId,
-            stock: product.variants.stock,
+          _id: product._id,
+          brand: product.brand,
+          productName: product.productName,
+          imageUrl:
+            Array.isArray(product.imageUrl) && product.imageUrl.length > 0
+              ? product.imageUrl[0]
+              : "/images/default-product.jpg",
+          price: product.variants?.price || null,
+          rating: product.variants?.rating || null,
+          discountPrice: product.variants?.discountPrice || null,
+          discountPercentage: product.variants?.discountPercentage || null,
+          categoryId: product.categoriesId,
+          stock: product.variants.stock,
+          color: product.variants?.color,
         }));
 
         // console.log("Filtered products:", formattedProducts);
@@ -277,20 +279,21 @@ exports.searchProducts = async (req, res) => {
         ]);
 
         const formattedProducts = products.map((product) => ({
-            _id: product._id,
-            brand: product.brand,
-            productName: product.productName,
-            imageUrl:
-                Array.isArray(product.imageUrl) && product.imageUrl.length > 0
-                    ? product.imageUrl[0]
-                    : "/images/default-product.jpg",
-            price: product.variants?.price || null,
-            rating: product.variants?.rating || null,
-            rating: product.variants?.rating || null,
-            discountPrice: product.variants?.discountPrice || null,
-            discountPercentage: product.variants?.discountPercentage || null,
-            categoryId: product.categoriesId,
-            stock: product.variants.stock,
+          _id: product._id,
+          brand: product.brand,
+          productName: product.productName,
+          imageUrl:
+            Array.isArray(product.imageUrl) && product.imageUrl.length > 0
+              ? product.imageUrl[0]
+              : "/images/default-product.jpg",
+          price: product.variants?.price || null,
+          rating: product.variants?.rating || null,
+          rating: product.variants?.rating || null,
+          discountPrice: product.variants?.discountPrice || null,
+          discountPercentage: product.variants?.discountPercentage || null,
+          categoryId: product.categoriesId,
+          stock: product.variants.stock,
+          color: product.variants?.color,
         }));
 
         console.log("Searched products:", formattedProducts);
