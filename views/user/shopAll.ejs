@@ -114,7 +114,6 @@
                   Reset Filters
                 </button>
               </div>
-
             </div>
           </div>
 
@@ -138,7 +137,7 @@
                   </h3>
                   <div>
                     <p class="ml-1 text-gray-800 font-medium">
-                      <%= product.color  %>
+                      <%= product.color %>
                     </p>
                   </div>
                   <div class="text-yellow-500 flex items-center">
@@ -198,7 +197,7 @@
             minPrice: document.getElementById("minPrice"),
             maxPrice: document.getElementById("maxPrice"),
             searchInput: document.getElementById("searchInput"),
-            productGrid: document.getElementById("productGrid")
+            productGrid: document.getElementById("productGrid"),
           };
 
           // Fetch and populate filter options
@@ -208,7 +207,7 @@
 
             // Populate brand options
             if (data.brands) {
-              data.brands.forEach(brand => {
+              data.brands.forEach((brand) => {
                 elements.brand.insertAdjacentHTML(
                   "beforeend",
                   `<option value="${brand}">${brand}</option>`
@@ -218,7 +217,7 @@
 
             // Populate color options
             if (data.colors) {
-              data.colors.forEach(color => {
+              data.colors.forEach((color) => {
                 elements.color.insertAdjacentHTML(
                   "beforeend",
                   `<option value="${color}">${color}</option>`
@@ -228,7 +227,7 @@
 
             // Populate category options
             if (data.categories) {
-              data.categories.forEach(category => {
+              data.categories.forEach((category) => {
                 elements.category.insertAdjacentHTML(
                   "beforeend",
                   `<option value="${category._id}">${category.categoriesName}</option>`
@@ -260,7 +259,7 @@
                 minPrice: elements.minPrice.value,
                 maxPrice: elements.maxPrice.value,
                 stockStatus: elements.stockFilter.value,
-                sort: elements.sortFilter.value
+                sort: elements.sortFilter.value,
               };
 
               // Build query string
@@ -274,14 +273,14 @@
               const data = await response.json();
 
               if (!data.products) {
-                console.error('No products returned');
+                console.error("No products returned");
                 return;
               }
 
               // Update product grid
- elements.productGrid.innerHTML = '';
-data.products.forEach(product => {
-  const productCard = `
+              elements.productGrid.innerHTML = "";
+              data.products.forEach((product) => {
+                const productCard = `
     <div class="bg-white rounded-lg shadow-md p-4 flex flex-col">
       <a href="/product/${product._id}">
         <img 
@@ -296,30 +295,36 @@ data.products.forEach(product => {
       </h3>
           <div>
           <p class="ml-1 text-gray-800 font-medium">
-            ${ product.color }
+            ${product.color}
           </p>
         </div>
       <div class="text-yellow-500 flex items-center">
         <i class="fa fa-star"></i>
         <p class="ml-1 text-gray-800 font-medium">
-          ${product.rating || 'No rating'}
+          ${product.rating || "No rating"}
         </p>
       </div>
-      ${product.price && product.discountPrice ? `
+      ${product.price && product.discountPrice
+                    ? `
         <div class="flex gap-2">
           <div class="text-xl font-bold text-gray-900">₹${product.discountPrice}</div>
           <div class="text-gray-500 line-through mt-1">₹${product.price}</div>
         </div>
-      ` : `
+      `
+                    : `
         <div class="text-xl font-bold text-gray-900">Price Not Available</div>
-      `}
-      ${product.stock > 0 ? `
+      `
+                  }
+      ${product.stock > 0
+                    ? `
         <div class="mt-2 text-green-500"></div>
-      ` : `
+      `
+                    : `
         <div class="mt-2 font-semibold text-red-600 bg-red-100 border border-red-600 rounded-lg p-2">
           Out of Stock
         </div>
-      `}
+      `
+                  }
       <div class="flex justify-between items-center mt-4">
         <a href="#" class="hover:text-slate-500">
           <i class="fa-regular fa-heart"></i>
@@ -327,7 +332,6 @@ data.products.forEach(product => {
       </div>
     </div>
   `;
-
 
                 elements.productGrid.innerHTML += productCard;
               });
@@ -360,7 +364,6 @@ data.products.forEach(product => {
             }, 500);
           });
 
-
           // Handle search
           async function handleSearch() {
             try {
@@ -374,13 +377,13 @@ data.products.forEach(product => {
               const data = await response.json();
 
               if (!data.products) {
-                console.error('No products returned from search');
+                console.error("No products returned from search");
                 return;
               }
 
               // Update product grid with search results
-              elements.productGrid.innerHTML = '';
-              data.products.forEach(product => {
+              elements.productGrid.innerHTML = "";
+              data.products.forEach((product) => {
                 const productCard = `
           <div class="bg-white rounded-lg shadow-md p-4 flex flex-col">
             <a href="/product/${product._id}">
@@ -396,23 +399,26 @@ data.products.forEach(product => {
             </h3>
         <div>
           <p class="ml-1 text-gray-800 font-medium">
-            ${ product.color }
+            ${product.color}
           </p>
         </div>
             <div class="text-yellow-500 flex items-center">
               <i class="fa fa-star"></i>
               <p class="ml-1 text-gray-800 font-medium">
-                ${product.rating || 'No rating'}
+                ${product.rating || "No rating"}
               </p>
             </div>
-            ${product.price && product.discountPrice ? `
+            ${product.price && product.discountPrice
+                    ? `
               <div class="flex gap-2">
                 <div class="text-xl font-bold text-gray-900">₹${product.discountPrice}</div>
                 <div class="text-gray-500 line-through mt-1">₹${product.price}</div>
               </div>
-            ` : `
+            `
+                    : `
               <div class="text-xl font-bold text-gray-900">Price Not Available</div>
-            `}
+            `
+                  }
             <div class="flex justify-between items-center mt-4">
               <a href="#" class="hover:text-slate-500">
                 <i class="fa-regular fa-heart"></i>
@@ -432,7 +438,7 @@ data.products.forEach(product => {
           const debouncedUpdateProducts = debounce(updateProducts, 300);
 
           // Add event listeners
-          elements.searchInput.addEventListener('input', debouncedSearch);
+          elements.searchInput.addEventListener("input", debouncedSearch);
 
           // Add event listeners for filters
           [
@@ -441,22 +447,16 @@ data.products.forEach(product => {
             elements.color,
             elements.category,
             elements.stockFilter,
-            elements.sortFilter
-          ].forEach(element => {
-            element.addEventListener('change', updateProducts);
+            elements.sortFilter,
+          ].forEach((element) => {
+            element.addEventListener("change", updateProducts);
           });
 
           // Add event listeners for price inputs
-          elements.minPrice.addEventListener('input', debouncedUpdateProducts);
-          elements.maxPrice.addEventListener('input', debouncedUpdateProducts);
+          elements.minPrice.addEventListener("input", debouncedUpdateProducts);
+          elements.maxPrice.addEventListener("input", debouncedUpdateProducts);
         });
       </script>
-
-
-
-
-
-
 </body>
 
 </html>

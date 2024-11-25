@@ -4,6 +4,9 @@ const userAuthenticated = require("../middleware/userauthmildware");
 
 // -------------User Login Page--------------------
 exports.loginGET = (req, res) => {
+  if (req.session.user) {
+    return res.redirect("/home");
+  }
   res.render("user/userLogin");
 };
 
@@ -12,6 +15,7 @@ exports.loginPOST = async (req, res) => {
     const { email, password } = req.body;
 
     const user = await User.findOne({ email });
+    console.log("The user is " + user);
     if (!user) {
       return res.render("user/userLogin", { error: "User not registered" });
     }
@@ -26,6 +30,7 @@ exports.loginPOST = async (req, res) => {
     }
 
     req.session.user = user;
+    console.log("The user is " + req.session.user);
 
     // Redirect to the home page after successful login
     res.redirect("/home");
@@ -126,40 +131,44 @@ const mongoose = require("mongoose"); // Import mongoose
 
 exports.home = async (req, res) => {
   try {
-    const products = await Product.aggregate([
-      {
-        $lookup: {
-          from: "variants",
-          localField: "_id",
-          foreignField: "productId",
-          as: "variants",
-        },
-      },
-      {
-        $project: {
-          _id: 1,
-          productName: 1,
-          imageUrl: 1,
-          variants: {
-            $arrayElemAt: ["$variants", 0],
+    if (req.session.user) {
+      const products = await Product.aggregate([
+        {
+          $lookup: {
+            from: "variants",
+            localField: "_id",
+            foreignField: "productId",
+            as: "variants",
           },
         },
-      },
-    ]);
+        {
+          $project: {
+            _id: 1,
+            productName: 1,
+            imageUrl: 1,
+            variants: {
+              $arrayElemAt: ["$variants", 0],
+            },
+          },
+        },
+      ]);
 
-    const formattedProducts = products.map((product) => ({
-      _id: product._id,
-      productName: product.productName,
-      imageUrl:
-        Array.isArray(product.imageUrl) && product.imageUrl.length > 0
-          ? product.imageUrl[0]
-          : "/images/default-product.jpg",
-      price: product.variants?.price || null,
-      discountPrice: product.variants?.discountPrice || null,
-    }));
+      const formattedProducts = products.map((product) => ({
+        _id: product._id,
+        productName: product.productName,
+        imageUrl:
+          Array.isArray(product.imageUrl) && product.imageUrl.length > 0
+            ? product.imageUrl[0]
+            : "/images/default-product.jpg",
+        price: product.variants?.price || null,
+        discountPrice: product.variants?.discountPrice || null,
+      }));
 
-    // console.log(formattedProducts);
-    res.render("user/home", { products: formattedProducts });
+      // console.log(formattedProducts);
+      res.render("user/home", { products: formattedProducts });
+    } else {
+      res.status(200).redirect("/user/login");
+    }
   } catch (err) {
     console.error("Error fetching products:", err.message);
     res.status(500).send("Server Error");
@@ -196,7 +205,7 @@ exports.viewProduct = async (req, res) => {
           "variants.discountPercentage": 1,
           "variants.rating": 1,
           "variants.color": 1,
-          "variants.stock":1,
+          "variants.stock": 1,
         },
       },
     ]);
@@ -228,8 +237,6 @@ exports.viewProduct = async (req, res) => {
     res.status(500).send("Server Error");
   }
 };
-
-
 
 exports.getVariantDetails = async (req, res) => {
   try {

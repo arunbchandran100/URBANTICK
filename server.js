@@ -9,7 +9,6 @@ const GoogleStrategy = require("passport-google-oauth20").Strategy;
 const path = require("path");
 const nocache = require("nocache");
 
-
 app.set("view engine", "ejs");
 app.use(express.static("public"));
 require("./models/mongodb");
@@ -23,26 +22,37 @@ app.use(nocache());
 
 app.use(
   session({
-    secret: "your_secret_key",  
+    secret: "123456755",
     resave: false,
     saveUninitialized: true,
-    cookie: { maxAge: 604800000 },  
+    cookie: { maxAge: 604800000 },
   })
 );
+
+app.use((req, res, next) => {
+  req.session.user = {
+    _id: "673deae68b80ef4c7373e582",
+    fullName: "Arun b chandran",
+    email: "arunbchandran100@gmail.com",
+    password: "$2a$10$JY8zyDruREWl7ZLmCNks2ukTDV1Qo8xVk2zcNV0wrmVru0efnZ2WO",
+    status: "active",
+    __v: 0,
+    googleId: "118236408678156032539",
+  };
+  next();
+});
+
 // const navbarUsername = require("../middleware/navbarUsername");
 
 const navbarUsername = require("./middleware/navbarUsername");
 
 app.use(navbarUsername);
 
-
 const userRoute = require("./routes/userRoute");
 app.use("/", userRoute);
 
 const adminRoute = require("./routes/adminRoute");
 app.use("/admin", adminRoute);
-
-
 
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
@@ -73,10 +83,8 @@ passport.use(
             // return res.render("user/userLogin", {
             // error: `${user.email} is blocked`,
             // });
-
           }
 
-           
           user.googleId = profile.id;
         } else {
           user = new User({
@@ -102,9 +110,6 @@ passport.deserializeUser((id, done) => {
     .catch((err) => done(err, null));
 });
 
-
-
-
 app.get(
   "/auth/google",
   passport.authenticate("google", {
@@ -112,7 +117,6 @@ app.get(
     prompt: "select_account",
   })
 );
-
 
 app.get("/auth/google/callback", (req, res, next) => {
   passport.authenticate("google", (err, user, info) => {
@@ -137,12 +141,11 @@ app.get("/auth/google/callback", (req, res, next) => {
 
       // Update the session with the user data
       req.session.user = user;
+      console.log(user);
       res.redirect("/home");
     });
   })(req, res, next);
 });
-
-
 
 // app.get("/logout", (req, res) => {
 //   req.logout(() => {

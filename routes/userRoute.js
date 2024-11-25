@@ -45,6 +45,7 @@ router.get("/products/search", ShopAllController.searchProducts);
 //--------------------View Product Page --------------------
 router.get("/product/:id", User.viewProduct);
 // Route to get variant details by color
+
 router.get("/product/getcolor/variant", User.getVariantDetails);
 
 
@@ -68,6 +69,15 @@ router.post("/user/address/edit/:id", userProfileController.updateAddress);
 
 // Delete an address
 router.delete("/user/address/:id", userProfileController.deleteAddress);
+
+
+//------------Cart---------------------------- 
+const cartController = require("../controllers/user/cartController");
+
+
+router.post("/cart/add", cartController.addToCart);
+
+
 
 module.exports = router;
 
