@@ -10,6 +10,9 @@
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.6.0/css/all.min.css"
     integrity="sha512-Kc323vGBEqzTmouAECnVceyQqyqdsSiqLQISBL29aUW4U/M7pSPA/gEUZQqv1cwx4OnYxTxve5UMg5GT6L4JJg=="
     crossorigin="anonymous" referrerpolicy="no-referrer" />
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/notyf@3/notyf.min.css">
+  <script src="https://cdn.jsdelivr.net/npm/notyf@3/notyf.min.js"></script>
+
   <style>
     #imageZoom {
       width: 100%;
@@ -131,17 +134,19 @@
               </ul>
             </div>
 
-<!-- Select Color -->
-<div class="mt-6">
-  <label for="color" class="block font-medium text-gray-700">Select Color</label>
-  <select id="color" class="mt-2 px-4 py-2 border rounded-lg shadow-sm">
-    <% product.variants.forEach(variant => { %>
-      <option value="<%= variant.color %>"><%= variant.color || 'N/A' %></option>
-    <% }) %>
-  </select>
-</div>
+            <!-- Select Color -->
+            <div class="mt-6">
+              <label for="color" class="block font-medium text-gray-700">Select Color</label>
+              <select id="color" class="mt-2 px-4 py-2 border rounded-lg shadow-sm">
+                <% product.variants.forEach(variant=> { %>
+                  <option value="<%= variant.color %>">
+                    <%= variant.color || 'N/A' %>
+                  </option>
+                  <% }) %>
+              </select>
+            </div>
 
-<div id="cartMessage" class="alert" style="display: none;"></div>
+            <div id="cartMessage" class="alert" style="display: none;"></div>
             <!-- Add a data attribute to an element (hidden or visible) -->
             <div id="product-details" data-product-id="<%= product._id %>"></div>
 
@@ -164,6 +169,15 @@
     <%- include("partials/footer") %>
 
       <script>
+
+        const notyf = new Notyf({
+          duration: 3000, // Notification duration in milliseconds
+          position: {
+            x: 'right',
+            y: 'bottom'
+          }
+        });
+
         // JavaScript for zoom functionality
         const imageZoom = document.getElementById("imageZoom");
 
@@ -240,51 +254,53 @@
               console.error("Error fetching variant details:", error)
             );
         });
-// Frontend JavaScript
-document.getElementById("addToCartButton").addEventListener("click", function () {
-  const productId = "<%= product._id %>"; // Pass dynamically from server
-  const variantId = document.getElementById("color").value; // Selected variant ID
-  const quantity = 1; // Default quantity for now, can add quantity selection
+        // Frontend JavaScript
+        document.getElementById("addToCartButton").addEventListener("click", function () {
+          const productId = "<%= product._id %>"; // Pass dynamically from server
+          const variantId = document.getElementById("color").value; // Selected variant ID
+          const quantity = 1; // Default quantity for now, can add quantity selection
 
-  fetch("/cart/add", {
-    method: "POST",
-    headers: {
-      "Content-Type": "application/json",
-    },
-    body: JSON.stringify({
-      productId,
-      variantId,
-      quantity,
-    }),
-  })
-    .then((response) => {
-      if (response.ok) {
-        alert("Item added to cart successfully!");
-      } else {
-        return response.json().then((data) => {
-          throw new Error(data.message || "Failed to add to cart.");
+          fetch("/cart/add", {
+            method: "POST",
+            headers: {
+              "Content-Type": "application/json",
+            },
+            body: JSON.stringify({
+              productId,
+              variantId,
+              quantity,
+            }),
+          })
+            .then((response) => {
+              if (response.ok) {
+                notyf.success("Item added to cart successfully!");
+
+              } else {
+                return response.json().then((data) => {
+                  throw new Error(data.message || "Failed to add to cart.");
+                });
+              }
+            })
+            .catch((error) => {
+              console.error("Error adding to cart:", error.message);
+              notyf.error(error.message);
+
+            });
         });
-      }
-    })
-    .catch((error) => {
-      console.error("Error adding to cart:", error.message);
-      alert("Failed to add item to cart.");
-    });
-});
 
-// Helper function to update cart count
-async function updateCartCount() {
-    try {
-        const response = await fetch('/api/cart/count');
-        const data = await response.json();
-        const cartCountElement = document.getElementById('cartCount');
-        if (cartCountElement) {
-            cartCountElement.textContent = data.count;
+        // Helper function to update cart count
+        async function updateCartCount() {
+          try {
+            const response = await fetch('/api/cart/count');
+            const data = await response.json();
+            const cartCountElement = document.getElementById('cartCount');
+            if (cartCountElement) {
+              cartCountElement.textContent = data.count;
+            }
+          } catch (error) {
+            console.error('Error updating cart count:', error);
+          }
         }
-    } catch (error) {
-        console.error('Error updating cart count:', error);
-    }
-}
       </script>
 </body>
 

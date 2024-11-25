@@ -46,7 +46,7 @@ exports.addToCart = async (req, res) => {
     //   return res.status(404).json({ message: "Variant not found." });
     // }
 
-    // // Check stock availability
+    // Check stock availability
     // if (variant.stock < quantity) {
     //   return res
     //     .status(400)
