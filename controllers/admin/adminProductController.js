@@ -74,7 +74,9 @@ exports.getAddProduct = [
 
 exports.postAddProduct = async (req, res) => {
   try {
-    const { productName, brand, gender, categoriesId, imageUrls } = req.body;
+    let { productName, brand, gender, categoriesId, imageUrls } = req.body;
+
+    brand = brand.charAt(0).toUpperCase() + brand.slice(1).toLowerCase();
 
     if (!productName || !brand || !gender || !imageUrls) {
       return res.status(400).json({ error: "Missing required fields" });
@@ -256,7 +258,7 @@ function extractPublicIdFromUrl(url) {
 //---------------POST Update Product----------------------
 exports.updateProductDetails = async (req, res) => {
   try {
-    const {
+    let {
       productName,
       brand,
       gender,
@@ -265,6 +267,10 @@ exports.updateProductDetails = async (req, res) => {
       imageUrls,
       stock,
     } = req.body;
+
+    //const lowerCategoryName = brand.trim().toLowerCase();
+    brand = brand.charAt(0).toUpperCase() + brand.slice(1).toLowerCase();
+
 
     if (!productName || !brand || !gender || !categoriesId) {
       return res.status(400).json({ error: "Missing required fields" });
@@ -286,7 +292,7 @@ exports.updateProductDetails = async (req, res) => {
           await Variant.findByIdAndUpdate(
             variant._id,
             {
-              color: variant.color,
+              color: variant.color.charAt(0).toUpperCase() + variant.color.slice(1).toLowerCase(),
               price: variant.price,
               discountPrice: variant.discountPrice,
               discountPercentage: variant.discountPercentage,
@@ -350,7 +356,7 @@ exports.getAddvariant = async (req, res) => {
 
 exports.postAddvariant = async (req, res) => {
   try {
-    const {
+    let {
       productId,
       color,
       price,
@@ -359,6 +365,9 @@ exports.postAddvariant = async (req, res) => {
       rating,
       stock,
     } = req.body;
+
+    color = color.charAt(0).toUpperCase() + color.slice(1).toLowerCase();
+
 
     // console.log(
     //   productId + " "

@@ -1,15 +1,15 @@
 const adminAuthenticated = require("../middleware/adminauthmildware");
-const User = require("../models/userModel");  
+const User = require("../models/userModel");
 
 
 
 ///////////////////Admin Login-------------------
 exports.getLogin = (req, res) => {
   if (req.session.admin) {
-            res.setHeader(
-              "Cache-Control",
-              "no-store, no-cache, must-revalidate, proxy-revalidate"
-            );
+    res.setHeader(
+      "Cache-Control",
+      "no-store, no-cache, must-revalidate, proxy-revalidate"
+    );
     res.redirect("/admin/dashboard");
   } else {
     res.render("admin/adminLogin", { error: null });
@@ -18,7 +18,7 @@ exports.getLogin = (req, res) => {
 
 
 exports.postLogin = (req, res) => {
-  res.clearCookie("connect.sid");  
+  res.clearCookie("connect.sid");
   if (
     process.env.ADMIN_EMAIL === req.body.email &&
     process.env.ADMIN_PASSWORD === req.body.password
@@ -36,9 +36,9 @@ exports.postLogin = (req, res) => {
 ///////////////////Admin Logout-------------------
 exports.logout = (req, res) => {
   res.setHeader(
-          "Cache-Control",
-          "no-store, no-cache, must-revalidate, proxy-revalidate"
-        );
+    "Cache-Control",
+    "no-store, no-cache, must-revalidate, proxy-revalidate"
+  );
   req.session.destroy();
   res.redirect("/admin/login");
 };
@@ -49,22 +49,22 @@ exports.getDashboard = [
   adminAuthenticated,
   (req, res) => {
     res.setHeader(
-        "Cache-Control",
-        "no-store, no-cache, must-revalidate, proxy-revalidate"
-      );
-    res.render("admin/adminDashboard");  
+      "Cache-Control",
+      "no-store, no-cache, must-revalidate, proxy-revalidate"
+    );
+    res.render("admin/adminDashboard");
   },
 ];
 
- 
+
 ///////////////////Dashboard Customers-------------------
 
 exports.getCustomers = [
   adminAuthenticated,
   async (req, res) => {
     try {
-      const page = parseInt(req.query.page) || 1; 
-      const limit = 12; 
+      const page = parseInt(req.query.page) || 1;
+      const limit = 12;
       const skip = (page - 1) * limit;
 
       const customers = await User.find().skip(skip).limit(limit);
@@ -144,7 +144,7 @@ exports.getCategories = [
       const totalPages = Math.ceil(totalCategories / limit);
 
       res.render("admin/adminCategory", {
-        message: req.query.message || undefined,  
+        message: req.query.message || undefined,
         categories,
         currentPage: page,
         totalPages,
@@ -159,42 +159,51 @@ exports.getCategories = [
 
 exports.addCategory = [
   adminAuthenticated,
-    async (req, res) => {
-  try {
-    const categoryName = req.body.categoriesName.trim().toLowerCase();
+  async (req, res) => {
+    try {
+      // const categoryName = req.body.categoriesName.trim().toLowerCase();
+      const lowerCategoryName = req.body.categoriesName.trim().toLowerCase();
+      const categoryName =
+        lowerCategoryName.charAt(0).toUpperCase() + lowerCategoryName.slice(1);
 
-     const existingCategory = await Category.findOne({
-      categoriesName: categoryName,
-    });
-    if (existingCategory) {
-      const categories = await Category.find();
-      const totalPages = Math.ceil((await Category.countDocuments()) / 10);
-      return res.render("admin/adminCategory", {
-        error: "Category already exists",
-        categories,
-        currentPage: 1,  
-        totalPages,
+
+      const existingCategory = await Category.findOne({
+        categoriesName: categoryName,
       });
+      if (existingCategory) {
+        const categories = await Category.find();
+        const totalPages = Math.ceil((await Category.countDocuments()) / 10);
+        return res.render("admin/adminCategory", {
+          error: "Category already exists",
+          categories,
+          currentPage: 1,
+          totalPages,
+        });
+      }
+
+      const newCategory = new Category({
+        categoriesName: categoryName,
+      });
+
+      await newCategory.save();
+      res.redirect("/admin/category");
+    } catch (err) {
+      res.status(500).send("Error adding category");
     }
-
-     const newCategory = new Category({
-      categoriesName: categoryName,
-    });
-
-    await newCategory.save();
-    res.redirect("/admin/category");
-  } catch (err) {
-    res.status(500).send("Error adding category");
   }
-}
 ];
 
 
 exports.updateCategory = async (req, res) => {
   try {
+
+    const lowerCategoryName = req.body.categoriesName.trim().toLowerCase();
+    const categoriesName =
+      lowerCategoryName.charAt(0).toUpperCase() + lowerCategoryName.slice(1);
+
     await Category.findByIdAndUpdate(req.params.id, {
-      categoriesName: req.body.categoriesName,
-      
+      categoriesName,
+
     });
     res.redirect("/admin/category");
   } catch (err) {
