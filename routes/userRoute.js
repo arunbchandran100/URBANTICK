@@ -78,6 +78,8 @@ const cartController = require("../controllers/user/cartController");
 router.post("/cart/add", cartController.addToCart);
 router.get("/shop/cart", cartController.getCart);
 router.delete("/cart/:id", cartController.deleteFromCart);
+router.put("/cart/:id", cartController.updateCartQuantity);
+
 
 
 
