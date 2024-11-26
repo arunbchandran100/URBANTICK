@@ -145,5 +145,43 @@
         <%- include("partials/footer") %>
 
 </body>
+<script>
+  async function placeOrder() {
+    const selectedAddress = document.querySelector("input[name='selectedAddress']:checked")?.value;
+    const paymentMethod = document.querySelector("input[name='paymentMethod']:checked")?.value;
+
+    if (!selectedAddress || !paymentMethod) {
+      Swal.fire("Error", "Please select an address and payment method.", "error");
+      return;
+    }
+
+    try {
+      const response = await fetch("/user/checkout", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ selectedAddress, paymentMethod }),
+      });
+
+      const data = await response.json();
+
+      if (response.ok) {
+        Swal.fire({
+          icon: "success",
+          title: "Order Placed!",
+          text: data.message,
+          showConfirmButton: true,
+          confirmButtonText: "OK",
+          onClose: () => {
+            window.location.href = data.redirectUrl;
+          },
+        });
+      } else {
+        Swal.fire("Error", data.error, "error");
+      }
+    } catch (error) {
+      Swal.fire("Error", "An error occurred while placing the order.", "error");
+    }
+  }
+</script>
 
 </html>

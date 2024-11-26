@@ -2,7 +2,7 @@ const mongoose = require("mongoose");
 
 const orderSchema = new mongoose.Schema(
   {
-    user_id: {
+    userId: {
       type: mongoose.Schema.Types.ObjectId,
       ref: "User",
       required: true,
@@ -10,36 +10,41 @@ const orderSchema = new mongoose.Schema(
     userName: {
       type: String,
     },
-    products: [
+    orderItems: [
       {
-        productDetails: {
-          type: Object, // Store all product and variant details (e.g., productName, price, color, etc.)
+        order_id: {
+          type: String, 
+          default: () =>
+            `ORD-${Date.now()}-${Math.floor(Math.random() * 10000)}`,
+        },
+        variant: {
+          type: Object, 
+        },
+        product: {
+          type: Object,  
         },
         quantity: {
           type: Number,
         },
-        order_id: {
-          type: String, // Unique order ID for each product
-          default: () =>
-            `ORD-${Date.now()}-${Math.floor(Math.random() * 10000)}`,
-        },
       },
     ],
-    address: {
-      type: Object, // Store the entire address object
+    shippingAddress: {
+      type: Object, 
     },
-    paymentMode: {
-      type: String, // Payment method (e.g., "COD", "Credit Card")
+    paymentMethod: {
+      type: String,  
     },
+    totalPrice: { type: Number },
+
     orderStatus: {
       type: String,
-      default: "Pending", // Possible statuses: Pending, Shipped, Delivered, Cancelled
+      default: "Pending",  
     },
     returnReason: {
-      type: String, // Reason for return (optional)
+      type: String, 
     },
   },
-  { timestamps: true } // Automatically adds createdAt and updatedAt
+  { timestamps: true }  
 );
 
 module.exports = mongoose.model("Order", orderSchema);

@@ -86,6 +86,9 @@ const checkoutController = require("../controllers/user/checkOutController");
 
 
 router.get("/cart/checkout", checkoutController.getCheckout);
+router.post("/user/checkout", checkoutController.placeOrder);
+
+
 
 
 module.exports = router;
