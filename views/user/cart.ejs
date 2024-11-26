@@ -27,123 +27,152 @@
                 Shopping Cart
             </h1>
 
-            <div class="grid md:grid-cols-3 gap-8 mt-16 b-2">
-                <div class="md:col-span-2 space-y-4 p-4 bg-gray-50 shadow-lg">
-                    <% cartItems.forEach(item=> { %>
-                        <div>
-                            <div class="grid grid-cols-3 items-start gap-4 border-b border-gray-200"
-                                data-cart-item-id="<%= item._id %>">
-                                <div class="col-span-2 flex items-start p-4 px-4 gap-4">
-                                    <div class="w-28 h-28 max-sm:w-24 max-sm:h-24 shrink-0 bg-gray-100 p-2 rounded-md">
-                                        <img src="<%= item.product.imageUrl[0] %>"
-                                            class="w-full h-full object-contain" />
-                                    </div>
-                                    <div class="flex flex-col">
-                                        <h3 id="productNameTag" class="text-base font-bold text-gray-800">
-                                            <%= item.product.productName %>
-                                        </h3>
-                                        <p id="variantColorTag" class="text-xs font-semibold text-gray-500 mt-0.5">
-                                            Color: <%= item.variant.color %>
-                                        </p>
-                                        <button type="button "
-                                            class="mt-6 font-semibold text-red-500 text-xs flex items-center gap-1 shrink-0 hover:text-red-700"
-                                            onclick="removeFromCart('<%= item._id %>')">
-                                            <svg xmlns="http://www.w3.org/2000/svg" class="w-4 fill-current inline "
-                                                viewBox="0 0 24 24">
-                                                <path
-                                                    d="M19 7a1 1 0 0 0-1 1v11.191A1.92 1.92 0 0 1 15.99 21H8.01A1.92 1.92 0 0 1 6 19.191V8a1 1 0 0 0-2 0v11.191A3.918 3.918 0 0 0 8.01 23h7.98A3.918 3.918 0 0 0 20 19.191V8a1 1 0 0 0-1-1Zm1-3h-4V2a1 1 0 0 0-1-1H9a1 1 0 0 0-1 1v2H4a1 1 0 0 0 0 2h16a1 1 0 0 0 0-2ZM10 4V3h4v1Z"
-                                                    data-original="#000000"></path>
-                                                <path
-                                                    d="M11 17v-7a1 1 0 0 0-2 0v7a1 1 0 0 0 2 0Zm4 0v-7a1 1 0 0 0-2 0v7a1 1 0 0 0 2 0Z"
-                                                    data-original="#000000"></path>
-                                            </svg>
-                                            REMOVE
-                                        </button>
+            <!-- No Products Message -->
+            <% if (cartItems.length===0) { %>
+
+                <!-- No items in the cart message -->
+<div class="grid align-items-center gap-8 mt-16">
+    <div class="md:col-span-2 space-y-4 p-4 bg-gray-50 shadow-lg text-center text-xl font-medium text-gray-700">
+        No items in the cart
+
+        <!-- Continue Shopping Button -->
+        <div class="mt-6 flex justify-center">
+            <button type="button" onclick="window.location.href='/shopall'"
+                class="text-sm px-6 py-3 w-full md:w-1/3 font-semibold tracking-wide bg-gray-800 text-white rounded-md hover:bg-gray-900">
+                Continue Shopping
+            </button>
+        </div>
+    </div>
+</div>
+
+
+
+                <% } else { %>
+
+                    <div id="cartItemsContainer" class="grid md:grid-cols-3 gap-8 mt-16 b-2">
+                        <div class="md:col-span-2 space-y-4 p-4 bg-gray-50 shadow-lg">
+                            <% cartItems.forEach(item=> { %>
+                                <div>
+                                    <div class="grid grid-cols-3 items-start gap-4 border-b border-gray-200"
+                                        data-cart-item-id="<%= item._id %>">
+                                        <div class="col-span-2 flex items-start p-4 px-4 gap-4">
+                                            <div
+                                                class="w-28 h-28 max-sm:w-24 max-sm:h-24 shrink-0 bg-gray-100 p-2 rounded-md">
+                                                <img src="<%= item.product.imageUrl[0] %>"
+                                                    class="w-full h-full object-contain" />
+                                            </div>
+                                            <div class="flex flex-col">
+                                                <h3 id="productNameTag" class="text-base font-bold text-gray-800">
+                                                    <%= item.product.productName %>
+                                                </h3>
+                                                <p id="variantColorTag"
+                                                    class="text-xs font-semibold text-gray-500 mt-0.5">
+                                                    Color: <%= item.variant.color %>
+                                                </p>
+                                                <button type="button "
+                                                    class="mt-6 font-semibold text-red-500 text-xs flex items-center gap-1 shrink-0 hover:text-red-700"
+                                                    onclick="removeFromCart('<%= item._id %>')">
+                                                    <svg xmlns="http://www.w3.org/2000/svg"
+                                                        class="w-4 fill-current inline " viewBox="0 0 24 24">
+                                                        <path
+                                                            d="M19 7a1 1 0 0 0-1 1v11.191A1.92 1.92 0 0 1 15.99 21H8.01A1.92 1.92 0 0 1 6 19.191V8a1 1 0 0 0-2 0v11.191A3.918 3.918 0 0 0 8.01 23h7.98A3.918 3.918 0 0 0 20 19.191V8a1 1 0 0 0-1-1Zm1-3h-4V2a1 1 0 0 0-1-1H9a1 1 0 0 0-1 1v2H4a1 1 0 0 0 0 2h16a1 1 0 0 0 0-2ZM10 4V3h4v1Z"
+                                                            data-original="#000000"></path>
+                                                        <path
+                                                            d="M11 17v-7a1 1 0 0 0-2 0v7a1 1 0 0 0 2 0Zm4 0v-7a1 1 0 0 0-2 0v7a1 1 0 0 0 2 0Z"
+                                                            data-original="#000000"></path>
+                                                    </svg>
+                                                    REMOVE
+                                                </button>
+                                            </div>
+                                        </div>
+                                        <div class="ml-auto">
+                                            <h4 id="variantPriceTag"
+                                                class="text-lg max-sm:text-base font-bold text-gray-800">
+                                                ₹<%= item.variant.price %>
+                                            </h4>
+                                            <div
+                                                class="flex items-center justify-between border border-gray-300 rounded-md w-24 mt-5">
+                                                <!-- Decrement Button -->
+                                                <button type="button" onclick="updateQuantity('<%= item._id %>', -1)"
+                                                    class="flex items-center justify-center w-8 h-8 text-gray-800 rounded-l-md transition hover:bg-gray-100 "
+                                                    aria-label="Decrease quantity">
+                                                    <svg xmlns="http://www.w3.org/2000/svg" class="w-4 h-4 fill-current"
+                                                        viewBox="0 0 124 124">
+                                                        <path
+                                                            d="M112 50H12C5.4 50 0 55.4 0 62s5.4 12 12 12h100c6.6 0 12-5.4 12-12s-5.4-12-12-12z">
+                                                        </path>
+                                                    </svg>
+                                                </button>
+
+                                                <!-- Quantity Display -->
+                                                <span id="variantQuantityTag"
+                                                    class="text-center flex-1 text-gray-800 font-semibold">
+                                                    <%= item.quantity %>
+                                                </span>
+
+                                                <!-- Increment Button -->
+                                                <button type="button" onclick="updateQuantity('<%= item._id %>', 1)"
+                                                    class="flex items-center justify-center w-8 h-8 text-gray-800 rounded-r-md transition hover:bg-gray-100 "
+                                                    aria-label="Increase quantity">
+                                                    <svg xmlns="http://www.w3.org/2000/svg" class="w-4 h-4 fill-current"
+                                                        viewBox="0 0 42 42">
+                                                        <path
+                                                            d="M37.059 16H26V4.941C26 2.224 23.718 0 21 0s-5 2.224-5 4.941V16H4.941C2.224 16 0 18.282 0 21s2.224 5 4.941 5H16v11.059C16 39.776 18.282 42 21 42s5-2.224 5-4.941V26h11.059C39.776 26 42 23.718 42 21s-2.224-5-4.941-5z">
+                                                        </path>
+                                                    </svg>
+                                                </button>
+                                            </div>
+
+
+                                        </div>
                                     </div>
                                 </div>
-                                <div class="ml-auto">
-                                    <h4 id="variantPriceTag" class="text-lg max-sm:text-base font-bold text-gray-800">
-                                        ₹<%= item.variant.price %>
-                                    </h4>
-                                    <div
-                                        class="flex items-center justify-between border border-gray-300 rounded-md w-24 mt-5">
-                                        <!-- Decrement Button -->
-                                        <button type="button" onclick="updateQuantity('<%= item._id %>', -1)"
-                                            class="flex items-center justify-center w-8 h-8 text-gray-800 rounded-l-md transition hover:bg-gray-100 "
-                                            aria-label="Decrease quantity">
-                                            <svg xmlns="http://www.w3.org/2000/svg" class="w-4 h-4 fill-current"
-                                                viewBox="0 0 124 124">
-                                                <path
-                                                    d="M112 50H12C5.4 50 0 55.4 0 62s5.4 12 12 12h100c6.6 0 12-5.4 12-12s-5.4-12-12-12z">
-                                                </path>
-                                            </svg>
-                                        </button>
+                                <% }); %>
+                        </div>
 
-                                        <!-- Quantity Display -->
-                                        <span id="variantQuantityTag"
-                                            class="text-center flex-1 text-gray-800 font-semibold">
-                                            <%= item.quantity %>
-                                        </span>
+                        <div id="orderSummarySection" class="bg-gray-50 shadow-lg rounded-md p-4 h-max">
+                            <h3 class="text-lg max-sm:text-base font-bold text-gray-800 border-b border-gray-300 pb-2">
+                                Order Summary
+                            </h3>
 
-                                        <!-- Increment Button -->
-                                        <button type="button" onclick="updateQuantity('<%= item._id %>', 1)"
-                                            class="flex items-center justify-center w-8 h-8 text-gray-800 rounded-r-md transition hover:bg-gray-100 "
-                                            aria-label="Increase quantity">
-                                            <svg xmlns="http://www.w3.org/2000/svg" class="w-4 h-4 fill-current"
-                                                viewBox="0 0 42 42">
-                                                <path
-                                                    d="M37.059 16H26V4.941C26 2.224 23.718 0 21 0s-5 2.224-5 4.941V16H4.941C2.224 16 0 18.282 0 21s2.224 5 4.941 5H16v11.059C16 39.776 18.282 42 21 42s5-2.224 5-4.941V26h11.059C39.776 26 42 23.718 42 21s-2.224-5-4.941-5z">
-                                                </path>
-                                            </svg>
-                                        </button>
-                                    </div>
+                            <ul class="text-gray-800 mt-6 space-y-3">
+                                <li class="flex flex-wrap gap-4 text-sm">
+                                    Subtotal
+                                    <span id="subtotalPriceTag" class="ml-auto font-bold">₹<%= cartItems.reduce((acc,
+                                            item)=>
+                                            acc + item.variant.price
+                                            *
+                                            item.quantity, 0) %></span>
+                                </li>
+                                <li class="flex flex-wrap gap-4 text-sm">
+                                    Shipping
+                                    <span id="" class="ml-auto font-semi-bold ">free</span>
+                                </li>
+                                <hr class="border-gray-300" />
+                                <li class="flex flex-wrap gap-4 text-sm font-bold">
+                                    Total
+                                    <span id="totalPriceTag" class="ml-auto">₹<%= cartItems.reduce((acc, item)=> acc +
+                                            item.variant.price *
+                                            item.quantity, 0) %></span>
+                                </li>
+                            </ul>
 
+                            <div class="mt-6 space-y-3">
+                                <button id="checkoutButton" onclick="window.location.href='/cart/checkout'"
+                                    type="button"
+                                    class="text-sm px-4 py-2.5 w-full font-semibold tracking-wide bg-gray-800 hover:bg-gray-900 text-white rounded-md">
+                                    Checkout
+                                </button>
+                                <button type="button" onclick="window.location.href='/shopall'"
+                                    class="text-sm px-4 py-2.5 w-full font-semibold tracking-wide bg-transparent text-gray-800 border border-gray-300 rounded-md">
+                                    Continue Shopping
+                                </button>
 
-                                </div>
                             </div>
                         </div>
-                        <% }); %>
-                </div>
-
-                <div class="bg-gray-50 shadow-lg rounded-md p-4 h-max">
-                    <h3 class="text-lg max-sm:text-base font-bold text-gray-800 border-b border-gray-300 pb-2">
-                        Order Summary
-                    </h3>
-
-                    <ul class="text-gray-800 mt-6 space-y-3">
-                        <li class="flex flex-wrap gap-4 text-sm">
-                            Subtotal
-                            <span id="subtotalPriceTag" class="ml-auto font-bold">₹<%= cartItems.reduce((acc, item)=>
-                                    acc + item.variant.price
-                                    *
-                                    item.quantity, 0) %></span>
-                        </li>
-                        <li class="flex flex-wrap gap-4 text-sm">
-                            Shipping
-                            <span id="" class="ml-auto font-semi-bold ">free</span>
-                        </li>
-                        <hr class="border-gray-300" />
-                        <li class="flex flex-wrap gap-4 text-sm font-bold">
-                            Total
-                            <span id="totalPriceTag" class="ml-auto">₹<%= cartItems.reduce((acc, item)=> acc +
-                                    item.variant.price *
-                                    item.quantity, 0) %></span>
-                        </li>
-                    </ul>
-
-                    <div class="mt-6 space-y-3">
-                        <button onclick="window.location.href='/cart/checkout'" type="button"
-                            class="text-sm px-4 py-2.5 w-full font-semibold tracking-wide bg-gray-800 hover:bg-gray-900 text-white rounded-md">
-                            Checkout
-                        </button>
-                        <button type="button" onclick="window.location.href='/shopall'"
-                            class="text-sm px-4 py-2.5 w-full font-semibold tracking-wide bg-transparent text-gray-800 border border-gray-300 rounded-md">
-                            Continue Shopping
-                        </button>
-
                     </div>
-                </div>
-            </div>
+                    <% } %>
+
         </div>
 </body>
 <!------------- Footer ------------>
@@ -157,6 +186,7 @@
                 y: "bottom",
             },
         });
+
 
         async function removeFromCart(cartItemId) {
             try {
