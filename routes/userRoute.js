@@ -61,7 +61,7 @@ router.post("/user/profile", userProfileController.updatePersonalInformation);
 router.post("/user/address/add", userProfileController.addAddress);
 
 // Get all addresses
-router.get("/user/address/:userId", userProfileController.getUserAddresses);
+router.get("/user/address", userProfileController.getUserAddresses);
 
 // Update an address
 router.get("/user/address/edit/:id", userProfileController.getEditAddress);
@@ -81,6 +81,11 @@ router.delete("/cart/:id", cartController.deleteFromCart);
 router.put("/cart/:id", cartController.updateCartQuantity);
 
 
+//-----------CheckoutPage
+const checkoutController = require("../controllers/user/checkOutController");
+
+
+router.get("/cart/checkout", checkoutController.getCheckout);
 
 
 module.exports = router;

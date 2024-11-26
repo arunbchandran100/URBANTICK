@@ -65,36 +65,38 @@
                                     <h4 id="variantPriceTag" class="text-lg max-sm:text-base font-bold text-gray-800">
                                         ₹<%= item.variant.price %>
                                     </h4>
-    <div class="flex items-center justify-between border border-gray-300 rounded-md w-24 mt-5">
-    <!-- Decrement Button -->
-    <button
-        type="button"
-        onclick="updateQuantity('<%= item._id %>', -1)"
-        class="flex items-center justify-center w-8 h-8 text-gray-800 rounded-l-md transition hover:bg-gray-100 "
-        aria-label="Decrease quantity"
-    >
-        <svg xmlns="http://www.w3.org/2000/svg" class="w-4 h-4 fill-current" viewBox="0 0 124 124">
-            <path d="M112 50H12C5.4 50 0 55.4 0 62s5.4 12 12 12h100c6.6 0 12-5.4 12-12s-5.4-12-12-12z"></path>
-        </svg>
-    </button>
+                                    <div
+                                        class="flex items-center justify-between border border-gray-300 rounded-md w-24 mt-5">
+                                        <!-- Decrement Button -->
+                                        <button type="button" onclick="updateQuantity('<%= item._id %>', -1)"
+                                            class="flex items-center justify-center w-8 h-8 text-gray-800 rounded-l-md transition hover:bg-gray-100 "
+                                            aria-label="Decrease quantity">
+                                            <svg xmlns="http://www.w3.org/2000/svg" class="w-4 h-4 fill-current"
+                                                viewBox="0 0 124 124">
+                                                <path
+                                                    d="M112 50H12C5.4 50 0 55.4 0 62s5.4 12 12 12h100c6.6 0 12-5.4 12-12s-5.4-12-12-12z">
+                                                </path>
+                                            </svg>
+                                        </button>
 
-    <!-- Quantity Display -->
-    <span id="variantQuantityTag" class="text-center flex-1 text-gray-800 font-semibold">
-        <%= item.quantity %>
-    </span>
+                                        <!-- Quantity Display -->
+                                        <span id="variantQuantityTag"
+                                            class="text-center flex-1 text-gray-800 font-semibold">
+                                            <%= item.quantity %>
+                                        </span>
 
-    <!-- Increment Button -->
-    <button
-        type="button"
-        onclick="updateQuantity('<%= item._id %>', 1)"
-        class="flex items-center justify-center w-8 h-8 text-gray-800 rounded-r-md transition hover:bg-gray-100 "
-        aria-label="Increase quantity"
-    >
-        <svg xmlns="http://www.w3.org/2000/svg" class="w-4 h-4 fill-current" viewBox="0 0 42 42">
-            <path d="M37.059 16H26V4.941C26 2.224 23.718 0 21 0s-5 2.224-5 4.941V16H4.941C2.224 16 0 18.282 0 21s2.224 5 4.941 5H16v11.059C16 39.776 18.282 42 21 42s5-2.224 5-4.941V26h11.059C39.776 26 42 23.718 42 21s-2.224-5-4.941-5z"></path>
-        </svg>
-    </button>
-</div>
+                                        <!-- Increment Button -->
+                                        <button type="button" onclick="updateQuantity('<%= item._id %>', 1)"
+                                            class="flex items-center justify-center w-8 h-8 text-gray-800 rounded-r-md transition hover:bg-gray-100 "
+                                            aria-label="Increase quantity">
+                                            <svg xmlns="http://www.w3.org/2000/svg" class="w-4 h-4 fill-current"
+                                                viewBox="0 0 42 42">
+                                                <path
+                                                    d="M37.059 16H26V4.941C26 2.224 23.718 0 21 0s-5 2.224-5 4.941V16H4.941C2.224 16 0 18.282 0 21s2.224 5 4.941 5H16v11.059C16 39.776 18.282 42 21 42s5-2.224 5-4.941V26h11.059C39.776 26 42 23.718 42 21s-2.224-5-4.941-5z">
+                                                </path>
+                                            </svg>
+                                        </button>
+                                    </div>
 
 
                                 </div>
@@ -116,6 +118,10 @@
                                     *
                                     item.quantity, 0) %></span>
                         </li>
+                        <li class="flex flex-wrap gap-4 text-sm">
+                            Shipping
+                            <span id="" class="ml-auto font-semi-bold ">free</span>
+                        </li>
                         <hr class="border-gray-300" />
                         <li class="flex flex-wrap gap-4 text-sm font-bold">
                             Total
@@ -126,14 +132,15 @@
                     </ul>
 
                     <div class="mt-6 space-y-3">
-                        <button type="button"
+                        <button onclick="window.location.href='/cart/checkout'" type="button"
                             class="text-sm px-4 py-2.5 w-full font-semibold tracking-wide bg-gray-800 hover:bg-gray-900 text-white rounded-md">
                             Checkout
                         </button>
-                        <button type="button"
+                        <button type="button" onclick="window.location.href='/shopall'"
                             class="text-sm px-4 py-2.5 w-full font-semibold tracking-wide bg-transparent text-gray-800 border border-gray-300 rounded-md">
                             Continue Shopping
                         </button>
+
                     </div>
                 </div>
             </div>

@@ -101,7 +101,7 @@ exports.getCart = async (req, res) => {
 
 exports.deleteFromCart = async (req, res) => {
   try {
-    console.log(22222222222222222);
+    // console.log(22222222222222222);
     const cartItemId = req.params.id;
     const userId = req.session.user._id;
 

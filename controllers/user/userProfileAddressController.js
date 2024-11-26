@@ -195,7 +195,7 @@ exports.deleteAddress = async (req, res) => {
 // Fetch a single address by ID
 exports.getEditAddress = async (req, res) => {
     try {
-        const { id } = req.params; // Extract address ID from the route
+        const { id } = req.params;
         const address = await Address.findById(id);
 
         if (!address) {

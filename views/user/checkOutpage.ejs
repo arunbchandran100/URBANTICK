@@ -1,0 +1,149 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Checkout</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://cdn.jsdelivr.net/npm/axios/dist/axios.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+    <!-- Material Icons -->
+    <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet" />
+    <link rel="stylesheet" href="style.css" />
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.6.0/css/all.min.css"
+        integrity="sha512-Kc323vGBEqzTmouAECnVceyQqyqdsSiqLQISBL29aUW4U/M7pSPA/gEUZQqv1cwx4OnYxTxve5UMg5GT6L4JJg=="
+        crossorigin="anonymous" referrerpolicy="no-referrer" />
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/sweetalert2@11.1.9/dist/sweetalert2.min.css" />
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/toastr.js/latest/toastr.min.css" />
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11.1.9/dist/sweetalert2.all.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/toastr.js/latest/toastr.min.js"></script>
+    <link href="https://cdn.jsdelivr.net/npm/notyf@3/notyf.min.css" rel="stylesheet" />
+    <script src="https://cdn.jsdelivr.net/npm/notyf@3/notyf.min.js"></script>
+</head>
+
+<body class="bg-gray-50">
+    <!------------ Navbar ---------->
+    <%- include("partials/navBar") %>
+        <div class="mt-16"></div>
+
+        <div class="font-sans max-w-5xl mx-auto bg-gray-50 py-8">
+            <h1 class="text-3xl font-bold text-gray-800 text-center">
+                Checkout
+            </h1>
+
+            <div class="grid md:grid-cols-3 gap-8 mt-8">
+                <!-- Left Section: Address and Payment -->
+                <div class="md:col-span-2 space-y-6">
+                    <!-- Address Section -->
+                    <div class="bg-white p-4 shadow-md rounded-md">
+                        <h3 class="text-lg font-bold text-gray-800 border-b border-gray-200 pb-2">
+                            Shipping Address
+                        </h3>
+                        <div class="mt-4 space-y-4">
+                            <% userAddresses.forEach(address=> { %>
+                                <label class="flex items-start gap-4 p-3 border border-gray-300 rounded-md">
+                                    <input type="radio" name="selectedAddress" value="<%= address._id %>" class="mt-1">
+                                    <div>
+                                        <p class="text-gray-800 font-semibold">
+                                            <%= address.Name %>
+                                        </p>
+                                        <p class="text-sm text-gray-600">
+                                            <%= address.HouseName %>, <%= address.LocalityStreet %>, <%=
+                                                        address.TownCity %>
+                                                        ,
+                                                        <%= address.state %>, <%= address.country %>, <%=
+                                                                    address.pincode %>
+                                        </p>
+                                        <p class="text-sm text-gray-600">Mobile: <%= address.MobileNumber %>
+                                        </p>
+                                    </div>
+                                </label>
+                                <% }) %>
+                        </div>
+                        <button onclick="window.location.href='/user/address'"
+                            class="mt-4 w-full bg-gray-800 hover:bg-gray-900 text-white text-sm py-2 rounded-md">
+                            Add New Address
+                        </button>
+                    </div>
+
+                    <!-- Payment Method Section -->
+                    <div class="bg-white p-4 shadow-md rounded-md">
+                        <h3 class="text-lg font-bold text-gray-800 border-b border-gray-200 pb-2">
+                            Payment Method
+                        </h3>
+                        <div class="mt-4 space-y-3">
+                            <label class="flex items-center gap-3">
+                                <input type="radio" name="paymentMethod" value="COD" class="mt-1">
+                                <span class="text-gray-800 font-semibold">Cash on Delivery</span>
+                            </label>
+                            <label class="flex items-center gap-3">
+                                <input type="radio" name="paymentMethod" value="Online" class="mt-1">
+                                <span class="text-gray-800 font-semibold">Online Payment</span>
+                            </label>
+                            <label class="flex items-center gap-3">
+                                <input type="radio" name="paymentMethod" value="Wallet" class="mt-1">
+                                <span class="text-gray-800 font-semibold">Wallet</span>
+                            </label>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Right Section: Cart Summary -->
+                <div class="bg-white p-4 shadow-md rounded-md">
+                    <h3 class="text-lg font-bold text-gray-800 border-b border-gray-200 pb-2">
+                        Order Summary
+                    </h3>
+                    <ul class="mt-4 space-y-4">
+                        <% cartItems.forEach(item=> { %>
+                            <li class="flex items-start gap-4">
+                                <div class="w-16 h-16 bg-gray-100 p-2 rounded-md">
+                                    <img src="<%= item.productId.imageUrl[0] %>" alt="Product Image"
+                                        class="w-full h-full object-contain">
+                                </div>
+                                <div>
+                                    <p class="text-gray-800 font-semibold">
+                                        <%= item.productId.productName %>
+                                    </p>
+                                    <p class="text-sm text-gray-600">Color: <%= item.variantId.color %>
+                                    </p>
+                                    <p class="text-sm text-gray-600">Quantity: <%= item.quantity %>
+                                    </p>
+                                    <p class="text-sm text-gray-600">Price: ₹<%= item.variantId.price %>
+                                    </p>
+                                </div>
+                            </li>
+                            <% }) %>
+                    </ul>
+                    <div class="mt-6 border-t border-gray-200 pt-4">
+                        <div class="flex justify-between text-gray-800">
+                            <span class="font-semibold">Subtotal:</span>
+                            <span>
+                                ₹<%= cartItems.reduce((acc, item)=> acc + item.variantId.price * item.quantity, 0) %>
+                            </span>
+                        </div>
+                        <div class="flex justify-between text-gray-800">
+                            <span class="font-semibold">Shipping:</span>
+                            <span>Free</span>
+                        </div>
+                        <div class="flex justify-between text-gray-800 font-bold text-lg mt-2">
+                            <span>Total:</span>
+                            <span>
+                                ₹<%= cartItems.reduce((acc, item)=> acc + item.variantId.price * item.quantity, 0) %>
+                            </span>
+                        </div>
+                        <button onclick="placeOrder()"
+                            class="mt-6 w-full bg-gray-800 hover:bg-gray-900 text-white text-sm py-2 rounded-md">
+                            Place Order
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!------------- Footer ------------>
+        <%- include("partials/footer") %>
+
+</body>
+
+</html>
