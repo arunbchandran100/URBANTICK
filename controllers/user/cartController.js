@@ -24,13 +24,6 @@ exports.addToCart = async (req, res) => {
       return res.status(400).json({ message: "Missing required fields." });
     }
 
-    // Check stock availability
-    // if (variant.stock < quantity) {
-    //   return res
-    //     .status(400)
-    //     .json({ message: `Only ${variant.stock} items in stock.` });
-    // }
-
     const nvariant = await Variant.findOne(
       { color: variantId, productId: productId },
       { _id: 1 }
@@ -75,3 +68,8 @@ exports.addToCart = async (req, res) => {
     res.status(500).json({ message: "Server error. Please try again later." });
   }
 };
+
+
+exports.getCart = async(req,res) =>{
+  res.render("user/cart", );
+}
