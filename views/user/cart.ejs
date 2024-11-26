@@ -11,6 +11,10 @@
         integrity="sha512-Kc323vGBEqzTmouAECnVceyQqyqdsSiqLQISBL29aUW4U/M7pSPA/gEUZQqv1cwx4OnYxTxve5UMg5GT6L4JJg=="
         crossorigin="anonymous" referrerpolicy="no-referrer" />
     <script src="https://cdn.jsdelivr.net/npm/axios/dist/axios.min.js"></script>
+
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/notyf@3/notyf.min.css" />
+    <script src="https://cdn.jsdelivr.net/npm/notyf@3/notyf.min.js"></script>
+
 </head>
 
 <body class="bg-gray-50">
@@ -69,7 +73,7 @@
                                                 d="M112 50H12C5.4 50 0 55.4 0 62s5.4 12 12 12h100c6.6 0 12-5.4 12-12s-5.4-12-12-12z"
                                                 data-original="#000000"></path>
                                         </svg>
-                                        <span id="variantQuantityTag"  class="mx-3 font-bold">
+                                        <span id="variantQuantityTag" class="mx-3 font-bold">
                                             <%= item.quantity %>
                                         </span>
                                         <svg xmlns="http://www.w3.org/2000/svg" class="w-2.5 fill-current"
@@ -93,14 +97,16 @@
                     <ul class="text-gray-800 mt-6 space-y-3">
                         <li class="flex flex-wrap gap-4 text-sm">
                             Subtotal
-                            <span id="subtotalPriceTag" class="ml-auto font-bold">₹<%= cartItems.reduce((acc, item)=> acc + item.variant.price
+                            <span id="subtotalPriceTag" class="ml-auto font-bold">₹<%= cartItems.reduce((acc, item)=>
+                                    acc + item.variant.price
                                     *
                                     item.quantity, 0) %></span>
                         </li>
                         <hr class="border-gray-300" />
                         <li class="flex flex-wrap gap-4 text-sm font-bold">
                             Total
-                            <span id="totalPriceTag" class="ml-auto">₹<%= cartItems.reduce((acc, item)=> acc + item.variant.price *
+                            <span id="totalPriceTag" class="ml-auto">₹<%= cartItems.reduce((acc, item)=> acc +
+                                    item.variant.price *
                                     item.quantity, 0) %></span>
                         </li>
                     </ul>
@@ -122,43 +128,54 @@
 <!------------- Footer ------------>
 <%- include("partials/footer") %>
 
-<script>
-    async function removeFromCart(cartItemId) {
-        try {
-            const response = await axios.delete(`/cart/${cartItemId}`);
-            if (response.status === 200) {
-                // Remove the item from the DOM
-                const cartItemElement = document.querySelector(
-                    `[data-cart-item-id="${cartItemId}"]`
-                );
-                cartItemElement.remove();
-                // Optionally, update the subtotal and total
-                updateCartTotals();
-            } else {
-                console.error(
-                    "Failed to remove item from cart:",
-                    response.data.message
-                );
-            }
-        } catch (error) {
-            console.error("Error removing item from cart:", error);
-        }
-    }
-
-    function updateCartTotals() {
-        const cartItemElements = document.querySelectorAll("[data-cart-item-id]");
-        let subtotal = 0;
-        cartItemElements.forEach((item) => {
-            const price = parseFloat(
-                item.querySelector("#variantPriceTag").textContent.replace("₹", "")
-            );
-            const quantity = parseInt(item.querySelector("#variantQuantityTag").textContent);
-            subtotal += price * quantity;
+    <script>
+        const notyf = new Notyf({
+            duration: 3000, // Notification duration in milliseconds
+            position: {
+                x: "right",
+                y: "bottom",
+            },
         });
-        document.getElementById("subtotalPriceTag").textContent = `₹${subtotal}`;
-        document.getElementById("totalPriceTag").textContent = `₹${subtotal}`;
-    }
-</script>
+
+        async function removeFromCart(cartItemId) {
+            try {
+                const response = await axios.delete(`/cart/${cartItemId}`);
+                if (response.status === 200) {
+                    notyf.success("Item removed from cart");
+
+
+                    // Remove the item from the DOM
+                    const cartItemElement = document.querySelector(
+                        `[data-cart-item-id="${cartItemId}"]`
+                    );
+                    cartItemElement.remove();
+                    // Optionally, update the subtotal and total
+                    updateCartTotals();
+                } else {
+                    console.error(
+                        "Failed to remove item from cart:",
+                        response.data.message
+                    );
+                }
+            } catch (error) {
+                console.error("Error removing item from cart:", error);
+            }
+        }
+
+        function updateCartTotals() {
+            const cartItemElements = document.querySelectorAll("[data-cart-item-id]");
+            let subtotal = 0;
+            cartItemElements.forEach((item) => {
+                const price = parseFloat(
+                    item.querySelector("#variantPriceTag").textContent.replace("₹", "")
+                );
+                const quantity = parseInt(item.querySelector("#variantQuantityTag").textContent);
+                subtotal += price * quantity;
+            });
+            document.getElementById("subtotalPriceTag").textContent = `₹${subtotal}`;
+            document.getElementById("totalPriceTag").textContent = `₹${subtotal}`;
+        }
+    </script>
 
 
 </html>
