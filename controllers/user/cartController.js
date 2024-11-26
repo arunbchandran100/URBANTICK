@@ -88,8 +88,8 @@ exports.getCart = async (req, res) => {
       quantity: item.quantity,
     }));
 
-    console.log(222222222);
-    console.log(formattedCartItems);
+    // console.log(222222222);
+    // console.log(formattedCartItems);
 
     res.render("user/cart", { cartItems: formattedCartItems });
   } catch (error) {
@@ -97,3 +97,25 @@ exports.getCart = async (req, res) => {
     res.status(500).send("Server Error");
   }
 };
+
+
+exports.deleteFromCart = async (req, res) => {
+  try {
+    console.log(22222222222222222);
+    const cartItemId = req.params.id;
+    const userId = req.session.user._id;
+
+    // Find and delete the cart item
+    const result = await Cart.findOneAndDelete({ _id: cartItemId, userId });
+
+    if (result) {
+      res.status(200).json({ message: "Item removed from cart" });
+    } else {
+      res.status(404).json({ message: "Item not found in cart" });
+    }
+  } catch (error) {
+    console.error("Error deleting cart item:", error);
+    res.status(500).json({ message: "Server Error" });
+  }
+};
+

@@ -77,8 +77,10 @@ const cartController = require("../controllers/user/cartController");
 
 router.post("/cart/add", cartController.addToCart);
 router.get("/shop/cart", cartController.getCart);
+router.delete("/cart/:id", cartController.deleteFromCart);
 
 
 
 module.exports = router;
+
 
