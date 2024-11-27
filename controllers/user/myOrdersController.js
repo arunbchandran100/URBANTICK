@@ -82,7 +82,7 @@ exports.getOrderDetails = async (req, res) => {
         color: item.variant.color,
         discountPrice: item.variant.discountPrice,
         quantity: item.quantity,
-        status: order.orderStatus || "Pending",
+        orderStatus: item.orderStatus,
       })),
     };
 
