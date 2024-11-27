@@ -50,6 +50,7 @@ exports.placeOrder = async (req, res) => {
       orderId: new ObjectId(),
       product: {
         productId: item.productId._id,
+        brand: item.productId.brand,
         productName: item.productId.productName,
         imageUrl: item.productId.imageUrl[0],
       },

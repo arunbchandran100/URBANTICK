@@ -80,7 +80,7 @@ router.get("/user/orders", myOrders.getMyOrders);
 // View order Details
 router.get("/user/order/details/:id", myOrders.getOrderDetails);
 
-
+router.post("/order/cancel", myOrders.cancelOrderItem);
 
 
 //--------------------Cart----------------------------------------- 

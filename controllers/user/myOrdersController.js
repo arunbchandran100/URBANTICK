@@ -27,6 +27,7 @@ exports.getMyOrders = async (req, res) => {
       totalPrice: order.totalPrice,
       paymentMethod: order.paymentMethod,
       items: order.orderItems.map((item) => ({
+        brand: item.product.brand,
         productName: item.product.productName,
         imageUrl: item.product.imageUrl,
         color: item.variant.color,
@@ -49,9 +50,6 @@ exports.getMyOrders = async (req, res) => {
 };
 
 
-// exports.getOrderDetails = async (req, res) => {
-//   res.render("user/viewOrderDetails");
-// };
 
 
 
@@ -76,6 +74,7 @@ exports.getOrderDetails = async (req, res) => {
       items: order.orderItems.map((item) => ({
         orderItemId: item._id,
         orderId: item.order_id,
+        brand: item.product.brand,
         productName: item.product.productName,
         imageUrl: item.product.imageUrl,
         color: item.variant.color,
@@ -102,5 +101,53 @@ exports.getOrderDetails = async (req, res) => {
   } catch (error) {
     console.error("Error fetching order details:", error);
     res.status(500).send("Internal Server Error");
+  }
+};
+
+
+
+
+exports.cancelOrderItem = async (req, res) => {
+  try {
+    const { orderItemId } = req.body; // Extract the order item ID from the request body
+    const userId = req.session.user._id; // Get the user ID from the session
+
+    // Find the order containing the specific order item
+    const order = await Order.findOne({
+      userId,
+      "orderItems._id": orderItemId,
+    });
+
+    if (!order) {
+      return res.status(404).json({ message: "Order or item not found." });
+    }
+
+    // Find the specific order item
+    const orderItem = order.orderItems.find(
+      (item) => item._id.toString() === orderItemId
+    );
+
+    if (!orderItem) {
+      return res.status(404).json({ message: "Order item not found." });
+    }
+
+    // Check if the order item is eligible for cancellation
+    if (["Shipped", "Delivered"].includes(orderItem.orderStatus)) {
+      return res.status(400).json({
+        message:
+          "Order item cannot be canceled as it is already shipped or delivered.",
+      });
+    }
+
+    // Update the order item's status to "Cancelled"
+    orderItem.orderStatus = "Cancelled";
+
+    // Save the updated order
+    await order.save();
+
+    res.status(200).json({ message: "Order item canceled successfully." });
+  } catch (error) {
+    console.error("Error canceling order item:", error);
+    res.status(500).json({ message: "Internal Server Error." });
   }
 };
