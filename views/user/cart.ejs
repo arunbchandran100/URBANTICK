@@ -90,7 +90,7 @@
                                         <div class="ml-auto">
                                             <h4 id="variantPriceTag"
                                                 class="text-lg max-sm:text-base font-bold text-gray-800">
-                                                ₹<%= item.variant.price %>
+                                                ₹<%= item.variant.discountPrice %>
                                             </h4>
                                             <div
                                                 class="flex items-center justify-between border border-gray-300 rounded-md w-24 mt-5">
@@ -142,7 +142,7 @@
                                     Subtotal
                                     <span id="subtotalPriceTag" class="ml-auto font-bold">₹<%= cartItems.reduce((acc,
                                             item)=>
-                                            acc + item.variant.price
+                                            acc + item.variant.discountPrice
                                             *
                                             item.quantity, 0) %></span>
                                 </li>
@@ -154,7 +154,7 @@
                                 <li class="flex flex-wrap gap-4 text-sm font-bold">
                                     Total
                                     <span id="totalPriceTag" class="ml-auto">₹<%= cartItems.reduce((acc, item)=> acc +
-                                            item.variant.price *
+                                            item.variant.discountPrice *
                                             item.quantity, 0) %></span>
                                 </li>
                             </ul>

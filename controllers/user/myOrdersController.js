@@ -5,40 +5,37 @@ const mongoose = require("mongoose");
 const Cart = require("../../models/cartModel");
 
 
-const Order = require("../../models/orderModel"); // Import the Order model
+const Order = require("../../models/orderModel"); 
 
 
 exports.getMyOrders = async (req, res) => {
   try {
-    const userId = req.session.user._id; // Get the user ID from the session
-    const page = parseInt(req.query.page) || 1; // Get the current page from query params, default to 1
-    const limit = 5; // Number of orders per page
-    const skip = (page - 1) * limit; // Skip orders for previous pages
+    const userId = req.session.user._id; 
+    const page = parseInt(req.query.page) || 1;  
+    const limit = 5;  
+    const skip = (page - 1) * limit;  
 
-    // Fetch orders with pagination
-    const totalOrders = await Order.countDocuments({ userId });
+     const totalOrders = await Order.countDocuments({ userId });
     const userOrders = await Order.find({ userId })
       .sort({ createdAt: -1 })
       .skip(skip)
       .limit(limit);
 
-    // Prepare orders with relevant details for rendering
-    const ordersWithDetails = userOrders.map((order) => ({
-      _id: order._id, // Order ID
-      orderDate: order.createdAt.toDateString(), // Order date
-      totalPrice: order.totalPrice, // Total order price
-      paymentMethod: order.paymentMethod, // Payment method
-      orderStatus: order.orderStatus, // Order status
+     const ordersWithDetails = userOrders.map((order) => ({
+      _id: order._id,  
+      orderDate: order.createdAt.toDateString(),  
+      totalPrice: order.totalPrice,  
+      paymentMethod: order.paymentMethod,  
+      orderStatus: order.orderStatus,  
       items: order.orderItems.map((item) => ({
-        productName: item.product.productName, // Product name
-        imageUrl: item.product.imageUrl, // Product image
-        color: item.variant.color, // Variant color
-        price: item.variant.price, // Price
-        quantity: item.quantity, // Quantity
+        productName: item.product.productName,  
+        imageUrl: item.product.imageUrl,  
+        color: item.variant.color,  
+        price: item.variant.price, 
+        quantity: item.quantity, 
       })),
     }));
 
-    // Render the My Orders page with pagination info
     res.render("user/userMyOrders", {
       orders: ordersWithDetails,
       currentPage: page,

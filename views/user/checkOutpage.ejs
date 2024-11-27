@@ -109,7 +109,7 @@
                                     </p>
                                     <p class="text-sm text-gray-600">Quantity: <%= item.quantity %>
                                     </p>
-                                    <p class="text-sm text-gray-600">Price: ₹<%= item.variantId.price %>
+                                    <p class="text-sm text-gray-600">Price: ₹<%= item.variantId.discountPrice %>
                                     </p>
                                 </div>
                             </li>
@@ -119,7 +119,7 @@
                         <div class="flex justify-between text-gray-800">
                             <span class="font-semibold">Subtotal:</span>
                             <span>
-                                ₹<%= cartItems.reduce((acc, item)=> acc + item.variantId.price * item.quantity, 0) %>
+                                ₹<%= cartItems.reduce((acc, item)=> acc + item.variantId.discountPrice * item.quantity, 0) %>
                             </span>
                         </div>
                         <div class="flex justify-between text-gray-800">
@@ -129,7 +129,7 @@
                         <div class="flex justify-between text-gray-800 font-bold text-lg mt-2">
                             <span>Total:</span>
                             <span>
-                                ₹<%= cartItems.reduce((acc, item)=> acc + item.variantId.price * item.quantity, 0) %>
+                                ₹<%= cartItems.reduce((acc, item)=> acc + item.variantId.discountPrice * item.quantity, 0) %>
                             </span>
                         </div>
                         <button onclick="placeOrder()"

@@ -56,13 +56,13 @@ exports.placeOrder = async (req, res) => {
       variant: {
         variantId: item.variantId._id,
         color: item.variantId.color,
-        price: item.variantId.price,
+        discountPrice: item.variantId.discountPrice,
       },
       quantity: item.quantity,
     }));
 
     const totalPrice = orderItems.reduce(
-      (acc, item) => acc + item.variant.price * item.quantity,
+      (acc, item) => acc + item.variant.discountPrice * item.quantity,
       0
     );
 
