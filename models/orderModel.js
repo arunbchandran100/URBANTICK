@@ -26,6 +26,10 @@ const orderSchema = new mongoose.Schema(
         quantity: {
           type: Number,
         },
+        orderStatus: {
+          type: String,
+          default: "Pending",  
+        },
       },
     ],
     shippingAddress: {
@@ -36,10 +40,6 @@ const orderSchema = new mongoose.Schema(
     },
     totalPrice: { type: Number },
 
-    orderStatus: {
-      type: String,
-      default: "Pending",  
-    },
     returnReason: {
       type: String, 
     },

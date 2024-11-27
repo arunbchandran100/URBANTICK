@@ -4,8 +4,139 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Document</title>
+    <!-- Tailwind CSS -->
+        <script src="https://cdn.tailwindcss.com"></script>
+        <script src="https://cdn.jsdelivr.net/npm/axios/dist/axios.min.js"></script>
+        <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+        <!-- Material Icons -->
+        <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet" />
+        <link rel="stylesheet" href="style.css" />
+        <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.6.0/css/all.min.css"
+            integrity="sha512-Kc323vGBEqzTmouAECnVceyQqyqdsSiqLQISBL29aUW4U/M7pSPA/gEUZQqv1cwx4OnYxTxve5UMg5GT6L4JJg=="
+            crossorigin="anonymous" referrerpolicy="no-referrer" />
+        <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/sweetalert2@11.1.9/dist/sweetalert2.min.css" />
+        <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/toastr.js/latest/toastr.min.css" />
+        <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11.1.9/dist/sweetalert2.all.min.js"></script>
+        <script src="https://cdnjs.cloudflare.com/ajax/libs/toastr.js/latest/toastr.min.js"></script>
+        <link href="https://cdn.jsdelivr.net/npm/notyf@3/notyf.min.css" rel="stylesheet" />
+        <script src="https://cdn.jsdelivr.net/npm/notyf@3/notyf.min.js"></script>
+    </head>
 </head>
 <body>
-    This is an order details page
+<div class="flex-1 ml-64 w-3/4 bg-white p-6 shadow-md">
+    <h1 class="text-2xl font-semibold text-gray-800 mb-6">Order Details</h1>
+
+    <!-- Order Information -->
+    <div class="mb-6 border border-gray-300 rounded-lg bg-white p-6 shadow-md">
+        <p class="text-sm font-semibold text-gray-600">Order ID: <span class="text-gray-800"><%= order._id %></span></p>
+        <p class="text-sm text-gray-500">Order Date: <%= order.orderDate %></p>
+        <p class="text-sm text-gray-500">Status: <span class="text-green-600 font-medium"><%= order.orderStatus %></span></p>
+        <p class="text-lg font-semibold text-gray-800 mt-4">Total Price: ₹<%= order.totalPrice %></p>
+        <p class="text-sm text-gray-500">Payment Method: <%= order.paymentMethod %></p>
+    </div>
+
+    <!-- Order Items -->
+    <% order.items.forEach(item => { %>
+        <div class="mb-6 border border-gray-300 rounded-lg bg-white p-6 shadow-md">
+            <div class="flex items-center gap-6">
+                <!-- Product Image -->
+                <img src="<%= item.imageUrl %>" alt="<%= item.productName %>" class="w-20 h-20 object-cover rounded-md border border-gray-300">
+
+                <!-- Product Details -->
+                <div>
+                    <p class="text-base font-medium text-gray-800"><%= item.productName %></p>
+                    <p class="text-sm text-gray-500">Color: <span class="text-gray-700"><%= item.color %></span></p>
+                    <p class="text-sm text-gray-500">Quantity: <span class="text-gray-700"><%= item.quantity %></span></p>
+                    <p class="text-sm text-gray-500">Order Item ID: <span class="text-gray-700"><%= item.orderId %></span></p>
+                </div>
+
+                <!-- Price -->
+                <div class="ml-auto text-right">
+                    <p class="text-base font-medium text-gray-800">₹<%= item.discountPrice %></p>
+                </div>
+            </div>
+
+            <!-- Action Buttons -->
+            <div class="flex gap-4 mt-4">
+                <% if (item.status === 'Pending') { %>
+                    <button 
+                        class="cancel-btn text-sm px-4 py-2 bg-red-500 hover:bg-red-600 text-white rounded-md"
+                        data-id="<%= item.orderItemId %>">
+                        Cancel
+                    </button>
+                <% } else if (item.status === 'Delivered') { %>
+                    <button 
+                        class="return-btn text-sm px-4 py-2 bg-blue-500 hover:bg-blue-600 text-white rounded-md"
+                        data-id="<%= item.orderItemId %>">
+                        Return
+                    </button>
+                <% } %>
+            </div>
+        </div>
+    <% }) %>
+</div>
+
+<!-- Return Reason Modal -->
+<div id="returnModal" class="hidden fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center">
+    <div class="bg-white p-6 rounded-md shadow-md w-96">
+        <h2 class="text-lg font-semibold text-gray-800 mb-4">Return Order</h2>
+        <textarea id="returnReason" class="w-full border border-gray-300 rounded-md p-2 text-sm" rows="4" placeholder="Enter your return reason"></textarea>
+        <div class="flex justify-end gap-4 mt-4">
+            <button id="cancelReturn" class="px-4 py-2 bg-gray-200 rounded-md text-gray-600 hover:bg-gray-300">Cancel</button>
+            <button id="submitReturn" class="px-4 py-2 bg-blue-500 text-white rounded-md hover:bg-blue-600">Submit</button>
+        </div>
+    </div>
+</div>
+
+<script>
+    const notyf = new Notyf();
+
+    // Cancel Order Item
+    document.querySelectorAll('.cancel-btn').forEach(button => {
+        button.addEventListener('click', async () => {
+            const orderItemId = button.dataset.id;
+            try {
+                const response = await axios.post('/order/cancel', { orderItemId });
+                notyf.success(response.data.message || 'Order cancelled successfully!');
+                location.reload();
+            } catch (error) {
+                notyf.error(error.response?.data?.message || 'Failed to cancel order.');
+            }
+        });
+    });
+
+    // Return Order Item
+    document.querySelectorAll('.return-btn').forEach(button => {
+        button.addEventListener('click', () => {
+            const orderItemId = button.dataset.id;
+            document.getElementById('returnModal').classList.remove('hidden');
+            document.getElementById('submitReturn').dataset.id = orderItemId;
+        });
+    });
+
+    // Submit Return Reason
+    document.getElementById('submitReturn').addEventListener('click', async () => {
+        const orderItemId = document.getElementById('submitReturn').dataset.id;
+        const reason = document.getElementById('returnReason').value;
+
+        if (!reason.trim()) {
+            notyf.error('Please provide a return reason.');
+            return;
+        }
+
+        try {
+            const response = await axios.post('/order/return', { orderItemId, reason });
+            notyf.success(response.data.message || 'Return request submitted!');
+            location.reload();
+        } catch (error) {
+            notyf.error(error.response?.data?.message || 'Failed to submit return request.');
+        }
+    });
+
+    // Cancel Modal
+    document.getElementById('cancelReturn').addEventListener('click', () => {
+        document.getElementById('returnModal').classList.add('hidden');
+    });
+</script>
 </body>
 </html>

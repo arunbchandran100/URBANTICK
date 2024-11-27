@@ -58,6 +58,7 @@ exports.placeOrder = async (req, res) => {
         color: item.variantId.color,
         discountPrice: item.variantId.discountPrice,
       },
+      orderStatus: "Pending",
       quantity: item.quantity,
     }));
 
@@ -73,7 +74,6 @@ exports.placeOrder = async (req, res) => {
       shippingAddress,
       paymentMethod,
       totalPrice,
-      orderStatus: "Pending",
     });
 
     await newOrder.save();

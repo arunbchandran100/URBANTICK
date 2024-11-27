@@ -26,15 +26,16 @@ exports.getMyOrders = async (req, res) => {
       orderDate: order.createdAt.toDateString(),
       totalPrice: order.totalPrice,
       paymentMethod: order.paymentMethod,
-      orderStatus: order.orderStatus,
       items: order.orderItems.map((item) => ({
         productName: item.product.productName,
         imageUrl: item.product.imageUrl,
         color: item.variant.color,
         discountPrice: item.variant.discountPrice,
         quantity: item.quantity,
+        orderStatus: item.orderStatus,
       })),
     }));
+
 
     res.render("user/userMyOrders", {
       orders: ordersWithDetails,
@@ -47,6 +48,52 @@ exports.getMyOrders = async (req, res) => {
   }
 };
 
+
+// exports.getOrderDetails = async (req, res) => {
+//   res.render("user/viewOrderDetails");
+// };
+
+
+
 exports.getOrderDetails = async (req, res) => {
-  res.render("user/viewOrderDetails");
+  try {
+    const orderId = req.params.id; // Get order ID from URL parameters
+    const userId = req.session.user._id; // Get user ID from session
+
+    // Fetch the order details for the specific user and order
+    const order = await Order.findOne({ _id: orderId, userId });
+
+    if (!order) {
+      return res.status(404).send("Order not found.");
+    }
+
+    // Prepare the order details for rendering
+    const orderDetails = {
+      _id: order._id,
+      orderDate: order.createdAt.toDateString(),
+      totalPrice: order.totalPrice,
+      paymentMethod: order.paymentMethod,
+      orderStatus: order.orderStatus,
+      items: order.orderItems.map((item) => ({
+        orderItemId: item._id,
+        orderId: item.order_id,
+        productName: item.product.productName,
+        imageUrl: item.product.imageUrl,
+        color: item.variant.color,
+        discountPrice: item.variant.discountPrice,
+        quantity: item.quantity,
+        status: order.orderStatus || "Pending",
+      })),
+    };
+
+    console.log(orderDetails);
+
+    // Render the order details page with the prepared data
+    res.render("user/viewOrderDetails", {
+      order: orderDetails,
+    });
+  } catch (error) {
+    console.error("Error fetching order details:", error);
+    res.status(500).send("Internal Server Error");
+  }
 };
