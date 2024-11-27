@@ -46,3 +46,7 @@ exports.getMyOrders = async (req, res) => {
     res.status(500).send("Internal Server Error");
   }
 };
+
+exports.getOrderDetails = async (req, res) => {
+  res.render("user/viewOrderDetails");
+};
