@@ -41,12 +41,12 @@
       </div>
 
       <!-- Main Content -->
-<div class="flex-1 ml-64 w-3/4 bg-white p-6 shadow-md">
+<div class="flex-1 ml-64 w-full bg-white p-6 shadow-md flex flex-col items-center justify-center">
     <h1 class="text-2xl font-semibold text-gray-800 mb-6">My Orders</h1>
 
     <% if (orders.length > 0) { %>
         <% orders.forEach(order => { %>
-            <div class="mb-8 border border-gray-300 rounded-lg bg-white p-6 shadow-md">
+            <div class="mb-8 border w-2/4 border-gray-300 rounded-lg bg-white p-6 shadow-md">
                 <div class="flex justify-between items-center mb-4">
                     <div>
                         <p class="text-sm font-semibold text-gray-600">Order ID: <span class="text-gray-800"><%= order._id %></span></p>
@@ -70,7 +70,7 @@
 
                             </div>
                             <div class="ml-auto">
-                                <p class="text-base text-gray-800">₹<%= item.discountPrice %></p>
+                                <p class="text-base text-gray-800">Subtotal: ₹<%= item.discountPrice %></p>
                             </div>
                         </div>
                     <% }) %>

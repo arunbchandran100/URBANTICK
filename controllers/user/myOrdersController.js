@@ -70,10 +70,9 @@ exports.getOrderDetails = async (req, res) => {
     // Prepare the order details for rendering
     const orderDetails = {
       _id: order._id,
-      orderDate: order.createdAt.toDateString(),
+      orderDate: new Date(order.createdAt).toDateString(),
       totalPrice: order.totalPrice,
       paymentMethod: order.paymentMethod,
-      orderStatus: order.orderStatus,
       items: order.orderItems.map((item) => ({
         orderItemId: item._id,
         orderId: item.order_id,
@@ -84,9 +83,17 @@ exports.getOrderDetails = async (req, res) => {
         quantity: item.quantity,
         orderStatus: item.orderStatus,
       })),
+      shippingAddress: {
+        name: order.shippingAddress.Name,
+        street: order.shippingAddress.HouseName,
+        locality: order.shippingAddress.LocalityStreet,
+        city: order.shippingAddress.TownCity,
+        state: order.shippingAddress.state,
+        country: order.shippingAddress.country,
+        zipCode: order.shippingAddress.pincode,
+        phone: order.shippingAddress.MobileNumber,
+      },
     };
-
-    console.log(orderDetails);
 
     // Render the order details page with the prepared data
     res.render("user/viewOrderDetails", {
