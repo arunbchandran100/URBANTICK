@@ -1,8 +1,7 @@
 const Product = require("../../models/productSchema");
 const Category = require("../../models/categoryModel");
 const Variant = require("../../models/variantSchema");
-
-const mongoose = require("mongoose"); // Import mongoose
+const mongoose = require("mongoose");
 const Cart = require("../../models/cartModel");
 
 exports.addToCart = async (req, res) => {

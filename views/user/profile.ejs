@@ -35,15 +35,17 @@
   </style>
 
   <body class="bg-gray-50">
-    <%- include("partials/navBar") %>
+  <%- include("partials/navBar") %>
     <div class="mt-16"></div>
 
-    <div class="flex min-h-screen">
+    <div class="flex min-h-screen bg-stone-100">
       <!-- Sidebar -->
-      <%- include("partials/userProfileSideBar") %>
+      <div class="fixed bg-stone-100">
+        <%- include("partials/userProfileSideBar") %>
+      </div>
 
       <!-- Main Content -->
-      <div id="user-profile" class="w-3/4 bg-white p-6 shadow-md">
+      <div class="flex-1 ml-64 w-3/4 bg-white p-6 shadow-md">
         <h2 class="text-xl font-bold mb-6">Personal Information</h2>
         <form id="profile-form" class="space-y-4">
           <div>

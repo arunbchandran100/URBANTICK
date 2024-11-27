@@ -44,7 +44,6 @@ router.get("/products/search", ShopAllController.searchProducts);
 
 //--------------------View Product Page --------------------
 router.get("/product/:id", User.viewProduct);
-// Route to get variant details by color
 
 router.get("/product/getcolor/variant", User.getVariantDetails);
 
@@ -71,7 +70,17 @@ router.post("/user/address/edit/:id", userProfileController.updateAddress);
 router.delete("/user/address/:id", userProfileController.deleteAddress);
 
 
-//------------Cart---------------------------- 
+
+//-------------------- My Orders Dashboard --------------------
+const myOrders = require("../controllers/user/myOrdersController");
+
+// Get all orders
+router.get("/user/orders", myOrders.getMyOrders);
+
+
+
+
+//--------------------Cart----------------------------------------- 
 const cartController = require("../controllers/user/cartController");
 
 
@@ -81,11 +90,12 @@ router.delete("/cart/:id", cartController.deleteFromCart);
 router.put("/cart/:id", cartController.updateCartQuantity);
 
 
-//-----------CheckoutPage
+//-----------------CheckoutPage------------------------------------
 const checkoutController = require("../controllers/user/checkOutController");
 
-
 router.get("/cart/checkout", checkoutController.getCheckout);
+
+//Place Order
 router.post("/user/checkout", checkoutController.placeOrder);
 
 
