@@ -14,7 +14,8 @@
 
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/notyf@3/notyf.min.css" />
     <script src="https://cdn.jsdelivr.net/npm/notyf@3/notyf.min.js"></script>
-
+  <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11.1.9/dist/sweetalert2.all.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/toastr.js/latest/toastr.min.js"></script>
 </head>
 
 <body class="bg-gray-50">
@@ -31,19 +32,20 @@
             <% if (cartItems.length===0) { %>
 
                 <!-- No items in the cart message -->
-<div class="grid align-items-center gap-8 mt-16">
-    <div class="md:col-span-2 space-y-4 p-4 bg-gray-50 shadow-lg text-center text-xl font-medium text-gray-700">
-        No items in the cart
+                <div class="grid align-items-center gap-8 mt-16">
+                    <div
+                        class="md:col-span-2 space-y-4 p-4 bg-gray-50 shadow-lg text-center text-xl font-medium text-gray-700">
+                        No items in the cart
 
-        <!-- Continue Shopping Button -->
-        <div class="mt-6 flex justify-center">
-            <button type="button" onclick="window.location.href='/shopall'"
-                class="text-sm px-6 py-3 w-full md:w-1/3 font-semibold tracking-wide bg-gray-800 text-white rounded-md hover:bg-gray-900">
-                Continue Shopping
-            </button>
-        </div>
-    </div>
-</div>
+                        <!-- Continue Shopping Button -->
+                        <div class="mt-6 flex justify-center">
+                            <button type="button" onclick="window.location.href='/shopall'"
+                                class="text-sm px-6 py-3 w-full md:w-1/3 font-semibold tracking-wide bg-gray-800 text-white rounded-md hover:bg-gray-900">
+                                Continue Shopping
+                            </button>
+                        </div>
+                    </div>
+                </div>
 
 
 
@@ -213,19 +215,35 @@
             }
         }
 
-        function updateCartTotals() {
-            const cartItemElements = document.querySelectorAll("[data-cart-item-id]");
-            let subtotal = 0;
-            cartItemElements.forEach((item) => {
-                const price = parseFloat(
-                    item.querySelector("#variantPriceTag").textContent.replace("₹", "")
-                );
-                const quantity = parseInt(item.querySelector("#variantQuantityTag").textContent);
-                subtotal += price * quantity;
-            });
-            document.getElementById("subtotalPriceTag").textContent = `₹${subtotal}`;
-            document.getElementById("totalPriceTag").textContent = `₹${subtotal}`;
+function updateCartTotals() {
+    const cartItemElements = document.querySelectorAll("[data-cart-item-id]");
+    let subtotal = 0;
+    cartItemElements.forEach((item) => {
+        const priceTag = item.querySelector("#variantPriceTag");
+        const quantityTag = item.querySelector("#variantQuantityTag");
+        if (priceTag && quantityTag) {
+            const price = parseFloat(priceTag.textContent.replace("₹", ""));
+            const quantity = parseInt(quantityTag.textContent);
+            subtotal += price * quantity;
         }
+    });
+
+    if (subtotal === 0) {
+        Swal.fire({
+            title: "Error",
+            text: "No items in the cart",
+            icon: "error",
+            confirmButtonText: "Continue Shopping",
+        }).then((result) => {
+            if (result.isConfirmed) {
+                window.location.href = "/shopall";
+            }
+        });
+    }
+
+    document.getElementById("subtotalPriceTag").textContent = `₹${subtotal}`;
+    document.getElementById("totalPriceTag").textContent = `₹${subtotal}`;
+}
 
 
         async function updateQuantity(cartItemId, delta) {
@@ -268,19 +286,6 @@
             }
         }
 
-        function updateCartTotals() {
-            const cartItemElements = document.querySelectorAll("[data-cart-item-id]");
-            let subtotal = 0;
-            cartItemElements.forEach((item) => {
-                const price = parseFloat(
-                    item.querySelector("#variantPriceTag").textContent.replace("₹", "")
-                );
-                const quantity = parseInt(item.querySelector("#variantQuantityTag").textContent);
-                subtotal += price * quantity;
-            });
-            document.getElementById("subtotalPriceTag").textContent = `₹${subtotal}`;
-            document.getElementById("totalPriceTag").textContent = `₹${subtotal}`;
-        }
 
     </script>
 

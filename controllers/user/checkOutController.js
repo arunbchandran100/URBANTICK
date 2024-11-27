@@ -26,7 +26,6 @@ exports.getCheckout = async (req, res) => {
 
 exports.placeOrder = async (req, res) => {
   try {
-    console.log(22222222);
     const userId = req.session.user._id;  
     const { selectedAddress, paymentMethod } = req.body;
 
