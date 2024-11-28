@@ -29,18 +29,18 @@ app.use(
   })
 );
 
-// app.use((req, res, next) => {
-//   req.session.user = {
-//     _id: "673deae68b80ef4c7373e582",
-//     fullName: "Arun b chandran",
-//     email: "arunbchandran100@gmail.com",
-//     password: "$2a$10$JY8zyDruREWl7ZLmCNks2ukTDV1Qo8xVk2zcNV0wrmVru0efnZ2WO",
-//     status: "active",
-//     __v: 0,
-//     googleId: "118236408678156032539",
-//   };
-//   next();
-// });
+app.use((req, res, next) => {
+  req.session.user = {
+    _id: "673deae68b80ef4c7373e582",
+    fullName: "Arun b chandran",
+    email: "arunbchandran100@gmail.com",
+    password: "$2a$10$JY8zyDruREWl7ZLmCNks2ukTDV1Qo8xVk2zcNV0wrmVru0efnZ2WO",
+    status: "active",
+    __v: 0,
+    googleId: "118236408678156032539",
+  };
+  next();
+});
 
 // const navbarUsername = require("../middleware/navbarUsername");
 
