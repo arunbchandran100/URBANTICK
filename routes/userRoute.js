@@ -102,6 +102,7 @@ router.post("/cart/add", cartController.addToCart);
 router.get("/shop/cart", cartController.getCart);
 router.delete("/cart/:id", cartController.deleteFromCart);
 router.put("/cart/:id", cartController.updateCartQuantity);
+// router.get("/variant/:cartItemId", cartController.getVariantStock);
 
 
 //-----------------CheckoutPage------------------------------------

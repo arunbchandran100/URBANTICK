@@ -120,28 +120,68 @@ exports.deleteFromCart = async (req, res) => {
 
 exports.updateCartQuantity = async (req, res) => {
   try {
-    const cartItemId = req.params.id;
-    const { quantity } = req.body;
-    const userId = req.session.user._id;
+    const cartItemId = req.params.id; // ID of the cart item
+    const { quantity } = req.body; // New quantity from the client
+    const userId = req.session.user._id; // Current user ID
 
     if (quantity < 1) {
       return res.status(400).json({ message: "Quantity must be at least 1" });
-    } else if (quantity  > 5) {
-      return res.status(400).json({ message: "Maximum quantity 5 is allowed" });
+    } else if (quantity > 5) {
+      return res
+        .status(400)
+        .json({ message: "Maximum quantity of 5 is allowed" });
     }
 
-    // Find the cart item and update its quantity
-    const cartItem = await Cart.findOne({ _id: cartItemId, userId });
-    if (cartItem) {
-      cartItem.quantity = quantity;
-      await cartItem.save();
-      res.status(200).json({ message: "Cart updated", cartItem });
-    } else {
-      res.status(404).json({ message: "Item not found in cart" });
+    // Find the cart item
+    const cartItem = await Cart.findOne({ _id: cartItemId, userId }).populate(
+      "variantId"
+    );
+
+    if (!cartItem) {
+      return res.status(404).json({ message: "Item not found in cart" });
     }
+
+    // Check the variant stock
+    const variant = cartItem.variantId; // Populated variant document
+    if (variant.stock < quantity) {
+      return res
+        .status(400)
+        .json({ message: `Only ${variant.stock} items left in stock` });
+    }
+
+    // Update the quantity
+    cartItem.quantity = quantity;
+    await cartItem.save();
+
+    res.status(200).json({ message: "Cart updated successfully", cartItem });
   } catch (error) {
     console.error("Error updating cart quantity:", error);
     res.status(500).json({ message: "Server Error" });
   }
 };
+
+
+
+// Route to get stock for a specific variant
+// exports.getVariantStock = async (req, res) => {
+//   try {
+//     console.log(89898989898);
+//     const cartItemId = req.params.cartItemId;
+
+
+//     // Find the variant by ID
+//     const variant = await Variant.findById(cartItemId);
+//     console.log(variant);
+//     console.log(89998989);
+//     console.log(variant.stock);
+//     if (variant) {
+//       res.status(200).json({ stock: variant.stock });
+//     } else {
+//       res.status(404).json({ message: "Variant not found" });
+//     }
+//   } catch (error) {
+//     console.error("Error fetching variant stock:", error);
+//     res.status(500).json({ message: "Server Error" });
+//   }
+// };
 
