@@ -144,7 +144,7 @@
                                             item)=>
                                             acc + item.variant.discountPrice
                                             *
-                                            item.quantity, 0) %></span>
+                                            item.quantity, 0).toLocaleString() %></span>
                                 </li>
                                 <li class="flex flex-wrap gap-4 text-sm">
                                     Shipping
@@ -155,7 +155,7 @@
                                     Total
                                     <span id="totalPriceTag" class="ml-auto">₹<%= cartItems.reduce((acc, item)=> acc +
                                             item.variant.discountPrice *
-                                            item.quantity, 0) %></span>
+                                            item.quantity, 0).toLocaleString() %></span>
                                 </li>
                             </ul>
 
@@ -241,8 +241,8 @@ function updateCartTotals() {
         });
     }
 
-    document.getElementById("subtotalPriceTag").textContent = `₹${subtotal}`;
-    document.getElementById("totalPriceTag").textContent = `₹${subtotal}`;
+    document.getElementById("subtotalPriceTag").textContent = `₹${subtotal.toLocaleString()}`;
+    document.getElementById("totalPriceTag").textContent = `₹${subtotal.toLocaleString()}`;
 }
 
 

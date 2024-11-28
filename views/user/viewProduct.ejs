@@ -84,13 +84,13 @@
             <!-- Pricing -->
             <div class="flex items-center space-x-4 my-4">
               <p class="text-lg text-gray-800 font-bold variant-price">
-                ₹<%= product.variants[0]?.discountPrice || 'N/A' %>
+                ₹<%= product.variants[0]?.discountPrice.toLocaleString() || 'N/A' %>
               </p>
               <p class="text-gray-500 line-through variant-original-price">
-                ₹<%= product.variants[0]?.price || 'N/A' %>
+                ₹<%= product.variants[0]?.price.toLocaleString() || 'N/A' %>
               </p>
               <p class="text-green-600 font-semibold variant-discount">
-                <%= product.variants[0]?.discountPercentage || 0 %>% off
+                <%= product.variants[0]?.discountPercentage.toLocaleString() || 0 %>% off
               </p>
             </div>
 
@@ -226,11 +226,11 @@
           const buyNowButton = document.getElementById("buyNowButton");
           const addToCartButton = document.getElementById("addToCartButton");
 
-          document.querySelector(".variant-price").textContent = `₹${variant.discountPrice || "N/A"
+          document.querySelector(".variant-price").textContent = `₹${variant.discountPrice.toLocaleString() || "N/A"
             }`;
-          document.querySelector(".variant-original-price").textContent = `₹${variant.price || "N/A"
+          document.querySelector(".variant-original-price").textContent = `₹${variant.price.toLocaleString() || "N/A"
             }`;
-          document.querySelector(".variant-discount").textContent = `${variant.discountPercentage || 0
+          document.querySelector(".variant-discount").textContent = `${variant.discountPercentage.toLocaleString() || 0
             }% off`;
           document.querySelector(".variant-rating").textContent = variant.rating
             ? `${variant.rating} stars`

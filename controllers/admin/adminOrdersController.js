@@ -1,30 +1,15 @@
 const adminAuthenticated = require("../../middleware/adminauthmildware");
 
-//---------------GET Admin orders----------------------
-// exports.getAdminOrders = [
-//   adminAuthenticated,
-//   async (req, res) => {
-//     try {
-      
-//       res.render("admin/adminOrders");
-//     } catch (error) {
-//       console.error("Error fetching product details:", error);
-//       res.status(500).json({ error: "Failed to fetch product details" });
-//     }
-//   },
-// ];
-
-// Import necessary models
 const Order = require("../../models/orderModel");
 const User = require("../../models/userModel");
 
-// Admin Orders Controller
+
 exports.getAdminOrders = [
-  adminAuthenticated, // Middleware to verify admin access
+  adminAuthenticated, 
   async (req, res) => {
     try {
       const page = parseInt(req.query.page) || 1;
-      const limit = 12; // Limit orders per page
+      const limit = 10; 
       const skip = (page - 1) * limit;
 
       // Fetch orders with pagination
@@ -32,7 +17,7 @@ exports.getAdminOrders = [
       const orders = await Order.find()
         .skip(skip)
         .limit(limit)
-        .populate("userId", "fullName email") // Populate user details
+        .populate("userId", "fullName email") 
         .sort({ createdAt: -1 });
 
       const totalPages = Math.ceil(totalOrders / limit);
@@ -45,6 +30,67 @@ exports.getAdminOrders = [
     } catch (error) {
       console.error("Error fetching admin orders:", error);
       res.status(500).json({ error: "Failed to fetch admin orders" });
+    }
+  },
+];
+
+
+
+
+exports.getAdminOrdersDetails = [
+  adminAuthenticated, // Middleware to verify admin access
+  async (req, res) => {
+    try {
+      const { id } = req.params;
+
+      // Fetch the order by ID
+      const order = await Order.findById(id);
+
+      if (!order) {
+        return res
+          .status(404)
+          .render("admin/404", { message: "Order not found" });
+      }
+
+      // Map the `orderItems` array to `items` for the template
+      const mappedOrder = {
+        _id: order._id,
+        userName: order.userName,
+        orderDate: order.createdAt,
+        totalPrice: order.totalPrice,
+        paymentMethod: order.paymentMethod,
+        shippingAddress: order.shippingAddress,
+        items: order.orderItems, // Pass the orderItems directly
+      };
+
+      // Render the template with mappedOrder
+      res.render("admin/adminOrdersDetails", { order: mappedOrder });
+    } catch (error) {
+      console.error("Error fetching admin order details:", error);
+      res.status(500).json({ error: "Failed to fetch admin order details" });
+    }
+  },
+];
+
+
+exports.updateOrderStatus = [
+  adminAuthenticated,
+  async (req, res) => {
+    try {
+      const { itemId, orderId, orderStatus } = req.body;
+
+      // Update item status
+      const order = await Order.findById(orderId);
+      const item = order.items.id(itemId);
+      if (!item) return res.status(404).send("Item not found");
+
+      item.orderStatus = orderStatus;
+      await order.save();
+
+      res.redirect(`/admin/orders/details/${orderId}`);
+    } catch (error) {
+      console.error("Error updating order status:", error);
+      res.status(500).json({ error: "Failed to update order status" });
     }
   },
 ];

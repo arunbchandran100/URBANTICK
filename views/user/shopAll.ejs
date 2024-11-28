@@ -150,10 +150,10 @@
                   <% if (product.price && product.discountPrice) { %>
                     <div class="flex gap-2">
                       <div class="text-xl font-bold text-gray-900">
-                        ₹<%= product.discountPrice %>
+                        ₹<%= product.discountPrice.toLocaleString() %>
                       </div>
                       <div class="text-gray-500 line-through mt-1">
-                        ₹<%= product.price %>
+                        ₹<%= product.price.toLocaleString() %>
                       </div>
                     </div>
                     <% } else { %>
@@ -307,8 +307,8 @@
       ${product.price && product.discountPrice
                     ? `
         <div class="flex gap-2">
-          <div class="text-xl font-bold text-gray-900">₹${product.discountPrice}</div>
-          <div class="text-gray-500 line-through mt-1">₹${product.price}</div>
+          <div class="text-xl font-bold text-gray-900">₹${product.discountPrice.toLocaleString()}</div>
+          <div class="text-gray-500 line-through mt-1">₹${product.price.toLocaleString()}</div>
         </div>
       `
                     : `
@@ -411,8 +411,8 @@
             ${product.price && product.discountPrice
                     ? `
               <div class="flex gap-2">
-                <div class="text-xl font-bold text-gray-900">₹${product.discountPrice}</div>
-                <div class="text-gray-500 line-through mt-1">₹${product.price}</div>
+                <div class="text-xl font-bold text-gray-900">₹${product.discountPrice.toLocaleString()}</div>
+                <div class="text-gray-500 line-through mt-1">₹${product.price.toLocaleString()}</div>
               </div>
             `
                     : `

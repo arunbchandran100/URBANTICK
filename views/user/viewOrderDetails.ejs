@@ -64,7 +64,7 @@
                     order.paymentMethod %>
                 </p>
                 <p class="text-lg font-semibold text-gray-800 mt-4">Total Price:
-                    ₹<%= order.totalPrice %>
+                    ₹<%= order.totalPrice.toLocaleString() %>
                 </p>
             </div>
 
@@ -147,7 +147,7 @@
 
                             </div>
                             <!-- 6th Section: Cancel Button -->
-                            <% if (item.orderStatus==='Pending' ) { %>
+                            <% if (item.orderStatus==='Processing' ) { %>
                             <div class="mt-6 ml-10">
                                 <button
                                     class="cancel-btn text-sm px-4 py-2 bg-red-500 hover:bg-red-600 text-white rounded-md"

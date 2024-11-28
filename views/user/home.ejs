@@ -40,12 +40,12 @@
         </h3>
         <% if (product.discountPrice && product.discountPrice < product.price) {
         %>
-        <div class="text-gray-500 line-through">₹<%= product.price %></div>
+        <div class="text-gray-500 line-through">₹<%= product.price.toLocaleString() %></div>
         <div class="text-xl font-bold text-gray-900">
-          ₹<%= product.discountPrice %>
+          ₹<%= product.discountPrice.toLocaleString() %>
         </div>
         <% } else { %>
-        <div class="text-xl font-bold text-gray-900">₹<%= product.price %></div>
+        <div class="text-xl font-bold text-gray-900">₹<%= product.price.toLocaleString() %></div>
         <% } %>
       </div>
       <% i++; %> <% } %> <% }); %>

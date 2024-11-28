@@ -55,7 +55,8 @@ router.post("/products/add/variant", adminProduct.postAddvariant);
 const adminOrders = require("../controllers/admin/adminOrdersController");
 
 router.get("/orders", adminOrders.getAdminOrders);
-// router.get("/orders/details/:id", adminOrders.getAdminOrdersDetails);
+router.get("/orders/details/:id", adminOrders.getAdminOrdersDetails);
+router.post("/orders/update-status", adminOrders.updateOrderStatus);
 
 
 

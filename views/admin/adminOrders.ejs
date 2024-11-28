@@ -1,105 +1,99 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Document</title>
-        <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://cdn.tailwindcss.com"></script>
     <script src="https://unpkg.com/sweetalert/dist/sweetalert.min.js"></script>
-    <link rel="stylesheet"
-      href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.6.0/css/all.min.css"
-      integrity="sha512-Kc323vGBEqzTmouAECnVceyQqyqdsSiqLQISBL29aUW4U/M7pSPA/gEUZQqv1cwx4OnYxTxve5UMg5GT6L4JJg=="
-      crossorigin="anonymous" referrerpolicy="no-referrer" />
-    <link href="https://fonts.googleapis.com/icon?family=Material+Icons"
-      rel="stylesheet">
-      <!-- SweetAlert 2 CDN -->
-<script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.6.0/css/all.min.css"
+        integrity="sha512-Kc323vGBEqzTmouAECnVceyQqyqdsSiqLQISBL29aUW4U/M7pSPA/gEUZQqv1cwx4OnYxTxve5UMg5GT6L4JJg=="
+        crossorigin="anonymous" referrerpolicy="no-referrer" />
+    <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
+    <!-- SweetAlert 2 CDN -->
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
 
 </head>
-  <body class="bg-black text-white min-h-screen">
-  <!-- Sidebar -->
-   <%- include("partials/sidebar")  %>
 
-    <!-- Main Content -->
-<main class="ml-64 p-8">
-  <!-- Header -->
-  <header class="flex items-center justify-between mb-8">
-    <h1 class="text-2xl font-semibold text-gray-200">Orders</h1>
-  </header>
+<body class="bg-black text-white min-h-screen">
+    <!-- Sidebar -->
+    <%- include("partials/sidebar") %>
 
-  <!-- Orders Table -->
-  <div class="bg-zinc-800 rounded-lg p-6">
-    <table class="min-w-full text-left text-gray-400">
-      <thead>
-        <tr class="border-b border-gray-700">
-          <th class="py-3 px-4">S.No</th>
-          <th class="py-3 px-4">User Name</th>
-          <th class="py-3 px-4">Payment Mode</th>
-          <th class="py-3 px-4">Total Price</th>
-          <th class="py-3 px-4">Action</th>
-        </tr>
-      </thead>
-      <tbody>
-        <% orders.forEach((order, index) => { %>
-          <tr class="border-b border-gray-700">
-            <!-- Serial Number -->
-            <td class="py-3 px-4 text-white">
-              <%= (currentPage - 1) * 12 + index + 1 %>
-            </td>
-            <!-- User Name -->
-            <td class="py-3 px-4 text-white">
-              <%= order.userId?.fullName || "Unknown User" %>
-            </td>
-            <!-- Payment Mode -->
-            <td class="py-3 px-4 text-white">
-              <%= order.paymentMethod %>
-            </td>
-            <!-- Total Price -->
-            <td class="py-3 px-4 text-white">
-              ₹<%= order.totalPrice.toLocaleString() %>
-            </td>
-            <!-- Action -->
-            <td class="py-3 px-4">
-              <a
-                href="/admin/orders/<%= order._id %>"
-class="bg-slate-500 text-white border-gray-400 px-3 py-1 rounded-lg hover:bg-slate-700"              >
-                More Details
-              </a>
-            </td>
-          </tr>
-        <% }); %>
-      </tbody>
-    </table>
+        <!-- Main Content -->
+        <main class="ml-64 p-8">
+            <!-- Header -->
+            <header class="flex items-center justify-between mb-8">
+                <h1 class="text-2xl font-semibold text-gray-200">Orders</h1>
+            </header>
 
-    <!-- Pagination -->
-    <div class="flex justify-center space-x-2 mt-4">
-      <% if (currentPage > 1) { %>
-        <a
-          href="/admin/orders?page=<%= currentPage - 1 %>"
-          class="bg-gray-700 text-white px-3 py-1 rounded hover:bg-gray-600"
-        >
-          Previous
-        </a>
-      <% } %>
-      <% for (let i = 1; i <= totalPages; i++) { %>
-        <a
-          href="/admin/orders?page=<%= i %>"
-          class="bg-gray-700 text-white px-3 py-1 rounded hover:bg-gray-600"
-        >
-          <%= i %>
-        </a>
-      <% } %>
-      <% if (currentPage < totalPages) { %>
-        <a
-          href="/admin/orders?page=<%= currentPage + 1 %>"
-          class="bg-gray-700 text-white px-3 py-1 rounded hover:bg-gray-600"
-        >
-          Next
-        </a>
-      <% } %>
-    </div>
-  </div>
-</main>
+            <!-- Orders Table -->
+            <div class="bg-zinc-800 rounded-lg p-6">
+                <table class="min-w-full text-left text-gray-400">
+                    <thead>
+                        <tr class="border-b border-gray-700">
+                            <th class="py-3 px-4">S.No</th>
+                            <th class="py-3 px-4">User Name</th>
+                            <th class="py-3 px-4">Payment Mode</th>
+                            <th class="py-3 px-4">Total Price</th>
+                            <th class="py-3 px-4">Action</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <% orders.forEach((order, index)=> { %>
+                            <tr class="border-b border-gray-700">
+                                <!-- Serial Number -->
+                                <td class="py-3 px-4 text-white">
+                                    <%= (currentPage - 1) * 12 + index + 1 %>
+                                </td>
+                                <!-- User Name -->
+                                <td class="py-3 px-4 text-white">
+                                    <%= order.userId?.fullName || "Unknown User" %>
+                                </td>
+                                <!-- Payment Mode -->
+                                <td class="py-3 px-4 text-white">
+                                    <%= order.paymentMethod %>
+                                </td>
+                                <!-- Total Price -->
+                                <td class="py-3 px-4 text-white">
+                                    ₹<%= order.totalPrice.toLocaleString() %>
+                                </td>
+                                <!-- Action -->
+                                <td class="py-3 px-4">
+                                    <a href="/admin/orders/details/<%= order._id %>"
+                                        class="bg-slate-500 text-white border-gray-400 px-3 py-1 rounded-lg hover:bg-slate-700">
+                                        More Details
+                                    </a>
+                                </td>
+                            </tr>
+                            <% }); %>
+                    </tbody>
+                </table>
+
+                <!-- Pagination -->
+                <div class="flex justify-center space-x-2 mt-4">
+                    <% if (currentPage> 1) { %>
+                        <a href="/admin/orders?page=<%= currentPage - 1 %>"
+                            class="bg-gray-700 text-white px-3 py-1 rounded hover:bg-gray-600">
+                            Previous
+                        </a>
+                        <% } %>
+                            <% for (let i=1; i <=totalPages; i++) { %>
+                                <a href="/admin/orders?page=<%= i %>"
+                                    class="bg-gray-700 text-white px-3 py-1 rounded hover:bg-gray-600">
+                                    <%= i %>
+                                </a>
+                                <% } %>
+                                    <% if (currentPage < totalPages) { %>
+                                        <a href="/admin/orders?page=<%= currentPage + 1 %>"
+                                            class="bg-gray-700 text-white px-3 py-1 rounded hover:bg-gray-600">
+                                            Next
+                                        </a>
+                                        <% } %>
+                </div>
+            </div>
+        </main>
 
 </body>
+
 </html>
