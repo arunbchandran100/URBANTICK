@@ -15,7 +15,7 @@ exports.loginPOST = async (req, res) => {
     const { email, password } = req.body;
 
     const user = await User.findOne({ email });
-    console.log("The user is " + user);
+    // console.log("The user is " + user);
     if (!user) {
       return res.render("user/userLogin", { error: "User not registered" });
     }
@@ -30,7 +30,7 @@ exports.loginPOST = async (req, res) => {
     }
 
     req.session.user = user;
-    console.log("The user is " + req.session.user);
+    //console.log("The user is " + req.session.user);
 
     // Redirect to the home page after successful login
     res.redirect("/home");
