@@ -83,6 +83,17 @@ router.get("/user/order/details/:id", myOrders.getOrderDetails);
 router.post("/order/cancel", myOrders.cancelOrderItem);
 
 
+
+//-------------------- Change password Dashboard --------------------
+const changePassword = require("../controllers/user/changePasswordController");
+
+router.get("/user/changePassword", changePassword.getChangePassword);
+router.post("/user/changePassword", changePassword.postChangePassword);
+
+
+
+
+
 //--------------------Cart----------------------------------------- 
 const cartController = require("../controllers/user/cartController");
 
@@ -101,7 +112,6 @@ router.get("/cart/checkout", checkoutController.getCheckout);
 //Place Order
 router.post("/user/checkout", checkoutController.placeOrder);
 
-// /user/changePassword
 
 
 module.exports = router;
