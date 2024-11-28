@@ -106,14 +106,15 @@
             <!-- Stock Status -->
             <div class="variant-stock mt-2">
               <% if (product.variants[0].stock==0) { %>
-                <div class="font-semibold text-red-600 bg-red-100 border border-red-600 rounded-lg p-2"
+                <div class="font-bold text-red-600 bg-red-100 border border-red-600 rounded-lg p-2"
                   style="width: fit-content">
                   Out of Stock
                 </div>
 
                 <% } else { %>
-                  <div class="text-green-500">In Stock</div>
-                  <% } %>
+                  <div class="text-green-500">
+                    <p class = " font-semibold">In stock (<%= product.variants[0].stock %> left)</div>
+                  <% } %></p>
             </div>
 
             <!-- Product Details -->

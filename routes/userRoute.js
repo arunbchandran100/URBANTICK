@@ -101,7 +101,7 @@ router.get("/cart/checkout", checkoutController.getCheckout);
 //Place Order
 router.post("/user/checkout", checkoutController.placeOrder);
 
-
+// /user/changePassword
 
 
 module.exports = router;

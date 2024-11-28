@@ -240,7 +240,7 @@ exports.viewProduct = async (req, res) => {
 
 exports.getVariantDetails = async (req, res) => {
   try {
-    console.log(2222222);
+    // console.log(2222222);
     const { productId, color } = req.query;
 
     // Validate inputs
@@ -262,7 +262,7 @@ exports.getVariantDetails = async (req, res) => {
       return res.status(404).json({ message: "Variant not found." });
     }
 
-    console.log(variant);
+    // console.log(variant);
     // Respond with the variant details
     res.json(variant);
   } catch (error) {
