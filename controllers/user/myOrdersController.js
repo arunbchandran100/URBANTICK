@@ -23,7 +23,14 @@ exports.getMyOrders = async (req, res) => {
 
     const ordersWithDetails = userOrders.map((order) => ({
       _id: order._id,
-      orderDate: order.createdAt.toDateString(),
+      orderDate: new Date(order.createdAt).toLocaleString("en-US", {
+        year: "numeric",
+        month: "long",
+        day: "numeric",
+        hour: "2-digit",
+        minute: "2-digit",
+        hour12: true, // Change to false for 24-hour format
+      }),
       totalPrice: order.totalPrice,
       paymentMethod: order.paymentMethod,
       items: order.orderItems.map((item) => ({
@@ -68,7 +75,14 @@ exports.getOrderDetails = async (req, res) => {
     // Prepare the order details for rendering
     const orderDetails = {
       _id: order._id,
-      orderDate: new Date(order.createdAt).toDateString(),
+      orderDate: new Date(order.createdAt).toLocaleString("en-US", {
+        year: "numeric",
+        month: "long",
+        day: "numeric",
+        hour: "2-digit",
+        minute: "2-digit",
+        hour12: true, // Change to false for 24-hour format
+      }),
       totalPrice: order.totalPrice,
       paymentMethod: order.paymentMethod,
       items: order.orderItems.map((item) => ({
