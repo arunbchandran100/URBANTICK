@@ -92,16 +92,17 @@
                             </div>
 
                             <!-- 5th Section: Status -->
-                            <select
-                name="orderStatus"
-                class="bg-gray-700 text-white rounded p-2 focus:outline-none"
-                onchange="this.form.submit()"
-              >
-                <option value="Processing" <%= item.orderStatus === "Processing" ? "selected" : "" %>>Processing</option>
-                <option value="Shipped" <%= item.orderStatus === "Shipped" ? "selected" : "" %>>Shipped</option>
-                <option value="Delivered" <%= item.orderStatus === "Delivered" ? "selected" : "" %>>Delivered</option>
-                <option value="Cancelled" <%= item.orderStatus === "Cancelled" ? "selected" : "" %>>Cancelled</option>
-              </select>
+                            <select name="orderStatus" class="bg-gray-700 text-white rounded p-2 focus:outline-none"
+                                onchange="this.form.submit()">
+                                <option value="Processing" <%=item.orderStatus==="Processing" ? "selected" : "" %>
+                                    >Processing</option>
+                                <option value="Shipped" <%=item.orderStatus==="Shipped" ? "selected" : "" %>>Shipped
+                                </option>
+                                <option value="Delivered" <%=item.orderStatus==="Delivered" ? "selected" : "" %>
+                                    >Delivered</option>
+                                <option value="Cancelled" <%=item.orderStatus==="Cancelled" ? "selected" : "" %>
+                                    >Cancelled</option>
+                            </select>
                         </div>
                     </div>
                     <% }) %>

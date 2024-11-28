@@ -59,7 +59,7 @@ exports.placeOrder = async (req, res) => {
         color: item.variantId.color,
         discountPrice: item.variantId.discountPrice,
       },
-      orderStatus: "Pending",
+      orderStatus: "Processing",
       quantity: item.quantity,
     }));
 
