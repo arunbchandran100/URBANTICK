@@ -24,7 +24,8 @@
         <main class="ml-64 p-8">
             <!-- Section 1: Order Details -->
             <section class="mb-8 bg-zinc-800 p-6 rounded-lg">
-                <h1 class="text-2xl font-semibold text-gray-200 mb-4">Order ID: <%= order._id %>
+                <h1 class="text-2xl font-semibold text-gray-200 mb-4">Order ID:
+                    <%= order._id %>
                 </h1>
                 <p class="text-gray-400 mb-2">Order Date: <%= new Date(order.orderDate).toLocaleDateString() %>
                 </p>
@@ -36,7 +37,8 @@
 
             <!-- Section 2: Shipping Address -->
             <section class="mb-8 bg-zinc-800 p-6 rounded-lg">
-                <h2 class="text-xl font-semibold text-gray-200 mb-4">Shipping Address</h2>
+                <h2 class="text-xl font-semibold text-gray-200 mb-4">Shipping
+                    Address</h2>
                 <p class="text-gray-400">
                     <%= order.shippingAddress.Name %>,
                 </p>
@@ -92,25 +94,78 @@
                             </div>
 
                             <!-- 5th Section: Status -->
-                            <select name="orderStatus" class="bg-gray-700 text-white rounded p-2 focus:outline-none"
-                                onchange="this.form.submit()">
-                                <option value="Processing" <%=item.orderStatus==="Processing" ? "selected" : "" %>
-                                    >Processing</option>
-                                <option value="Shipped" <%=item.orderStatus==="Shipped" ? "selected" : "" %>>Shipped
-                                </option>
-                                <option value="Delivered" <%=item.orderStatus==="Delivered" ? "selected" : "" %>
-                                    >Delivered</option>
-                                <option value="Cancelled" <%=item.orderStatus==="Cancelled" ? "selected" : "" %>
-                                    >Cancelled</option>
-                            </select>
+                            <form>
+                                <input type="hidden" name="itemId" value="<%= item._id %>" />
+                                <input type="hidden" name="orderId" value="<%= order._id %>" />
+                                <select name="orderStatus"
+                                    class="bg-gray-700 text-white rounded p-2 focus:outline-none">
+                                    <option value="Processing" <%=item.orderStatus==="Processing" ? "selected" : "" %>
+                                        >Processing</option>
+                                    <option value="Shipped" <%=item.orderStatus==="Shipped" ? "selected" : "" %>>Shipped
+                                    </option>
+                                    <option value="Delivered" <%=item.orderStatus==="Delivered" ? "selected" : "" %>
+                                        >Delivered</option>
+                                    <option value="Cancelled" <%=item.orderStatus==="Cancelled" ? "selected" : "" %>
+                                        >Cancelled</option>
+                                </select>
+                            </form>
+
                         </div>
                     </div>
                     <% }) %>
 
             </section>
         </main>
-
-
 </body>
+
+<script>
+    document.querySelectorAll('select[name="orderStatus"]').forEach((selectElement) => {
+        selectElement.addEventListener('change', async function () {
+            const orderStatus = this.value;
+            const itemId = this.closest('form').querySelector('input[name="itemId"]').value;
+            const orderId = this.closest('form').querySelector('input[name="orderId"]').value;
+
+            try {
+                console.log(3333333333333);
+                // Send AJAX request to update order status
+                const response = await fetch('/admin/orders/update-status', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify({
+                        orderId,
+                        itemId,
+                        orderStatus,
+                    }),
+                });
+
+if (response.ok) {
+    // Display success notification or update UI
+    Swal.fire({
+        title: 'Success!',
+        text: 'Order status updated successfully!',
+        icon: 'success',
+        confirmButtonText: 'OK'
+    });
+} else {
+    // Handle errors
+    const errorData = await response.json();
+    console.error('Failed to update order status:', errorData.error);
+    Swal.fire({
+        title: 'Error!',
+        text: 'Failed to update order status. Please try again.',
+        icon: 'error',
+        confirmButtonText: 'OK'
+    });
+}
+
+            } catch (error) {
+                console.error('Error updating order status:', error);
+                alert('An error occurred while updating the order status.');
+            }
+        });
+    });
+</script>
 
 </html>

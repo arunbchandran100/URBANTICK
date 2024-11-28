@@ -73,21 +73,28 @@ exports.getAdminOrdersDetails = [
 ];
 
 
+
 exports.updateOrderStatus = [
   adminAuthenticated,
   async (req, res) => {
     try {
+      console.log(222222222);
       const { itemId, orderId, orderStatus } = req.body;
 
-      // Update item status
+      // Find the order by ID
       const order = await Order.findById(orderId);
-      const item = order.items.id(itemId);
-      if (!item) return res.status(404).send("Item not found");
+      if (!order) return res.status(404).json({ error: "Order not found" });
 
+      // Find the item by its ID within the order
+      const item = order.orderItems.id(itemId);
+      if (!item) return res.status(404).json({ error: "Item not found" });
+
+      // Update the status
       item.orderStatus = orderStatus;
       await order.save();
 
-      res.redirect(`/admin/orders/details/${orderId}`);
+      // Respond with success
+      res.status(200).json({ message: "Order status updated successfully" });
     } catch (error) {
       console.error("Error updating order status:", error);
       res.status(500).json({ error: "Failed to update order status" });
