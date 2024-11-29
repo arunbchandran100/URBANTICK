@@ -5,7 +5,7 @@ const userAuthenticated = require("../middleware/userauthmildware");
 // -------------User Login Page--------------------
 exports.loginGET = (req, res) => {
   if (req.session.user) {
-    return res.redirect("/home");
+    return res.redirect("/user/profile");
   }
   res.render("user/userLogin");
 };
@@ -33,7 +33,7 @@ exports.loginPOST = async (req, res) => {
     //console.log("The user is " + req.session.user);
 
     // Redirect to the home page after successful login
-    res.redirect("/home");
+    res.redirect("/user/profile");
   } catch (error) {
     console.error("Error during login:", error);
     res.status(500).json({ message: "Server error" });
@@ -131,7 +131,7 @@ const mongoose = require("mongoose"); // Import mongoose
 
 exports.home = async (req, res) => {
   try {
-    if (req.session.user) {
+    // if (req.session.user) {
       const products = await Product.aggregate([
         {
           $lookup: {
@@ -164,11 +164,10 @@ exports.home = async (req, res) => {
         discountPrice: product.variants?.discountPrice || null,
       }));
 
-      // console.log(formattedProducts);
       res.render("user/home", { products: formattedProducts });
-    } else {
-      res.status(200).redirect("/user/login");
-    }
+    // } else {
+    //   res.status(200).redirect("/user/login");
+    // }
   } catch (err) {
     console.error("Error fetching products:", err.message);
     res.status(500).send("Server Error");
