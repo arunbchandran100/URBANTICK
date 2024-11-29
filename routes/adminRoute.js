@@ -3,10 +3,10 @@ const router = express.Router();
 const adminController = require("../controllers/adminController");
 const uploadMiddleware = require("../middleware/uploadMiddleware");
 
-router.use((req, res, next) => {
-    req.session.admin = true;
-    next();
-});
+// router.use((req, res, next) => {
+//     req.session.admin = true;
+//     next();
+// });
 
 // Admin login page
 router.get("/login", adminController.getLogin);

@@ -15,22 +15,29 @@ exports.loginPOST = async (req, res) => {
     const { email, password } = req.body;
 
     const user = await User.findOne({ email });
-    // console.log("The user is " + user);
     if (!user) {
-      return res.render("user/userLogin", { error: "User not registered" });
+      return res.render("user/userLogin", {
+        error: "User not registered",
+        email,
+      });
     }
 
     if (user.status === "blocked") {
-      return res.render("user/userLogin", { error: `${email} is blocked` });
+      return res.render("user/userLogin", {
+        error: `${email} is blocked`,
+        email,
+      });
     }
 
     const isMatch = await bcrypt.compare(password, user.password);
     if (!isMatch) {
-      return res.render("user/userLogin", { error: "Invalid credentials" });
+      return res.render("user/userLogin", {
+        error: "Wrong Email or Password",
+        email,
+      });
     }
 
     req.session.user = user;
-    //console.log("The user is " + req.session.user);
 
     // Redirect to the home page after successful login
     res.redirect("/user/profile");
