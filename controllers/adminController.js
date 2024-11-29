@@ -46,7 +46,6 @@ exports.logout = (req, res) => {
 
 ///////////////////Dashboard-------------------
 exports.getDashboard = [
-  adminAuthenticated,
   (req, res) => {
     res.setHeader(
       "Cache-Control",
@@ -60,7 +59,6 @@ exports.getDashboard = [
 ///////////////////Dashboard Customers-------------------
 
 exports.getCustomers = [
-  adminAuthenticated,
   async (req, res) => {
     try {
       const page = parseInt(req.query.page) || 1;
@@ -111,7 +109,6 @@ exports.blockCustomer = [
 
 
 exports.updateStatus = [
-  adminAuthenticated,
   async (req, res) => {
     try {
       const customerId = req.params.id;
@@ -132,7 +129,6 @@ exports.updateStatus = [
 const Category = require("../models/categoryModel");
 
 exports.getCategories = [
-  adminAuthenticated,
   async (req, res) => {
     try {
       const page = parseInt(req.query.page) || 1;
@@ -158,7 +154,6 @@ exports.getCategories = [
 
 
 exports.addCategory = [
-  adminAuthenticated,
   async (req, res) => {
     try {
       // const categoryName = req.body.categoriesName.trim().toLowerCase();
