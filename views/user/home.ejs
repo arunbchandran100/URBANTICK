@@ -1,23 +1,20 @@
 <!DOCTYPE html>
 <html lang="en">
-  <head>
-    <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <link rel="stylesheet" href="style.css" />
-    <title>Home Page</title>
-    <script src="https://cdn.tailwindcss.com"></script>
-    <link
-      rel="stylesheet"
-      href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.6.0/css/all.min.css"
-      integrity="sha512-Kc323vGBEqzTmouAECnVceyQqyqdsSiqLQISBL29aUW4U/M7pSPA/gEUZQqv1cwx4OnYxTxve5UMg5GT6L4JJg=="
-      crossorigin="anonymous"
-      referrerpolicy="no-referrer"
-    />
-  </head>
 
-  <body class="bg-gray-100">
-    <!------------ Navbar ---------->
-    <%- include("partials/navBar") %>
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <link rel="stylesheet" href="style.css" />
+  <title>Home Page</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.6.0/css/all.min.css"
+    integrity="sha512-Kc323vGBEqzTmouAECnVceyQqyqdsSiqLQISBL29aUW4U/M7pSPA/gEUZQqv1cwx4OnYxTxve5UMg5GT6L4JJg=="
+    crossorigin="anonymous" referrerpolicy="no-referrer" />
+</head>
+
+<body class="bg-gray-100">
+  <!------------ Navbar ---------->
+  <%- include("partials/navBar") %>
     <div class="mt-16"></div>
 
     <!-- Page Content -->
@@ -26,32 +23,66 @@
     </div>
 
     <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-8">
-      <% let i = 0; %> <% products.forEach(product => { %> <% if (i < 4) { %>
-      <div class="bg-white rounded-lg shadow-md p-4">
-        <a href="/product/<%= product._id %>">
-          <img
-            class="w-full h-auto rounded-lg mb-4"
-            src="<%= product.imageUrl %>"
-            alt="<%= product.productName %>"
-          />
-        </a>
-        <h3 class="text-lg font-semibold text-gray-800">
-          <%= product.productName %>
-        </h3>
-        <% if (product.discountPrice && product.discountPrice < product.price) {
-        %>
-        <div class="text-gray-500 line-through">₹<%= product.price.toLocaleString() %></div>
-        <div class="text-xl font-bold text-gray-900">
-          ₹<%= product.discountPrice.toLocaleString() %>
-        </div>
-        <% } else { %>
-        <div class="text-xl font-bold text-gray-900">₹<%= product.price.toLocaleString() %></div>
-        <% } %>
-      </div>
-      <% i++; %> <% } %> <% }); %>
+      <% let i=0; %>
+        <% products.forEach(product=> { %> <% if (i < 4) { %>
+            <div class="bg-white rounded-lg shadow-md p-4 flex flex-col">
+              <a href="/product/<%= product._id %>">
+                <img class="w-full h-auto rounded-lg mb-4" src="<%= product.imageUrl %>"
+                  alt="<%= product.productName %>" />
+              </a>
+              <h3 class="text-lg font-semibold text-gray-800">
+                <span class="font-bold">
+                  <%= product.brand %>
+                </span>
+                <span class="text-gray-800">
+                  <%= product.productName %>
+                </span>
+              </h3>
+              <div>
+                <p class="ml-1 text-gray-800 font-medium">
+                  <%= product.color %>
+                </p>
+              </div>
+              <div class="text-yellow-500 flex items-center">
+                <i class="fa fa-star"></i>
+                <p class="ml-1 text-gray-800 font-medium">
+                  <%= product.rating || 'No rating' %>
+                </p>
+              </div>
+
+              <% if (product.price && product.discountPrice) { %>
+                <div class="flex gap-2">
+                  <div class="text-xl font-bold text-gray-900">
+                    ₹<%= product.discountPrice.toLocaleString() %>
+                  </div>
+                  <div class="text-gray-500 line-through mt-1">
+                    ₹<%= product.price.toLocaleString() %>
+                  </div>
+                </div>
+                <% } else { %>
+                  <div class="text-xl font-bold text-gray-900">
+                    Price Not Available
+                  </div>
+                  <% } %>
+                    <div class="flex justify-between items-center mt-4">
+                      <a href="#" class="hover:text-slate-500"><i class="fa-regular fa-heart"></i></a>
+                    </div>
+
+                    <% if (product.stock> 0) { %>
+                      <div class="mt-2 text-green-500"></div>
+                      <% } else { %>
+                        <div class="mt-2 font-semibold text-red-600 bg-red-100 border border-red-600 rounded-lg p-2">
+                          Out of Stock
+                        </div>
+                        <% } %>
+            </div>
+            <% i++; %>
+              <% } %>
+                <% }); %>
     </div>
 
     <!------------- Footer ------------>
     <%- include("partials/footer") %>
-  </body>
+</body>
+
 </html>
