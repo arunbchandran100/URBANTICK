@@ -2,6 +2,7 @@ const adminAuthenticated = require("../../middleware/adminauthmildware");
 
 const Order = require("../../models/orderModel");
 const User = require("../../models/userModel");
+const Variant = require("../../models/variantSchema");
 
 
 exports.getAdminOrders = [
@@ -92,7 +93,26 @@ exports.updateOrderStatus = [
       // Update the status
       item.orderStatus = orderStatus;
       await order.save();
+      // ----------------------------------
+      // If the new status is "Cancelled," update the variant stock
+      if (orderStatus === "Cancelled") {
+        const variant = await Variant.findById(item.variant.variantId);
+        if (!variant) {
+          return res
+            .status(404)
+            .json({ error: "Associated variant not found" });
+        }
 
+        // Increment the stock by the item's quantity
+        variant.stock += item.quantity;
+        await variant.save();
+      }
+
+      // Update the order item's status
+      item.orderStatus = orderStatus;
+      await order.save();
+
+      //---------------------------------------
       // Respond with success
       res.status(200).json({ message: "Order status updated successfully" });
     } catch (error) {

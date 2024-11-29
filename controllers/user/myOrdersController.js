@@ -29,7 +29,7 @@ exports.getMyOrders = async (req, res) => {
         day: "numeric",
         hour: "2-digit",
         minute: "2-digit",
-        hour12: true, // Change to false for 24-hour format
+        hour12: true, 
       }),
       totalPrice: order.totalPrice,
       paymentMethod: order.paymentMethod,
@@ -62,17 +62,15 @@ exports.getMyOrders = async (req, res) => {
 
 exports.getOrderDetails = async (req, res) => {
   try {
-    const orderId = req.params.id; // Get order ID from URL parameters
-    const userId = req.session.user._id; // Get user ID from session
+    const orderId = req.params.id; 
+    const userId = req.session.user._id; 
 
-    // Fetch the order details for the specific user and order
     const order = await Order.findOne({ _id: orderId, userId });
 
     if (!order) {
       return res.status(404).send("Order not found.");
     }
 
-    // Prepare the order details for rendering
     const orderDetails = {
       _id: order._id,
       orderDate: new Date(order.createdAt).toLocaleString("en-US", {
@@ -81,7 +79,7 @@ exports.getOrderDetails = async (req, res) => {
         day: "numeric",
         hour: "2-digit",
         minute: "2-digit",
-        hour12: true, // Change to false for 24-hour format
+        hour12: true, 
       }),
       totalPrice: order.totalPrice,
       paymentMethod: order.paymentMethod,
@@ -108,7 +106,6 @@ exports.getOrderDetails = async (req, res) => {
       },
     };
 
-    // Render the order details page with the prepared data
     res.render("user/viewOrderDetails", {
       order: orderDetails,
     });
@@ -123,10 +120,9 @@ exports.getOrderDetails = async (req, res) => {
 
 exports.cancelOrderItem = async (req, res) => {
   try {
-    const { orderItemId } = req.body; // Extract the order item ID from the request body
-    const userId = req.session.user._id; // Get the user ID from the session
+    const { orderItemId } = req.body;
+    const userId = req.session.user._id;
 
-    // Find the order containing the specific order item
     const order = await Order.findOne({
       userId,
       "orderItems._id": orderItemId,
@@ -136,7 +132,6 @@ exports.cancelOrderItem = async (req, res) => {
       return res.status(404).json({ message: "Order or item not found." });
     }
 
-    // Find the specific order item
     const orderItem = order.orderItems.find(
       (item) => item._id.toString() === orderItemId
     );
@@ -145,7 +140,6 @@ exports.cancelOrderItem = async (req, res) => {
       return res.status(404).json({ message: "Order item not found." });
     }
 
-    // Check if the order item is eligible for cancellation
     if (["Shipped", "Delivered"].includes(orderItem.orderStatus)) {
       return res.status(400).json({
         message:
@@ -153,10 +147,18 @@ exports.cancelOrderItem = async (req, res) => {
       });
     }
 
-    // Update the order item's status to "Cancelled"
     orderItem.orderStatus = "Cancelled";
 
-    // Save the updated order
+    const variant = await Variant.findById(orderItem.variant.variantId);
+    if (!variant) {
+      return res
+        .status(404)
+        .json({ message: "Associated variant not found in inventory." });
+    }
+
+    variant.stock += orderItem.quantity; 
+    await variant.save();
+
     await order.save();
 
     res.status(200).json({ message: "Order item canceled successfully." });
