@@ -6,6 +6,10 @@ const Cart = require("../../models/cartModel");
 
 exports.addToCart = async (req, res) => {
   try {
+
+    if (!req.session.user) {
+      return res.status(401).json({ message: "User not logged in" });
+    }
     const { productId, variantId, quantity } = req.body;
 
     // console.log(

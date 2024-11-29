@@ -12,9 +12,9 @@ const Address = require("../../models/addressModel");
 // -------------GET User Profile Page--------------------
 exports.getPersonalInformation = async (req, res) => {
   try {
-    if (!req.session.user) {
-      return res.redirect("/user/login");
-    }
+    // if (!req.session.user) {
+    //   return res.redirect("/user/login");
+    // }
 
     // Fetch user details
     const user = await User.findById(req.session.user._id).select(
