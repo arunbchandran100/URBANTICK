@@ -139,39 +139,54 @@ const mongoose = require("mongoose"); // Import mongoose
 exports.home = async (req, res) => {
   try {
     // if (req.session.user) {
-      const products = await Product.aggregate([
-        {
-          $lookup: {
-            from: "variants",
-            localField: "_id",
-            foreignField: "productId",
-            as: "variants",
-          },
+    const products = await Product.aggregate([
+      {
+        $lookup: {
+          from: "variants",
+          localField: "_id",
+          foreignField: "productId",
+          as: "variants",
         },
-        {
-          $project: {
-            _id: 1,
-            productName: 1,
-            imageUrl: 1,
-            variants: {
-              $arrayElemAt: ["$variants", 0],
-            },
-          },
+      },
+      {
+        $unwind: {
+          path: "$variants",
+          preserveNullAndEmptyArrays: true,
         },
-      ]);
+      },
+      {
+        $project: {
+          _id: 1,
+          brand: 1,
+          productName: 1,
+          imageUrl: 1,
+          "variants.color": 1,
+          "variants.price": 1,
+          "variants.rating": 1,
+          "variants.discountPrice": 1,
+          "variants.discountPercentage": 1,
+          "variants.stock": 1,
+        },
+      },
+    ]);
 
-      const formattedProducts = products.map((product) => ({
-        _id: product._id,
-        productName: product.productName,
-        imageUrl:
-          Array.isArray(product.imageUrl) && product.imageUrl.length > 0
-            ? product.imageUrl[0]
-            : "/images/default-product.jpg",
-        price: product.variants?.price || null,
-        discountPrice: product.variants?.discountPrice || null,
-      }));
+    const formattedProducts = products.map((product) => ({
+      _id: product._id,
+      brand: product.brand,
+      productName: product.productName,
+      imageUrl:
+        Array.isArray(product.imageUrl) && product.imageUrl.length > 0
+          ? product.imageUrl[0]
+          : "/images/default-product.jpg",
+      color: product.variants?.color,
+      price: product.variants?.price || null,
+      rating: product.variants?.rating || null,
+      discountPrice: product.variants?.discountPrice || null,
+      discountPercentage: product.variants?.discountPercentage || null,
+      stock: product.variants.stock,
+    }));
 
-      res.render("user/home", { products: formattedProducts });
+    res.render("user/home", { products: formattedProducts });
     // } else {
     //   res.status(200).redirect("/user/login");
     // }

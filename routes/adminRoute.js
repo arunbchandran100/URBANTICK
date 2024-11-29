@@ -5,10 +5,10 @@ const uploadMiddleware = require("../middleware/uploadMiddleware");
 const adminAuthenticated = require("../middleware/adminauthmildware");
 
 
-// router.use((req, res, next) => {
-//     req.session.admin = true;
-//     next();
-// });
+router.use((req, res, next) => {
+    req.session.admin = true;
+    next();
+});
 
 // Admin login page
 router.get("/login", adminController.getLogin);
