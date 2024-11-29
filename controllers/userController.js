@@ -269,7 +269,6 @@ exports.getVariantDetails = async (req, res) => {
     }
 
     // console.log(variant);
-    // Respond with the variant details
     res.json(variant);
   } catch (error) {
     console.error("Error fetching variant details:", error);

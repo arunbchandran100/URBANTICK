@@ -227,32 +227,27 @@
         }
 
         // Function to update variant details
-        function updateVariantDetails(variant) {
-          const buyNowButton = document.getElementById("buyNowButton");
-          const addToCartButton = document.getElementById("addToCartButton");
+function updateVariantDetails(variant) {
+  const buyNowButton = document.getElementById("buyNowButton");
+  const addToCartButton = document.getElementById("addToCartButton");
 
-          document.querySelector(".variant-price").textContent = `₹${variant.discountPrice.toLocaleString() || "N/A"
-            }`;
-          document.querySelector(".variant-original-price").textContent = `₹${variant.price.toLocaleString() || "N/A"
-            }`;
-          document.querySelector(".variant-discount").textContent = `${variant.discountPercentage.toLocaleString() || 0
-            }% off`;
-          document.querySelector(".variant-rating").textContent = variant.rating
-            ? `${variant.rating} stars`
-            : "No rating";
-          // Update stock status with appropriate styling
-          const stockElement = document.querySelector(".variant-stock");
-          if (variant.stock > 0) {
-            stockElement.innerHTML = '<div class="text-green-500">In Stock</div>';
-            buyNowButton.style.display = "inline-block"; // Show the buttons
-            addToCartButton.style.display = "inline-block"; // Show the buttons
-          } else {
-            stockElement.innerHTML =
-              '<div class="font-semibold text-red-600 bg-red-100 border border-red-600 rounded-lg p-2" style="width: fit-content;">Out of Stock</div>';
-            buyNowButton.style.display = "none"; // Hide the buttons
-            addToCartButton.style.display = "none"; // Hide the buttons
-          }
-        }
+  document.querySelector(".variant-price").textContent = `₹${variant.discountPrice.toLocaleString() || "N/A"}`;
+  document.querySelector(".variant-original-price").textContent = `₹${variant.price.toLocaleString() || "N/A"}`;
+  document.querySelector(".variant-discount").textContent = `${variant.discountPercentage.toLocaleString() || 0}% off`;
+  document.querySelector(".variant-rating").textContent = variant.rating ? `${variant.rating} stars` : "No rating";
+  
+  // Update stock status with appropriate styling
+  const stockElement = document.querySelector(".variant-stock");
+  if (variant.stock > 0) {
+    stockElement.innerHTML = `<div class="text-green-500"><p class="font-semibold">In stock (${variant.stock} left)</p></div>`;
+    buyNowButton.style.display = "inline-block"; // Show the buttons
+    addToCartButton.style.display = "inline-block"; // Show the buttons
+  } else {
+    stockElement.innerHTML = '<div class="font-semibold text-red-600 bg-red-100 border border-red-600 rounded-lg p-2" style="width: fit-content;">Out of Stock</div>';
+    buyNowButton.style.display = "none"; // Hide the buttons
+    addToCartButton.style.display = "none"; // Hide the buttons
+  }
+}
 
         // Event listener for color change
         document.getElementById("color").addEventListener("change", function () {
