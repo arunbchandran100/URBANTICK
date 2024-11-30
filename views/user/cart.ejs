@@ -190,31 +190,41 @@
             },
         });
 
+async function removeFromCart(cartItemId) {
+    // Show SweetAlert confirmation dialog
+    const result = await Swal.fire({
+        title: 'Are you sure?',
+        text: "You won't be able to revert this!",
+        icon: 'warning',
+        showCancelButton: true,
+        confirmButtonColor: '#3085d6',
+        cancelButtonColor: '#d33',
+        confirmButtonText: 'Yes, delete it!'
+    });
 
-        async function removeFromCart(cartItemId) {
-            try {
-                const response = await axios.delete(`/cart/${cartItemId}`);
-                if (response.status === 200) {
-                    notyf.success("Item removed from cart");
+    if (result.isConfirmed) {
+        try {
+            const response = await axios.delete(`/cart/${cartItemId}`);
+            if (response.status === 200) {
+                notyf.success("Item removed from cart");
 
-
-                    // Remove the item from the DOM
-                    const cartItemElement = document.querySelector(
-                        `[data-cart-item-id="${cartItemId}"]`
-                    );
+                // Remove the item from the DOM
+                const cartItemElement = document.querySelector(`[data-cart-item-id="${cartItemId}"]`);
+                if (cartItemElement) {
                     cartItemElement.remove();
-                    // Optionally, update the subtotal and total
-                    updateCartTotals();
-                } else {
-                    console.error(
-                        "Failed to remove item from cart:",
-                        response.data.message
-                    );
                 }
-            } catch (error) {
-                console.error("Error removing item from cart:", error);
+                
+                // Optionally, update the subtotal and total
+                updateCartTotals();
+            } else {
+                console.error("Failed to remove item from cart:", response.data.message);
             }
+        } catch (error) {
+            console.error("Error removing item from cart:", error);
         }
+    }
+}
+
 
 function updateCartTotals() {
     const cartItemElements = document.querySelectorAll("[data-cart-item-id]");
