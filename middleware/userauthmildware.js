@@ -20,8 +20,15 @@ module.exports = async (req, res, next) => {
     if (user && user.status === "active") {
       next();
     } else {
-      console.log("User is blocked");
-      res.redirect("/user/login");
+          req.session.destroy((err) => {
+            if (err) {
+              console.error("Error during logout:", err);
+              return res
+                .status(500)
+                .send("Failed to logout. Please try again.");
+            }
+            res.redirect("/user/login");
+          });
     }
   } else {
     res.redirect("/user/login");
