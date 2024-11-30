@@ -22,9 +22,9 @@
       <img src="/images/main-banner.png" alt="Banner Image" class="w-full" />
     </div>
 
-    <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-8">
+    <div class="grid mx-6 my-2 grid-cols-1 sm:grid-cols-2 lg:grid-cols-5 gap-8">
       <% let i=0; %>
-        <% products.forEach(product=> { %> <% if (i < 4) { %>
+        <% products.forEach(product=> { %> <% if (i < 5) { %>
             <div class="bg-white rounded-lg shadow-md p-4 flex flex-col">
               <a href="/product/<%= product._id %>">
                 <img class="w-full h-auto rounded-lg mb-4" src="<%= product.imageUrl %>"
@@ -66,15 +66,15 @@
                   <% } %>
                     <div class="flex justify-between items-center mt-4">
                       <a href="#" class="hover:text-slate-500"><i class="fa-regular fa-heart"></i></a>
-                    </div>
 
-                    <% if (product.stock> 0) { %>
-                      <div class="mt-2 text-green-500"></div>
-                      <% } else { %>
-                        <div class="mt-2 font-semibold text-red-600 bg-red-100 border border-red-600 rounded-lg p-2">
-                          Out of Stock
-                        </div>
-                        <% } %>
+                      <% if (product.stock> 0) { %>
+                        <div class=" text-green-500"></div>
+                        <% } else { %>
+                          <div class=" font-semibold text-red-600 bg-red-100 border border-red-600 rounded-lg p-2">
+                            Out of Stock
+                          </div>
+                          <% } %>
+                    </div>
             </div>
             <% i++; %>
               <% } %>
