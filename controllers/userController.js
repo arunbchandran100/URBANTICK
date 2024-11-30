@@ -221,6 +221,7 @@ exports.viewProduct = async (req, res) => {
           imageUrl: 1,
           gender: 1,
           brand: 1,
+          categoriesId : 1,
           "variants.price": 1,
           "variants.discountPrice": 1,
           "variants.discountPercentage": 1,
@@ -242,6 +243,7 @@ exports.viewProduct = async (req, res) => {
       imageUrl: product[0].imageUrl,
       gender: product[0].gender,
       brand: product[0].brand,
+      categoriesId: product[0].categoriesId,
       variants: product[0].variants.map((variant) => ({
         price: variant.price || "N/A",
         discountPrice: variant.discountPrice || "N/A",
@@ -251,8 +253,63 @@ exports.viewProduct = async (req, res) => {
         stock: variant.stock,
       })),
     };
+////////////////////////////
+    console.log(22222);
+    console.log(formattedProduct.categoriesId);
 
-    res.render("user/viewProduct", { product: formattedProduct });
+
+const products = await Product.aggregate([
+  {
+    $lookup: {
+      from: "variants",
+      localField: "_id",
+      foreignField: "productId",
+      as: "variants",
+    },
+  },
+  {
+    $unwind: {
+      path: "$variants",
+      preserveNullAndEmptyArrays: true,
+    },
+  },
+  {
+    $project: {
+      _id: 1,
+      brand: 1,
+      productName: 1,
+      imageUrl: 1,
+      "variants.color": 1,
+      "variants.price": 1,
+      "variants.rating": 1,
+      "variants.discountPrice": 1,
+      "variants.discountPercentage": 1,
+      "variants.stock": 1,
+    },
+  },
+]);
+
+const formattedRelatedProducts = products.map((product) => ({
+  _id: product._id,
+  brand: product.brand,
+  productName: product.productName,
+  imageUrl:
+    Array.isArray(product.imageUrl) && product.imageUrl.length > 0
+      ? product.imageUrl[0]
+      : "/images/default-product.jpg",
+  color: product.variants?.color,
+  price: product.variants?.price || null,
+  rating: product.variants?.rating || null,
+  discountPrice: product.variants?.discountPrice || null,
+  discountPercentage: product.variants?.discountPercentage || null,
+  stock: product.variants.stock,
+}));
+
+//////////////
+    res.render("user/viewProduct", {
+      product: formattedProduct,
+      relatedProducts: formattedRelatedProducts,
+    });
   } catch (err) {
     console.error("Error fetching product:", err.message);
     res.status(500).send("Server Error");
