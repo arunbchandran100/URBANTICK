@@ -194,38 +194,51 @@
                     },
                 });
 
-                // Cancel Order Item
-                document.querySelectorAll('.cancel-btn').forEach((button) => {
-                    button.addEventListener('click', async () => {
-                        const orderItemId = button.dataset.id;
+// Cancel Order Item
+document.querySelectorAll('.cancel-btn').forEach((button) => {
+    button.addEventListener('click', async () => {
+        const orderItemId = button.dataset.id;
 
-                        try {
-                            // Make the API call to cancel the order
-                            const response = await axios.post('/order/cancel', { orderItemId });
+        // Show SweetAlert confirmation dialog
+        const result = await Swal.fire({
+            title: 'Are you sure?',
+            text: "You won't be able to revert this!",
+            icon: 'warning',
+            showCancelButton: true,
+            confirmButtonColor: '#3085d6',
+            cancelButtonColor: '#d33',
+            confirmButtonText: 'Yes, cancel it!'
+        });
 
-                            // Use SweetAlert to show a success popup
-                            Swal.fire({
-                                icon: 'success',
-                                title: 'Cancelled',
-                                text: response.data.message || 'Order cancelled successfully!',
-                                confirmButtonText: 'OK',
-                            }).then((result) => {
-                                if (result.isConfirmed) {
-                                    // Reload the page when the user clicks OK
-                                    location.reload();
-                                }
-                            });
-                        } catch (error) {
-                            // Use SweetAlert to show an error popup
-                            Swal.fire({
-                                icon: 'error',
-                                title: 'Error',
-                                text: error.response?.data?.message || 'Failed to cancel order.',
-                                confirmButtonText: 'OK',
-                            });
-                        }
-                    });
+        if (result.isConfirmed) {
+            try {
+                // Make the API call to cancel the order
+                const response = await axios.post('/order/cancel', { orderItemId });
+
+                // Use SweetAlert to show a success popup
+                Swal.fire({
+                    icon: 'success',
+                    title: 'Cancelled',
+                    text: response.data.message || 'Order cancelled successfully!',
+                    confirmButtonText: 'OK',
+                }).then((result) => {
+                    if (result.isConfirmed) {
+                        // Reload the page when the user clicks OK
+                        location.reload();
+                    }
                 });
+            } catch (error) {
+                // Use SweetAlert to show an error popup
+                Swal.fire({
+                    icon: 'error',
+                    title: 'Error',
+                    text: error.response?.data?.message || 'Failed to cancel order.',
+                    confirmButtonText: 'OK',
+                });
+            }
+        }
+    });
+});
 
 
                 // Return Order Item
