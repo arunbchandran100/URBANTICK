@@ -78,21 +78,18 @@ exports.getCart = async (req, res) => {
   try {
     const userId = req.session.user._id;
 
-    // Fetch cart items for the user
+
     const cartItems = await Cart.find({ userId })
       .populate("productId")
       .populate("variantId");
 
-    // Format cart items to include product and variant details
+
     const formattedCartItems = cartItems.map((item) => ({
       _id: item._id,
       product: item.productId,
       variant: item.variantId,
-      quantity: item.quantity,
+      quantity: item.variantId && item.variantId.stock > 0 ? item.quantity : 0,
     }));
-
-    // console.log(222222222);
-    // console.log(formattedCartItems);
 
     res.render("user/cart", { cartItems: formattedCartItems });
   } catch (error) {
