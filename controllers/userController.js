@@ -254,11 +254,7 @@ exports.viewProduct = async (req, res) => {
       })),
     };
 ////////////////////////////
-    console.log(22222);
-    console.log(formattedProduct.categoriesId);
-
-
-const products = await Product.aggregate([
+ const products = await Product.aggregate([
   {
     $lookup: {
       from: "variants",
@@ -271,6 +267,11 @@ const products = await Product.aggregate([
     $unwind: {
       path: "$variants",
       preserveNullAndEmptyArrays: true,
+    },
+  },
+  {
+    $match: {
+      categoriesId: formattedProduct.categoriesId, 
     },
   },
   {
@@ -302,7 +303,7 @@ const formattedRelatedProducts = products.map((product) => ({
   rating: product.variants?.rating || null,
   discountPrice: product.variants?.discountPrice || null,
   discountPercentage: product.variants?.discountPercentage || null,
-  stock: product.variants.stock,
+  stock: product.variants?.stock,
 }));
 
 //////////////
