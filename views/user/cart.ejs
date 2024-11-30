@@ -90,8 +90,9 @@
                                         <div class="ml-auto">
                                             <h4 id="variantPriceTag"
                                                 class="text-lg max-sm:text-base font-bold text-gray-800">
-                                                ₹<%= item.variant.discountPrice %>
+                                                ₹<%= item.variant.discountPrice * item.quantity%>
                                             </h4>
+                                            <h5 id="perItemPrice" class="visibility: hidden"> <%= item.variant.discountPrice %></h5>
                                             <div
                                                 class="flex items-center justify-between border border-gray-300 rounded-md w-24 mt-5">
                                                 <!-- Decrement Button -->
@@ -215,83 +216,75 @@
             }
         }
 
-        function updateCartTotals() {
-            const cartItemElements = document.querySelectorAll("[data-cart-item-id]");
-            let subtotal = 0;
-            cartItemElements.forEach((item) => {
-                const priceTag = item.querySelector("#variantPriceTag");
-                const quantityTag = item.querySelector("#variantQuantityTag");
-                if (priceTag && quantityTag) {
-                    const price = parseFloat(priceTag.textContent.replace("₹", ""));
-                    const quantity = parseInt(quantityTag.textContent);
-                    subtotal += price * quantity;
-                }
-            });
+function updateCartTotals() {
+    const cartItemElements = document.querySelectorAll("[data-cart-item-id]");
+    let subtotal = 0;
 
-            if (subtotal === 0) {
-                Swal.fire({
-                    title: "Error",
-                    text: "No items in the cart",
-                    icon: "error",
-                    confirmButtonText: "Continue Shopping",
-                }).then((result) => {
-                    if (result.isConfirmed) {
-                        window.location.href = "/shopall";
-                    }
-                });
-            }
+    cartItemElements.forEach((item) => {
+        const perItemPriceElement = item.querySelector("#perItemPrice");
+        const quantityElement = item.querySelector("#variantQuantityTag");
 
-            document.getElementById("subtotalPriceTag").textContent = `₹${subtotal.toLocaleString()}`;
-            document.getElementById("totalPriceTag").textContent = `₹${subtotal.toLocaleString()}`;
+        if (perItemPriceElement && quantityElement) {
+            const perItemPrice = parseFloat(perItemPriceElement.textContent);
+            const quantity = parseInt(quantityElement.textContent);
+            subtotal += perItemPrice * quantity;
+        }
+    });
+
+    // Update the subtotal and total in the DOM
+    document.getElementById("subtotalPriceTag").textContent = `₹${subtotal.toLocaleString()}`;
+    document.getElementById("totalPriceTag").textContent = `₹${subtotal.toLocaleString()}`;
+}
+
+
+async function updateQuantity(cartItemId, delta) {
+    try {
+        const cartItemElement = document.querySelector(`[data-cart-item-id="${cartItemId}"]`);
+        const quantityElement = cartItemElement.querySelector("#variantQuantityTag");
+        const priceElement = cartItemElement.querySelector("#variantPriceTag");
+        const perItemPriceElement = cartItemElement.querySelector("#perItemPrice");
+
+        const currentQuantity = parseInt(quantityElement.textContent);
+        const perItemPrice = parseFloat(perItemPriceElement.textContent);
+
+        const newQuantity = currentQuantity + delta;
+
+        if (newQuantity < 1) {
+            notyf.error("Quantity must be at least 1");
+            return;
+        } else if (newQuantity > 5) {
+            notyf.error("Maximum quantity of 5 is allowed");
+            return;
         }
 
+        // Send the updated quantity to the server
+        const response = await axios.put(`/cart/${cartItemId}`, { quantity: newQuantity });
 
-        async function updateQuantity(cartItemId, delta) {
-            try {
-                const quantityElement = document.querySelector(
-                    `[data-cart-item-id="${cartItemId}"] #variantQuantityTag`
-                );
-                const currentQuantity = parseInt(quantityElement.textContent);
-                const newQuantity = currentQuantity + delta;
+        if (response.status === 200) {
+            notyf.success("Cart updated");
 
-                if (newQuantity < 1) {
-                    notyf.error("Quantity must be at least 1");
-                    return;
-                } else if (newQuantity > 5) {
-                    notyf.error("Maximum quantity 5 is allowed");
-                    return;
-                }
+            // Update the quantity in the DOM
+            quantityElement.textContent = newQuantity;
 
-                const response = await axios.put(`/cart/${cartItemId}`, {
-                    quantity: newQuantity,
-                });
+            // Calculate the new price and update the DOM
+            const newPrice = perItemPrice * newQuantity;
+            priceElement.textContent = `₹${newPrice.toLocaleString()}`;
 
-                if (response.status === 200) {
-                    notyf.success("Cart updated");
-
-                    // Update the quantity in the DOM
-                    quantityElement.textContent = newQuantity;
-                    // Optionally, update the subtotal and total
-                    updateCartTotals();
-                } else {
-                    notyf.error("Failed to update cart");
-                    console.error(
-                        "Failed to update cart:",
-                        response.data.message
-                    );
-                }
-            } catch (error) {
-                // Handle server-specific error messages
-                if (error.response && error.response.data && error.response.data.message) {
-                    notyf.error(error.response.data.message); // Display server message
-                } else {
-                    notyf.error("Error updating cart. Please try again."); // Fallback error
-                }
-
-                console.error("Error updating cart:", error);
-            }
-
+            // Update the subtotal and total
+            updateCartTotals();
+        } else {
+            notyf.error("Failed to update cart");
+            console.error("Failed to update cart:", response.data.message);
         }
+    } catch (error) {
+        if (error.response && error.response.data && error.response.data.message) {
+            notyf.error(error.response.data.message); // Display server error message
+        } else {
+            notyf.error("Error updating cart. Please try again."); // Fallback error message
+        }
+        console.error("Error updating cart:", error);
+    }
+}
 
 
     </script>
