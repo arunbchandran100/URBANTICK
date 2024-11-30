@@ -4,7 +4,7 @@
 <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Document</title>
+    <title>Admin Orders</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <script src="https://unpkg.com/sweetalert/dist/sweetalert.min.js"></script>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.6.0/css/all.min.css"
@@ -33,7 +33,7 @@
                         <tr class="border-b border-gray-700">
                             <th class="py-3 px-4">S.No</th>
                             <th class="py-3 px-4">User Name</th>
-                            <th class="py-3 px-4">Order Status</th>
+                            <th class="py-3 px-4">Order Id</th>
                             <th class="py-3 px-4">Total Price</th>
                             <th class="py-3 px-4">Action</th>
                         </tr>
@@ -51,8 +51,8 @@
                                 </td>
                                 <!-- Order Status -->
                                 <td
-                                    class="py-3 px-4 <%= order.computedOrderStatus === 'Cancelled' ? 'text-red-500' : order.computedOrderStatus === 'Delivered' ? 'text-green-500' : 'text-white' %>">
-                                    <%= order.computedOrderStatus || "Unknown Status" %>
+                                    class="py-3 px-4 text-slate-300 ">
+                                    <%= order._id || "Unknown Status" %>
                                 </td>
 
                                 <!-- Total Price -->
