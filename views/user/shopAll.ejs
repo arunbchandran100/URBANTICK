@@ -51,18 +51,14 @@
           <!-- Left Sidebar - Filters -->
           <div class="md:w-1/4">
             <div class="sticky top-4 space-y-6 bg-white p-6 rounded-lg shadow-sm">
-              <!-- Search Bar -->
-              <div class="mb-6">
-                <input type="text" id="searchInput"
-                  class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
-                  placeholder="Search products..." />
-              </div>
+
+
 
               <!-- Sorting Section -->
               <div class="mb-6">
                 <label for="sortFilter" class="block text-gray-700 font-medium mb-2">Sort By</label>
                 <select id="sortFilter"
-                  class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500">
+                  class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:border-2 focus:border-gray-900">
                   <option value="default">Default</option>
                   <option value="priceLowToHigh">Price: Low to High</option>
                   <option value="priceHighToLow">Price: High to Low</option>
@@ -76,7 +72,7 @@
                 <div>
                   <label for="gender" class="block text-gray-700 font-medium mb-2">Gender</label>
                   <select id="gender"
-                    class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500">
+                    class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:border-2 focus:border-gray-900">
                     <option value>All</option>
                     <option value="male">Male</option>
                     <option value="female">Female</option>
@@ -87,7 +83,7 @@
                 <div>
                   <label for="category" class="block text-gray-700 font-medium mb-2">Category</label>
                   <select id="category"
-                    class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500">
+                    class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:border-2 focus:border-gray-900">
                     <option value>All</option>
                   </select>
                 </div>
@@ -95,7 +91,7 @@
                 <div>
                   <label for="brand" class="block text-gray-700 font-medium mb-2">Brand</label>
                   <select id="brand"
-                    class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500">
+                    class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:border-2 focus:border-gray-900">
                     <option value>All</option>
                   </select>
                 </div>
@@ -103,7 +99,7 @@
                 <div>
                   <label for="color" class="block text-gray-700 font-medium mb-2">Color</label>
                   <select id="color"
-                    class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500">
+                    class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:border-2 focus:border-gray-900">
                     <option value>All</option>
                   </select>
                 </div>
@@ -113,10 +109,10 @@
                     Range</label>
                   <div class="flex gap-2">
                     <input type="number" id="minPrice"
-                      class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
+                      class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:border-2 focus:border-gray-900"
                       placeholder="Min" />
                     <input type="number" id="maxPrice"
-                      class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
+                      class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:border-2 focus:border-gray-900"
                       placeholder="Max" />
                   </div>
                 </div>
@@ -125,7 +121,7 @@
                   <label for="stockFilter" class="block text-gray-700 font-medium mb-2">Stock
                     Status</label>
                   <select id="stockFilter"
-                    class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500">
+                    class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:border-2 focus:border-gray-900">
                     <option value>All Products</option>
                     <option value="inStock">In Stock</option>
                     <option value="outOfStock">Out of Stock</option>
@@ -145,6 +141,19 @@
 
           <!-- Right Side - Product Grid -->
           <div class="md:w-3/4">
+            <!-- Search Bar -->
+<div class="mb-6 flex-1">
+  <div class="flex items-center">
+    <input type="text" id="searchInput"
+      class="h-10 flex-grow px-4 py-2 border border-gray-300 rounded-l-lg focus:outline-none focus:border-2 focus:border-gray-900"
+      placeholder="Search products..." />
+    <button id="searchButton"
+      class="h-10 px-4 py-2 bg-zinc-800 text-white rounded-r-lg transform transition-transform duration-300 ease-in-out hover:bg-zinc-600 hover:scale-105 active:bg-zinc-700 active:scale-95">
+      Search
+    </button>
+  </div>
+</div>
+
             <div id="productGrid" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
               <!-- Dynamic product rendering here -->
               <% products.forEach(product=> { %>
@@ -207,112 +216,112 @@
       </div>
     </div>
 
-    <div class = "pt-6">
+    <div class="pt-6">
       <%- include("partials/footer") %>
     </div>
-      <!-- ------------- -->
+    <!-- ------------- -->
 
-      <script>
-        document.addEventListener("DOMContentLoaded", async () => {
-          // Get all filter elements
-          const elements = {
-            brand: document.getElementById("brand"),
-            color: document.getElementById("color"),
-            category: document.getElementById("category"),
-            gender: document.getElementById("gender"),
-            stockFilter: document.getElementById("stockFilter"),
-            sortFilter: document.getElementById("sortFilter"),
-            minPrice: document.getElementById("minPrice"),
-            maxPrice: document.getElementById("maxPrice"),
-            searchInput: document.getElementById("searchInput"),
-            productGrid: document.getElementById("productGrid"),
+    <script>
+      document.addEventListener("DOMContentLoaded", async () => {
+        // Get all filter elements
+        const elements = {
+          brand: document.getElementById("brand"),
+          color: document.getElementById("color"),
+          category: document.getElementById("category"),
+          gender: document.getElementById("gender"),
+          stockFilter: document.getElementById("stockFilter"),
+          sortFilter: document.getElementById("sortFilter"),
+          minPrice: document.getElementById("minPrice"),
+          maxPrice: document.getElementById("maxPrice"),
+          searchInput: document.getElementById("searchInput"),
+          productGrid: document.getElementById("productGrid"),
+        };
+
+        // Fetch and populate filter options
+        try {
+          const response = await fetch("/products/filter-options");
+          const data = await response.json();
+
+          // Populate brand options
+          if (data.brands) {
+            data.brands.forEach((brand) => {
+              elements.brand.insertAdjacentHTML(
+                "beforeend",
+                `<option value="${brand}">${brand}</option>`
+              );
+            });
+          }
+
+          // Populate color options
+          if (data.colors) {
+            data.colors.forEach((color) => {
+              elements.color.insertAdjacentHTML(
+                "beforeend",
+                `<option value="${color}">${color}</option>`
+              );
+            });
+          }
+
+          // Populate category options
+          if (data.categories) {
+            data.categories.forEach((category) => {
+              elements.category.insertAdjacentHTML(
+                "beforeend",
+                `<option value="${category._id}">${category.categoriesName}</option>`
+              );
+            });
+          }
+        } catch (error) {
+          console.error("Error fetching filter options:", error);
+        }
+
+        // Debounce function
+        function debounce(func, wait) {
+          let timeout;
+          return function (...args) {
+            clearTimeout(timeout);
+            timeout = setTimeout(() => func.apply(this, args), wait);
           };
+        }
 
-          // Fetch and populate filter options
+        // Function to update products
+        async function updateProducts() {
           try {
-            const response = await fetch("/products/filter-options");
+            // Get current values
+            const filters = {
+              gender: elements.gender.value,
+              brand: elements.brand.value,
+              color: elements.color.value,
+              category: elements.category.value,
+              minPrice: elements.minPrice.value,
+              maxPrice: elements.maxPrice.value,
+              stockStatus: elements.stockFilter.value,
+              sort: elements.sortFilter.value,
+            };
+
+            const query = elements.searchInput.value.trim();
+
+            // Build query string
+            const queryParams = new URLSearchParams();
+            Object.entries(filters).forEach(([key, value]) => {
+              if (value) queryParams.append(key, value);
+            });
+
+            console.log(565656500);
+            console.log(query);
+            // Make API call
+            const response = await fetch(`/products/searchFilter?${queryParams}&query=${query}`);
             const data = await response.json();
 
-            // Populate brand options
-            if (data.brands) {
-              data.brands.forEach((brand) => {
-                elements.brand.insertAdjacentHTML(
-                  "beforeend",
-                  `<option value="${brand}">${brand}</option>`
-                );
-              });
+            if (!data.products) {
+              console.error("No products returned");
+              return;
             }
 
-            // Populate color options
-            if (data.colors) {
-              data.colors.forEach((color) => {
-                elements.color.insertAdjacentHTML(
-                  "beforeend",
-                  `<option value="${color}">${color}</option>`
-                );
-              });
-            }
-
-            // Populate category options
-            if (data.categories) {
-              data.categories.forEach((category) => {
-                elements.category.insertAdjacentHTML(
-                  "beforeend",
-                  `<option value="${category._id}">${category.categoriesName}</option>`
-                );
-              });
-            }
-          } catch (error) {
-            console.error("Error fetching filter options:", error);
-          }
-
-          // Debounce function
-          function debounce(func, wait) {
-            let timeout;
-            return function (...args) {
-              clearTimeout(timeout);
-              timeout = setTimeout(() => func.apply(this, args), wait);
-            };
-          }
-
-          // Function to update products
-          async function updateProducts() {
-            try {
-              // Get current values
-              const filters = {
-                gender: elements.gender.value,
-                brand: elements.brand.value,
-                color: elements.color.value,
-                category: elements.category.value,
-                minPrice: elements.minPrice.value,
-                maxPrice: elements.maxPrice.value,
-                stockStatus: elements.stockFilter.value,
-                sort: elements.sortFilter.value,
-              };
-
-              const query = elements.searchInput.value.trim();
-
-              // Build query string
-              const queryParams = new URLSearchParams();
-              Object.entries(filters).forEach(([key, value]) => {
-                if (value) queryParams.append(key, value);
-              });
-
-              console.log(565656500);
-              console.log(query);
-              // Make API call
-              const response = await fetch(`/products/searchFilter?${queryParams}&query=${query}`);
-              const data = await response.json();
-
-              if (!data.products) {
-                console.error("No products returned");
-                return;
-              }
-
-              // Update product grid
-              elements.productGrid.innerHTML = "";
-              data.products.forEach((product) => {
-                const productCard = `
+            // Update product grid
+            elements.productGrid.innerHTML = "";
+            data.products.forEach((product) => {
+              const productCard = `
     <div class="bg-white rounded-lg shadow-md p-4 flex flex-col">
       <a href="/product/${product._id}">
         <img 
@@ -337,26 +346,26 @@
         </p>
       </div>
       ${product.price && product.discountPrice
-                    ? `
+                  ? `
         <div class="flex gap-2">
           <div class="text-xl font-bold text-gray-900">₹${product.discountPrice.toLocaleString()}</div>
           <div class="text-gray-500 line-through mt-1">₹${product.price.toLocaleString()}</div>
         </div>
       `
-                    : `
+                  : `
         <div class="text-xl font-bold text-gray-900">Price Not Available</div>
       `
-                  }
+                }
       ${product.stock > 0
-                    ? `
+                  ? `
         <div class="mt-2 text-green-500"></div>
       `
-                    : `
+                  : `
         <div class="mt-2 font-semibold text-red-600 bg-red-100 border border-red-600 rounded-lg p-2">
           Out of Stock
         </div>
       `
-                  }
+                }
       <div class="flex justify-between items-center mt-4">
         <a href="#" class="hover:text-slate-500">
           <i class="fa-regular fa-heart"></i>
@@ -365,60 +374,60 @@
     </div>
   `;
 
-                elements.productGrid.innerHTML += productCard;
-              });
-            } catch (error) {
-              console.error("Error updating products:", error);
-            }
+              elements.productGrid.innerHTML += productCard;
+            });
+          } catch (error) {
+            console.error("Error updating products:", error);
           }
+        }
 
-          // Add event listener for reset button
-          const resetButton = document.getElementById("resetButton");
-          resetButton.addEventListener("click", () => {
-            // Reset filter elements
-            elements.brand.value = "";
-            elements.color.value = "";
-            elements.category.value = "";
-            elements.gender.value = "";
-            elements.stockFilter.value = "";
-            elements.sortFilter.value = "default";
-            elements.minPrice.value = "";
-            elements.maxPrice.value = "";
-            elements.searchInput.value = "";
-            
+        // Add event listener for reset button
+        const resetButton = document.getElementById("resetButton");
+        resetButton.addEventListener("click", () => {
+          // Reset filter elements
+          elements.brand.value = "";
+          elements.color.value = "";
+          elements.category.value = "";
+          elements.gender.value = "";
+          elements.stockFilter.value = "";
+          elements.sortFilter.value = "default";
+          elements.minPrice.value = "";
+          elements.maxPrice.value = "";
+          elements.searchInput.value = "";
 
-            // Update products with default filters
-            updateProducts();
 
-            // Add animation for button click
-            resetButton.classList.add("animate-pulse");
-            setTimeout(() => {
-              resetButton.classList.remove("animate-pulse");
-            }, 500);
-          });
+          // Update products with default filters
+          updateProducts();
 
-          // Handle search
-          
-          // Debounced versions for search and price inputs
-
-          // Add event listeners for filters
-          [
-            elements.gender,
-            elements.brand,
-            elements.color,
-            elements.category,
-            elements.stockFilter,
-            elements.sortFilter,
-            elements.searchInput,
-          ].forEach((element) => {
-            element.addEventListener("change", updateProducts);
-          });
-
-          // Add event listeners for price inputs
-          elements.minPrice.addEventListener("input", debouncedUpdateProducts);
-          elements.maxPrice.addEventListener("input", debouncedUpdateProducts);
+          // Add animation for button click
+          resetButton.classList.add("animate-pulse");
+          setTimeout(() => {
+            resetButton.classList.remove("animate-pulse");
+          }, 500);
         });
-      </script>
+
+        // Handle search
+
+        // Debounced versions for search and price inputs
+
+        // Add event listeners for filters
+        [
+          elements.gender,
+          elements.brand,
+          elements.color,
+          elements.category,
+          elements.stockFilter,
+          elements.sortFilter,
+          elements.searchInput,
+        ].forEach((element) => {
+          element.addEventListener("change", updateProducts);
+        });
+
+        // Add event listeners for price inputs
+        elements.minPrice.addEventListener("input", debouncedUpdateProducts);
+        elements.maxPrice.addEventListener("input", debouncedUpdateProducts);
+      });
+    </script>
 </body>
 
 </html>
