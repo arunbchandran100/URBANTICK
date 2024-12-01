@@ -1,22 +1,20 @@
 <!DOCTYPE html>
 <html lang="en">
 
-  <head>
-    <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <link rel="stylesheet" href="style.css" />
-    <title>Product Page</title>
-    <script src="https://cdn.tailwindcss.com"></script>
-    <link rel="stylesheet"
-      href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.6.0/css/all.min.css"
-      integrity="sha512-Kc323vGBEqzTmouAECnVceyQqyqdsSiqLQISBL29aUW4U/M7pSPA/gEUZQqv1cwx4OnYxTxve5UMg5GT6L4JJg=="
-      crossorigin="anonymous" referrerpolicy="no-referrer" />
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <link rel="stylesheet" href="style.css" />
+  <title>Product Page</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.6.0/css/all.min.css"
+    integrity="sha512-Kc323vGBEqzTmouAECnVceyQqyqdsSiqLQISBL29aUW4U/M7pSPA/gEUZQqv1cwx4OnYxTxve5UMg5GT6L4JJg=="
+    crossorigin="anonymous" referrerpolicy="no-referrer" />
 
-    <link rel="stylesheet"
-      href="https://cdn.jsdelivr.net/npm/notyf@3/notyf.min.css" />
-    <script src="https://cdn.jsdelivr.net/npm/notyf@3/notyf.min.js"></script>
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/notyf@3/notyf.min.css" />
+  <script src="https://cdn.jsdelivr.net/npm/notyf@3/notyf.min.js"></script>
 
-    <style>
+  <style>
     #imageZoom {
       width: 100%;
       position: relative;
@@ -44,12 +42,44 @@
       pointer-events: none;
     }
   </style>
-  </head>
+</head>
 
-  <body class="bg-gray-100">
-    <!------------ Navbar ---------->
-    <%- include("partials/navBar") %>
+<body class="bg-gray-100">
+  <!------------ Navbar ---------->
+  <%- include("partials/navBar") %>
     <div class="mt-16"></div>
+
+    <!-- Breadcrumb -->
+    <div class="bg-gray-100 pt-4">
+      <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+        <nav class="text-sm font-medium text-gray-500" aria-label="Breadcrumb">
+          <ol class="flex items-center space-x-2">
+            <li>
+              <a href="/home" class="text-gray-800 hover:text-gray-900 transition">
+                Home
+              </a>
+            </li>
+            <li>
+              <span class="text-gray-400">/</span>
+            </li>
+            <li>
+              <a href="/shopall" class="text-gray-800 hover:text-gray-900 transition">
+                Shop All
+              </a>
+            </li>
+            </li>
+            <li>
+              <span class="text-gray-400">/</span>
+            </li>
+            <li class="text-gray-500">
+              <%= product.brand %>
+                <%= product.productName %>
+            </li>
+          </ol>
+        </nav>
+      </div>
+    </div>
+
 
     <!-- Page Content -->
     <div class="max-w-7xl mx-auto py-12 px-4 sm:px-6 lg:px-8">
@@ -58,11 +88,10 @@
           <!-- Thumbnails -->
           <div class="w-1/5 md:w-1/6 space-y-4">
             <% product.imageUrl.forEach((image, index)=> { %>
-            <img src="<%= image %>"
-              alt="<%= product.productName %> Thumbnail <%= index + 1 %>"
-              class="w-full h-auto rounded-md shadow-md cursor-pointer border-2 border-transparent hover:border-gray-400"
-              onclick="updateMainImage('<%= image %>')" />
-            <% }) %>
+              <img src="<%= image %>" alt="<%= product.productName %> Thumbnail <%= index + 1 %>"
+                class="w-full h-auto rounded-md shadow-md cursor-pointer border-2 border-transparent hover:border-gray-400"
+                onclick="updateMainImage('<%= image %>')" />
+              <% }) %>
           </div>
 
           <!-- Main Image with Zoom -->
@@ -73,8 +102,7 @@
                 --zoom-y: 0%;
                 --display: none;
               ">
-              <img id="main-product-image" src="<%= product.imageUrl[0] %>"
-                alt="<%= product.productName %> Main Image"
+              <img id="main-product-image" src="<%= product.imageUrl[0] %>" alt="<%= product.productName %> Main Image"
                 class="w-full h-auto rounded-md shadow-md" />
             </div>
           </div>
@@ -82,21 +110,20 @@
           <!-- Right Section: Product Details -->
           <div class="w-full md:w-2/3 md:pl-12">
             <h1 class="text-2xl font-bold text-gray-800">
-              <%= product.productName %>
+              <%= product.brand %>
+                <%= product.productName %>
             </h1>
 
             <!-- Pricing -->
             <div class="flex items-center space-x-4 my-4">
               <p class="text-lg text-gray-800 font-bold variant-price">
-                ₹<%= product.variants[0]?.discountPrice.toLocaleString() ||
-                'N/A' %>
+                ₹<%= product.variants[0]?.discountPrice.toLocaleString() || 'N/A' %>
               </p>
               <p class="text-gray-500 line-through variant-original-price">
                 ₹<%= product.variants[0]?.price.toLocaleString() || 'N/A' %>
               </p>
               <p class="text-green-600 font-semibold variant-discount">
-                <%= product.variants[0]?.discountPercentage.toLocaleString() ||
-                0 %>% off
+                <%= product.variants[0]?.discountPercentage.toLocaleString() || 0 %>% off
               </p>
             </div>
 
@@ -112,19 +139,17 @@
             <!-- Stock Status -->
             <div class="variant-stock mt-2">
               <% if (product.variants[0].stock==0) { %>
-              <div
-                class="font-bold text-red-600 bg-red-100 border border-red-600 rounded-lg p-2"
-                style="width: fit-content">
-                Out of Stock
-              </div>
-
-              <% } else { %>
-              <div class="text-green-500">
-                <p class=" font-semibold">In stock (<%=
-                  product.variants[0].stock %> left)
+                <div class="font-bold text-red-600 bg-red-100 border border-red-600 rounded-lg p-2"
+                  style="width: fit-content">
+                  Out of Stock
                 </div>
-                <% } %>
-              </p>
+
+                <% } else { %>
+                  <div class="text-green-500">
+                    <p class=" font-semibold">In stock (<%= product.variants[0].stock %> left)
+                  </div>
+                  <% } %>
+                    </p>
             </div>
 
             <!-- Product Details -->
@@ -150,20 +175,18 @@
             <div class="mt-6">
               <label for="color" class="block font-medium text-gray-700">Select
                 Color</label>
-              <select id="color"
-                class="mt-2 px-4 py-2 border rounded-lg shadow-sm">
+              <select id="color" class="mt-2 px-4 py-2 border rounded-lg shadow-sm">
                 <% product.variants.forEach(variant=> { %>
-                <option value="<%= variant.color %>">
-                  <%= variant.color || 'N/A' %>
-                </option>
-                <% }) %>
+                  <option value="<%= variant.color %>">
+                    <%= variant.color || 'N/A' %>
+                  </option>
+                  <% }) %>
               </select>
             </div>
 
             <div id="cartMessage" class="alert" style="display: none"></div>
             <!-- Add a data attribute to an element (hidden or visible) -->
-            <div id="product-details"
-              data-product-id="<%= product._id %>"></div>
+            <div id="product-details" data-product-id="<%= product._id %>"></div>
 
             <!-- Action Buttons -->
             <!-- <div class="mt-8 flex space-x-4">
@@ -177,29 +200,29 @@
             <!-- ********************************* -->
 
             <% if (product.variants[0].stock==0) { %>
-            <div class="mt-8 flex space-x-4" id="div-for-addToCart">
+              <div class="mt-8 flex space-x-4" id="div-for-addToCart">
 
-            </div>
+              </div>
 
-            <% } else { %>
-            <!-- Action Buttons  -->
-            <div class="mt-8 flex space-x-4" id="div-for-addToCart">
-              <!-- <button id="buyNowButton"
+              <% } else { %>
+                <!-- Action Buttons  -->
+                <div class="mt-8 flex space-x-4" id="div-for-addToCart">
+                  <!-- <button id="buyNowButton"
                     class="px-6 py-3 bg-black text-white rounded-lg font-bold shadow-md hover:bg-gray-800">
                     Buy Now
                   </button> -->
-              <!-- <button id="addToCartButton"
+                  <!-- <button id="addToCartButton"
                     class="px-6 py-3 bg-gray-200 rounded-lg font-bold shadow-md hover:bg-gray-300">
                     Add To Cart
                   </button> -->
-              <button id="addToCartButton"
-                class="px-6 py-3 bg-black text-white rounded-lg font-bold shadow-md hover:bg-gray-800">
-                Add To Cart
-              </button>
-              <% } %>
+                  <button id="addToCartButton"
+                    class="px-6 py-3 bg-black text-white rounded-lg font-bold shadow-md hover:bg-gray-800">
+                    Add To Cart
+                  </button>
+                  <% } %>
 
-              <!-- ***************************** -->
-            </div>
+                    <!-- ***************************** -->
+                </div>
           </div>
         </div>
       </div>
@@ -212,257 +235,256 @@
     <div class="mx-4 mb-4 grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-5 gap-8">
 
       <% let i=0; %>
-      <% relatedProducts.forEach(product=> { %> <% if (i < 5) { %>
-      <div class="bg-white rounded-lg shadow-md p-4 flex flex-col">
-        <a href="/product/<%= product._id %>">
-          <img class="w-full h-auto rounded-lg mb-4"
-            src="<%= product.imageUrl %>"
-            alt="<%= product.productName %>" />
-        </a>
-        <h3 class="text-lg font-semibold text-gray-800">
-          <span class="font-bold">
-            <%= product.brand %>
-          </span>
-          <span class="text-gray-800">
-            <%= product.productName %>
-          </span>
-        </h3>
-        <div>
-          <p class="ml-1 text-gray-800 font-medium">
-            <%= product.color %>
-          </p>
-        </div>
-        <div class="text-yellow-500 flex items-center">
-          <i class="fa fa-star"></i>
-          <p class="ml-1 text-gray-800 font-medium">
-            <%= product.rating || 'No rating' %>
-          </p>
-        </div>
+        <% relatedProducts.forEach(product=> { %> <% if (i < 5) { %>
+            <div class="bg-white rounded-lg shadow-md p-4 flex flex-col">
+              <a href="/product/<%= product._id %>">
+                <img class="w-full h-auto rounded-lg mb-4" src="<%= product.imageUrl %>"
+                  alt="<%= product.productName %>" />
+              </a>
+              <h3 class="text-lg font-semibold text-gray-800">
+                <span class="font-bold">
+                  <%= product.brand %>
+                </span>
+                <span class="text-gray-800">
+                  <%= product.productName %>
+                </span>
+              </h3>
+              <div>
+                <p class="ml-1 text-gray-800 font-medium">
+                  <%= product.color %>
+                </p>
+              </div>
+              <div class="text-yellow-500 flex items-center">
+                <i class="fa fa-star"></i>
+                <p class="ml-1 text-gray-800 font-medium">
+                  <%= product.rating || 'No rating' %>
+                </p>
+              </div>
 
-        <% if (product.price && product.discountPrice) { %>
-        <div class="flex gap-2">
-          <div class="text-xl font-bold text-gray-900">
-            ₹<%= product.discountPrice.toLocaleString() %>
-          </div>
-          <div class="text-gray-500 line-through mt-1">
-            ₹<%= product.price.toLocaleString() %>
-          </div>
-        </div>
-        <% } else { %>
-        <div class="text-xl font-bold text-gray-900">
-          Price Not Available
-        </div>
-        <% } %>
-        <div class="flex justify-between items-center mt-4">
-          <a href="#" class="hover:text-slate-500"><i
-              class="fa-regular fa-heart"></i></a>
+              <% if (product.price && product.discountPrice) { %>
+                <div class="flex gap-2">
+                  <div class="text-xl font-bold text-gray-900">
+                    ₹<%= product.discountPrice.toLocaleString() %>
+                  </div>
+                  <div class="text-gray-500 line-through mt-1">
+                    ₹<%= product.price.toLocaleString() %>
+                  </div>
+                </div>
+                <% } else { %>
+                  <div class="text-xl font-bold text-gray-900">
+                    Price Not Available
+                  </div>
+                  <% } %>
+                    <div class="flex justify-between items-center mt-4">
+                      <a href="#" class="hover:text-slate-500"><i class="fa-regular fa-heart"></i></a>
 
-          <% if (product.stock> 0) { %>
-          <div class="mt-2 text-green-500"></div>
-          <% } else { %>
-          <div
-            class="mt-2 font-semibold text-red-600 bg-red-100 border border-red-600 rounded-lg p-2">
-            Out of Stock
-          </div>
-          <% } %>
-        </div>
-      </div>
-      <% i++; %>
-      <% } %>
-      <% }); %>
+                      <% if (product.stock> 0) { %>
+                        <div class="mt-2 text-green-500"></div>
+                        <% } else { %>
+                          <div class="mt-2 font-semibold text-red-600 bg-red-100 border border-red-600 rounded-lg p-2">
+                            Out of Stock
+                          </div>
+                          <% } %>
+                    </div>
+            </div>
+            <% i++; %>
+              <% } %>
+                <% }); %>
     </div>
 
     <!------------- Footer ------------>
-    <%- include("partials/footer") %>
+    <div class="pt-6">
+      <%- include("partials/footer") %>
+    </div>
 
     <script>
-        const notyf = new Notyf({
-          duration: 3000, // Notification duration in milliseconds
-          position: {
-            x: "right",
-            y: "bottom",
-          },
-        });
+      const notyf = new Notyf({
+        duration: 3000, // Notification duration in milliseconds
+        position: {
+          x: "right",
+          y: "bottom",
+        },
+      });
 
-        // JavaScript for zoom functionality
-        const imageZoom = document.getElementById("imageZoom");
+      // JavaScript for zoom functionality
+      const imageZoom = document.getElementById("imageZoom");
 
-        // Handle mousemove for zoom
-        imageZoom.addEventListener("mousemove", (event) => {
-          imageZoom.style.setProperty("--display", "block");
-          const pointer = {
-            x: (event.offsetX * 100) / imageZoom.offsetWidth,
-            y: (event.offsetY * 100) / imageZoom.offsetHeight,
-          };
-          imageZoom.style.setProperty("--zoom-x", pointer.x + "%");
-          imageZoom.style.setProperty("--zoom-y", pointer.y + "%");
-        });
+      // Handle mousemove for zoom
+      imageZoom.addEventListener("mousemove", (event) => {
+        imageZoom.style.setProperty("--display", "block");
+        const pointer = {
+          x: (event.offsetX * 100) / imageZoom.offsetWidth,
+          y: (event.offsetY * 100) / imageZoom.offsetHeight,
+        };
+        imageZoom.style.setProperty("--zoom-x", pointer.x + "%");
+        imageZoom.style.setProperty("--zoom-y", pointer.y + "%");
+      });
 
-        // Hide zoom on mouseout
-        imageZoom.addEventListener("mouseout", () => {
-          imageZoom.style.setProperty("--display", "none");
-        });
+      // Hide zoom on mouseout
+      imageZoom.addEventListener("mouseout", () => {
+        imageZoom.style.setProperty("--display", "none");
+      });
 
-        // Update main image and zoom background
-        function updateMainImage(imageUrl) {
-          const mainImage = document.getElementById("main-product-image");
-          mainImage.src = imageUrl;
-          imageZoom.style.setProperty("--url", `url(${imageUrl})`);
-        }
+      // Update main image and zoom background
+      function updateMainImage(imageUrl) {
+        const mainImage = document.getElementById("main-product-image");
+        mainImage.src = imageUrl;
+        imageZoom.style.setProperty("--url", `url(${imageUrl})`);
+      }
 
-        // Function to update variant details
-        function updateVariantDetails(variant) {
-          const buyNowButton = document.getElementById("buyNowButton");
-          const addToCartButton = document.getElementById("div-for-addToCart");
+      // Function to update variant details
+      function updateVariantDetails(variant) {
+        const buyNowButton = document.getElementById("buyNowButton");
+        const addToCartButton = document.getElementById("div-for-addToCart");
 
-          document.querySelector(".variant-price").textContent = `₹${variant.discountPrice.toLocaleString() || "N/A"}`;
-          document.querySelector(".variant-original-price").textContent = `₹${variant.price.toLocaleString() || "N/A"}`;
-          document.querySelector(".variant-discount").textContent = `${variant.discountPercentage.toLocaleString() || 0}% off`;
-          document.querySelector(".variant-rating").textContent = variant.rating ? `${variant.rating} stars` : "No rating";
+        document.querySelector(".variant-price").textContent = `₹${variant.discountPrice.toLocaleString() || "N/A"}`;
+        document.querySelector(".variant-original-price").textContent = `₹${variant.price.toLocaleString() || "N/A"}`;
+        document.querySelector(".variant-discount").textContent = `${variant.discountPercentage.toLocaleString() || 0}% off`;
+        document.querySelector(".variant-rating").textContent = variant.rating ? `${variant.rating} stars` : "No rating";
 
-          // Update stock status with appropriate styling
-          const stockElement = document.querySelector(".variant-stock");
-          if (variant.stock > 0) {
-            stockElement.innerHTML = `<div class="text-green-500"><p class="font-semibold">In stock (${variant.stock} left)</p></div>`;
-            //buyNowButton.style.display = "inline-block"; // Show the buttons
-            //addToCartButton.style.display = "inline-block"; // Show the buttons
-            addToCartButton.innerHTML = `<button id="addToCartButton" 
+        // Update stock status with appropriate styling
+        const stockElement = document.querySelector(".variant-stock");
+        if (variant.stock > 0) {
+          stockElement.innerHTML = `<div class="text-green-500"><p class="font-semibold">In stock (${variant.stock} left)</p></div>`;
+          //buyNowButton.style.display = "inline-block"; // Show the buttons
+          //addToCartButton.style.display = "inline-block"; // Show the buttons
+          addToCartButton.innerHTML = `<button id="addToCartButton" 
                     class="px-6 py-3 bg-black text-white rounded-lg font-bold shadow-md hover:bg-gray-800">
                     Add To Cart
                   </button>`;
 
-            document
-              .getElementById("addToCartButton")
-              .addEventListener("click", function () {
-                const productId = "<%= product._id %>"; // Pass dynamically from server
-                const variantId = document.getElementById("color").value; // Selected variant ID
-                const quantity = 1; // Default quantity for now, can add quantity selection
+          document
+            .getElementById("addToCartButton")
+            .addEventListener("click", function () {
+              const productId = "<%= product._id %>"; // Pass dynamically from server
+              const variantId = document.getElementById("color").value; // Selected variant ID
+              const quantity = 1; // Default quantity for now, can add quantity selection
 
-                fetch("/cart/add", {
-                  method: "POST",
-                  headers: {
-                    "Content-Type": "application/json",
-                  },
-                  body: JSON.stringify({
-                    productId,
-                    variantId,
-                    quantity,
-                  }),
-                })
-                  .then((response) => {
-                    if (response.ok) {
-                      notyf.success("Item added to cart successfully!");
-                    } else {
-                      return response.json().then((data) => {
-                        throw new Error(data.message || "Failed to add to cart.");
-                      });
-                    }
-                  })
-                  .catch((error) => {
-                    console.error("Error adding to cart:", error.message);
-                    notyf.error(error.message);
-                  });
-              });
-
-            // Helper function to update cart count
-            async function updateCartCount() {
-              try {
-                const response = await fetch("/api/cart/count");
-                const data = await response.json();
-                const cartCountElement = document.getElementById("cartCount");
-                if (cartCountElement) {
-                  cartCountElement.textContent = data.count;
-                }
-              } catch (error) {
-                console.error("Error updating cart count:", error);
-              }
-            }
-          } else {
-            stockElement.innerHTML = '<div class="font-semibold text-red-600 bg-red-100 border border-red-600 rounded-lg p-2" style="width: fit-content;">Out of Stock</div>';
-            //buyNowButton.style.display = "none"; // Hide the buttons
-            addToCartButton.innerHTML = ` `;
-
-
-          }
-        }
-
-        // Event listener for color change
-        document.getElementById("color").addEventListener("change", function () {
-          const selectedColor = this.value;
-
-          // Retrieve the productId from the data attribute
-          const productDetails = document.getElementById("product-details");
-          const productId = productDetails.getAttribute("data-product-id");
-
-          if (!productId) {
-            console.error("Product ID is missing.");
-            return;
-          }
-
-          console.log("Selected color is: " + selectedColor);
-          console.log("Product ID is: " + productId);
-
-          // Fetch the variant details
-          fetch(
-            `/product/getcolor/variant?productId=${productId}&color=${selectedColor}`
-          )
-            .then((response) => response.json())
-            .then((variant) => {
-              //if (variant.imageUrl) updateMainImage(variant.imageUrl); // Update main image
-              updateVariantDetails(variant); // Update other details
-            })
-            .catch((error) =>
-              console.error("Error fetching variant details:", error)
-            );
-        });
-        // Frontend JavaScript
-        document
-          .getElementById("addToCartButton")
-          .addEventListener("click", function () {
-            const productId = "<%= product._id %>"; // Pass dynamically from server
-            const variantId = document.getElementById("color").value; // Selected variant ID
-            const quantity = 1; // Default quantity for now, can add quantity selection
-
-            fetch("/cart/add", {
-              method: "POST",
-              headers: {
-                "Content-Type": "application/json",
-              },
-              body: JSON.stringify({
-                productId,
-                variantId,
-                quantity,
-              }),
-            })
-              .then((response) => {
-                if (response.ok) {
-                  notyf.success("Item added to cart successfully!");
-                } else {
-                  return response.json().then((data) => {
-                    throw new Error(data.message || "Failed to add to cart.");
-                  });
-                }
+              fetch("/cart/add", {
+                method: "POST",
+                headers: {
+                  "Content-Type": "application/json",
+                },
+                body: JSON.stringify({
+                  productId,
+                  variantId,
+                  quantity,
+                }),
               })
-              .catch((error) => {
-                console.error("Error adding to cart:", error.message);
-                notyf.error(error.message);
-              });
-          });
+                .then((response) => {
+                  if (response.ok) {
+                    notyf.success("Item added to cart successfully!");
+                  } else {
+                    return response.json().then((data) => {
+                      throw new Error(data.message || "Failed to add to cart.");
+                    });
+                  }
+                })
+                .catch((error) => {
+                  console.error("Error adding to cart:", error.message);
+                  notyf.error(error.message);
+                });
+            });
 
-        // Helper function to update cart count
-        async function updateCartCount() {
-          try {
-            const response = await fetch("/api/cart/count");
-            const data = await response.json();
-            const cartCountElement = document.getElementById("cartCount");
-            if (cartCountElement) {
-              cartCountElement.textContent = data.count;
+          // Helper function to update cart count
+          async function updateCartCount() {
+            try {
+              const response = await fetch("/api/cart/count");
+              const data = await response.json();
+              const cartCountElement = document.getElementById("cartCount");
+              if (cartCountElement) {
+                cartCountElement.textContent = data.count;
+              }
+            } catch (error) {
+              console.error("Error updating cart count:", error);
             }
-          } catch (error) {
-            console.error("Error updating cart count:", error);
           }
+        } else {
+          stockElement.innerHTML = '<div class="font-semibold text-red-600 bg-red-100 border border-red-600 rounded-lg p-2" style="width: fit-content;">Out of Stock</div>';
+          //buyNowButton.style.display = "none"; // Hide the buttons
+          addToCartButton.innerHTML = ` `;
+
+
         }
-      </script>
-  </body>
+      }
+
+      // Event listener for color change
+      document.getElementById("color").addEventListener("change", function () {
+        const selectedColor = this.value;
+
+        // Retrieve the productId from the data attribute
+        const productDetails = document.getElementById("product-details");
+        const productId = productDetails.getAttribute("data-product-id");
+
+        if (!productId) {
+          console.error("Product ID is missing.");
+          return;
+        }
+
+        console.log("Selected color is: " + selectedColor);
+        console.log("Product ID is: " + productId);
+
+        // Fetch the variant details
+        fetch(
+          `/product/getcolor/variant?productId=${productId}&color=${selectedColor}`
+        )
+          .then((response) => response.json())
+          .then((variant) => {
+            //if (variant.imageUrl) updateMainImage(variant.imageUrl); // Update main image
+            updateVariantDetails(variant); // Update other details
+          })
+          .catch((error) =>
+            console.error("Error fetching variant details:", error)
+          );
+      });
+      // Frontend JavaScript
+      document
+        .getElementById("addToCartButton")
+        .addEventListener("click", function () {
+          const productId = "<%= product._id %>"; // Pass dynamically from server
+          const variantId = document.getElementById("color").value; // Selected variant ID
+          const quantity = 1; // Default quantity for now, can add quantity selection
+
+          fetch("/cart/add", {
+            method: "POST",
+            headers: {
+              "Content-Type": "application/json",
+            },
+            body: JSON.stringify({
+              productId,
+              variantId,
+              quantity,
+            }),
+          })
+            .then((response) => {
+              if (response.ok) {
+                notyf.success("Item added to cart successfully!");
+              } else {
+                return response.json().then((data) => {
+                  throw new Error(data.message || "Failed to add to cart.");
+                });
+              }
+            })
+            .catch((error) => {
+              console.error("Error adding to cart:", error.message);
+              notyf.error(error.message);
+            });
+        });
+
+      // Helper function to update cart count
+      async function updateCartCount() {
+        try {
+          const response = await fetch("/api/cart/count");
+          const data = await response.json();
+          const cartCountElement = document.getElementById("cartCount");
+          if (cartCountElement) {
+            cartCountElement.textContent = data.count;
+          }
+        } catch (error) {
+          console.error("Error updating cart count:", error);
+        }
+      }
+    </script>
+</body>
 
 </html>
