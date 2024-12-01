@@ -47,8 +47,6 @@
                     </div>
                 </div>
 
-
-
                 <% } else { %>
 
                     <div id="cartItemsContainer" class="grid md:grid-cols-3 gap-8 mt-16 b-2">
@@ -75,7 +73,7 @@
                                                     class="mt-6 font-semibold text-red-500 text-xs flex items-center gap-1 shrink-0 hover:text-red-700"
                                                     onclick="removeFromCart('<%= item._id %>')">
                                                     <svg xmlns="http://www.w3.org/2000/svg"
-                                                        class="w-4 fill-current inline " viewBox="0 0 24 24">
+                                                        class="w-4 fill-current inline" viewBox="0 0 24 24">
                                                         <path
                                                             d="M19 7a1 1 0 0 0-1 1v11.191A1.92 1.92 0 0 1 15.99 21H8.01A1.92 1.92 0 0 1 6 19.191V8a1 1 0 0 0-2 0v11.191A3.918 3.918 0 0 0 8.01 23h7.98A3.918 3.918 0 0 0 20 19.191V8a1 1 0 0 0-1-1Zm1-3h-4V2a1 1 0 0 0-1-1H9a1 1 0 0 0-1 1v2H4a1 1 0 0 0 0 2h16a1 1 0 0 0 0-2ZM10 4V3h4v1Z"
                                                             data-original="#000000"></path>
@@ -92,41 +90,50 @@
                                                 class="text-lg max-sm:text-base font-bold text-gray-800">
                                                 ₹<%= item.variant.discountPrice * item.quantity%>
                                             </h4>
-                                            <h5 id="perItemPrice" class="visibility: hidden"> <%= item.variant.discountPrice %></h5>
-                                            <div
-                                                class="flex items-center justify-between border border-gray-300 rounded-md w-24 mt-5">
-                                                <!-- Decrement Button -->
-                                                <button type="button" onclick="updateQuantity('<%= item._id %>', -1)"
-                                                    class="flex items-center justify-center w-8 h-8 text-gray-800 rounded-l-md transition hover:bg-gray-100 "
-                                                    aria-label="Decrease quantity">
-                                                    <svg xmlns="http://www.w3.org/2000/svg" class="w-4 h-4 fill-current"
-                                                        viewBox="0 0 124 124">
-                                                        <path
-                                                            d="M112 50H12C5.4 50 0 55.4 0 62s5.4 12 12 12h100c6.6 0 12-5.4 12-12s-5.4-12-12-12z">
-                                                        </path>
-                                                    </svg>
-                                                </button>
+                                            <h5 id="perItemPrice" class="visibility: hidden">
+                                                <%= item.variant.discountPrice %>
+                                            </h5>
+                                            <% if (item.quantity===0) { %>
+                                                <div
+                                                    class="font-semibold mt-3 text-red-600 bg-red-100 border border-red-600 rounded-lg p-1">
+                                                    Out of Stock
+                                                </div>
+                                                <% } else { %>
+                                                    <div
+                                                        class="flex items-center justify-between border border-gray-300 rounded-md w-24 mt-5">
+                                                        <!-- Decrement Button -->
+                                                        <button type="button"
+                                                            onclick="updateQuantity('<%= item._id %>', -1)"
+                                                            class="flex items-center justify-center w-8 h-8 text-gray-800 rounded-l-md transition hover:bg-gray-100"
+                                                            aria-label="Decrease quantity">
+                                                            <svg xmlns="http://www.w3.org/2000/svg"
+                                                                class="w-4 h-4 fill-current" viewBox="0 0 124 124">
+                                                                <path
+                                                                    d="M112 50H12C5.4 50 0 55.4 0 62s5.4 12 12 12h100c6.6 0 12-5.4 12-12s-5.4-12-12-12z">
+                                                                </path>
+                                                            </svg>
+                                                        </button>
 
-                                                <!-- Quantity Display -->
-                                                <span id="variantQuantityTag"
-                                                    class="text-center flex-1 text-gray-800 font-semibold">
-                                                    <%= item.quantity %>
-                                                </span>
+                                                        <!-- Quantity Display -->
+                                                        <span id="variantQuantityTag"
+                                                            class="text-center flex-1 text-gray-800 font-semibold">
+                                                            <%= item.quantity %>
+                                                        </span>
 
-                                                <!-- Increment Button -->
-                                                <button type="button" onclick="updateQuantity('<%= item._id %>', 1)"
-                                                    class="flex items-center justify-center w-8 h-8 text-gray-800 rounded-r-md transition hover:bg-gray-100 "
-                                                    aria-label="Increase quantity">
-                                                    <svg xmlns="http://www.w3.org/2000/svg" class="w-4 h-4 fill-current"
-                                                        viewBox="0 0 42 42">
-                                                        <path
-                                                            d="M37.059 16H26V4.941C26 2.224 23.718 0 21 0s-5 2.224-5 4.941V16H4.941C2.224 16 0 18.282 0 21s2.224 5 4.941 5H16v11.059C16 39.776 18.282 42 21 42s5-2.224 5-4.941V26h11.059C39.776 26 42 23.718 42 21s-2.224-5-4.941-5z">
-                                                        </path>
-                                                    </svg>
-                                                </button>
-                                            </div>
-
-
+                                                        <!-- Increment Button -->
+                                                        <button type="button"
+                                                            onclick="updateQuantity('<%= item._id %>', 1)"
+                                                            class="flex items-center justify-center w-8 h-8 text-gray-800 rounded-r-md transition hover:bg-gray-100"
+                                                            aria-label="Increase quantity">
+                                                            <svg xmlns="http://www.w3.org/2000/svg"
+                                                                class="w-4 h-4 fill-current" viewBox="0 0 42 42">
+                                                                <path
+                                                                    d="M37.059 16H26V4.941C26 2.224 23.718 0 21 0s-5 2.224-5 4.941V16H4.941C2.224 16 0 18.282 0 21s2.224 5 4.941 5H16v11.059C16 39.776 18.282 42 21 42s5-2.224 5-4.941V26h11.059C39.776 26 42 23.718 42 21s-2.224-5-4.941-5z">
+                                                                </path>
+                                                            </svg>
+                                                        </button>
+                                                    </div>
+                                                    <% } %>
                                         </div>
                                     </div>
                                 </div>
@@ -142,21 +149,20 @@
                                 <li class="flex flex-wrap gap-4 text-sm">
                                     Subtotal
                                     <span id="subtotalPriceTag" class="ml-auto font-bold">₹<%= cartItems.reduce((acc,
-                                            item)=>
-                                            acc + item.variant.discountPrice
-                                            *
-                                            item.quantity, 0).toLocaleString() %></span>
+                                            item)=> acc +
+                                            item.variant.discountPrice * item.quantity, 0).toLocaleString()
+                                            %></span>
                                 </li>
                                 <li class="flex flex-wrap gap-4 text-sm">
                                     Shipping
-                                    <span id="" class="ml-auto font-semi-bold ">free</span>
+                                    <span id="" class="ml-auto font-semi-bold">free</span>
                                 </li>
                                 <hr class="border-gray-300" />
                                 <li class="flex flex-wrap gap-4 text-sm font-bold">
                                     Total
                                     <span id="totalPriceTag" class="ml-auto">₹<%= cartItems.reduce((acc, item)=> acc +
-                                            item.variant.discountPrice *
-                                            item.quantity, 0).toLocaleString() %></span>
+                                            item.variant.discountPrice * item.quantity, 0).toLocaleString()
+                                            %></span>
                                 </li>
                             </ul>
 
@@ -170,12 +176,10 @@
                                     class="text-sm px-4 py-2.5 w-full font-semibold tracking-wide bg-transparent text-gray-800 border border-gray-300 rounded-md">
                                     Continue Shopping
                                 </button>
-
                             </div>
                         </div>
                     </div>
                     <% } %>
-
         </div>
 </body>
 <!------------- Footer ------------>
@@ -190,114 +194,129 @@
             },
         });
 
-async function removeFromCart(cartItemId) {
-    // Show SweetAlert confirmation dialog
-    const result = await Swal.fire({
-        title: 'Are you sure?',
-        text: "You won't be able to revert this!",
-        icon: 'warning',
-        showCancelButton: true,
-        confirmButtonColor: '#3085d6',
-        cancelButtonColor: '#d33',
-        confirmButtonText: 'Yes, delete it!'
-    });
+        async function removeFromCart(cartItemId) {
+            // Show SweetAlert confirmation dialog
+            const result = await Swal.fire({
+                title: "Are you sure?",
+                text: "You won't be able to revert this!",
+                icon: "warning",
+                showCancelButton: true,
+                confirmButtonColor: "#3085d6",
+                cancelButtonColor: "#d33",
+                confirmButtonText: "Yes, delete it!",
+            });
 
-    if (result.isConfirmed) {
-        try {
-            const response = await axios.delete(`/cart/${cartItemId}`);
-            if (response.status === 200) {
-                notyf.success("Item removed from cart");
+            if (result.isConfirmed) {
+                try {
+                    const response = await axios.delete(`/cart/${cartItemId}`);
+                    if (response.status === 200) {
+                        notyf.success("Item removed from cart");
 
-                // Remove the item from the DOM
-                const cartItemElement = document.querySelector(`[data-cart-item-id="${cartItemId}"]`);
-                if (cartItemElement) {
-                    cartItemElement.remove();
+                        // Remove the item from the DOM
+                        const cartItemElement = document.querySelector(
+                            `[data-cart-item-id="${cartItemId}"]`
+                        );
+                        if (cartItemElement) {
+                            cartItemElement.remove();
+                        }
+
+                        // Optionally, update the subtotal and total
+                        updateCartTotals();
+                    } else {
+                        console.error(
+                            "Failed to remove item from cart:",
+                            response.data.message
+                        );
+                    }
+                } catch (error) {
+                    console.error("Error removing item from cart:", error);
                 }
-                
-                // Optionally, update the subtotal and total
-                updateCartTotals();
-            } else {
-                console.error("Failed to remove item from cart:", response.data.message);
             }
-        } catch (error) {
-            console.error("Error removing item from cart:", error);
-        }
-    }
-}
-
-
-function updateCartTotals() {
-    const cartItemElements = document.querySelectorAll("[data-cart-item-id]");
-    let subtotal = 0;
-
-    cartItemElements.forEach((item) => {
-        const perItemPriceElement = item.querySelector("#perItemPrice");
-        const quantityElement = item.querySelector("#variantQuantityTag");
-
-        if (perItemPriceElement && quantityElement) {
-            const perItemPrice = parseFloat(perItemPriceElement.textContent);
-            const quantity = parseInt(quantityElement.textContent);
-            subtotal += perItemPrice * quantity;
-        }
-    });
-
-    // Update the subtotal and total in the DOM
-    document.getElementById("subtotalPriceTag").textContent = `₹${subtotal.toLocaleString()}`;
-    document.getElementById("totalPriceTag").textContent = `₹${subtotal.toLocaleString()}`;
-}
-
-
-async function updateQuantity(cartItemId, delta) {
-    try {
-        const cartItemElement = document.querySelector(`[data-cart-item-id="${cartItemId}"]`);
-        const quantityElement = cartItemElement.querySelector("#variantQuantityTag");
-        const priceElement = cartItemElement.querySelector("#variantPriceTag");
-        const perItemPriceElement = cartItemElement.querySelector("#perItemPrice");
-
-        const currentQuantity = parseInt(quantityElement.textContent);
-        const perItemPrice = parseFloat(perItemPriceElement.textContent);
-
-        const newQuantity = currentQuantity + delta;
-
-        if (newQuantity < 1) {
-            notyf.error("Quantity must be at least 1");
-            return;
-        } else if (newQuantity > 5) {
-            notyf.error("Maximum quantity of 5 is allowed");
-            return;
         }
 
-        // Send the updated quantity to the server
-        const response = await axios.put(`/cart/${cartItemId}`, { quantity: newQuantity });
+        function updateCartTotals() {
+            const cartItemElements = document.querySelectorAll("[data-cart-item-id]");
+            let subtotal = 0;
 
-        if (response.status === 200) {
-            notyf.success("Cart updated");
+            cartItemElements.forEach((item) => {
+                const perItemPriceElement = item.querySelector("#perItemPrice");
+                const quantityElement = item.querySelector("#variantQuantityTag");
 
-            // Update the quantity in the DOM
-            quantityElement.textContent = newQuantity;
+                if (perItemPriceElement && quantityElement) {
+                    const perItemPrice = parseFloat(perItemPriceElement.textContent);
+                    const quantity = parseInt(quantityElement.textContent);
+                    subtotal += perItemPrice * quantity;
+                }
+            });
 
-            // Calculate the new price and update the DOM
-            const newPrice = perItemPrice * newQuantity;
-            priceElement.textContent = `₹${newPrice.toLocaleString()}`;
-
-            // Update the subtotal and total
-            updateCartTotals();
-        } else {
-            notyf.error("Failed to update cart");
-            console.error("Failed to update cart:", response.data.message);
+            // Update the subtotal and total in the DOM
+            document.getElementById(
+                "subtotalPriceTag"
+            ).textContent = `₹${subtotal.toLocaleString()}`;
+            document.getElementById(
+                "totalPriceTag"
+            ).textContent = `₹${subtotal.toLocaleString()}`;
         }
-    } catch (error) {
-        if (error.response && error.response.data && error.response.data.message) {
-            notyf.error(error.response.data.message); // Display server error message
-        } else {
-            notyf.error("Error updating cart. Please try again."); // Fallback error message
+
+        async function updateQuantity(cartItemId, delta) {
+            try {
+                const cartItemElement = document.querySelector(
+                    `[data-cart-item-id="${cartItemId}"]`
+                );
+                const quantityElement = cartItemElement.querySelector(
+                    "#variantQuantityTag"
+                );
+                const priceElement = cartItemElement.querySelector("#variantPriceTag");
+                const perItemPriceElement =
+                    cartItemElement.querySelector("#perItemPrice");
+
+                const currentQuantity = parseInt(quantityElement.textContent);
+                const perItemPrice = parseFloat(perItemPriceElement.textContent);
+
+                const newQuantity = currentQuantity + delta;
+
+                if (newQuantity < 1) {
+                    notyf.error("Quantity must be at least 1");
+                    return;
+                } else if (newQuantity > 5) {
+                    notyf.error("Maximum quantity of 5 is allowed");
+                    return;
+                }
+
+                // Send the updated quantity to the server
+                const response = await axios.put(`/cart/${cartItemId}`, {
+                    quantity: newQuantity,
+                });
+
+                if (response.status === 200) {
+                    notyf.success("Cart updated");
+
+                    // Update the quantity in the DOM
+                    quantityElement.textContent = newQuantity;
+
+                    // Calculate the new price and update the DOM
+                    const newPrice = perItemPrice * newQuantity;
+                    priceElement.textContent = `₹${newPrice.toLocaleString()}`;
+
+                    // Update the subtotal and total
+                    updateCartTotals();
+                } else {
+                    notyf.error("Failed to update cart");
+                    console.error("Failed to update cart:", response.data.message);
+                }
+            } catch (error) {
+                if (
+                    error.response &&
+                    error.response.data &&
+                    error.response.data.message
+                ) {
+                    notyf.error(error.response.data.message); // Display server error message
+                } else {
+                    notyf.error("Error updating cart. Please try again."); // Fallback error message
+                }
+                console.error("Error updating cart:", error);
+            }
         }
-        console.error("Error updating cart:", error);
-    }
-}
-
-
     </script>
-
 
 </html>
