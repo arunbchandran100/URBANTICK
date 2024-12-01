@@ -98,10 +98,9 @@
                                                     class="font-semibold mt-3 text-red-600 bg-red-100 border border-red-600 rounded-lg p-1">
                                                     Out of Stock
                                                 </div>
-                                                <span id="variantQuantityTag"
-                                                            class="visibility: hidden">
-                                                            <%= item.quantity %>
-                                                        </span>
+                                                <span id="variantQuantityTag" class="visibility: hidden">
+                                                    <%= item.quantity %>
+                                                </span>
                                                 <% } else { %>
                                                     <div
                                                         class="flex items-center justify-between border border-gray-300 rounded-md w-24 mt-5">
@@ -171,10 +170,11 @@
                             </ul>
 
                             <div class="mt-6 space-y-3">
-<!-- Checkout Button -->
-<button id="checkoutButton" type="button" class="text-sm px-4 py-2.5 w-full font-semibold tracking-wide bg-gray-800 hover:bg-gray-900 text-white rounded-md">
-    Checkout
-</button>
+                                <!-- Checkout Button -->
+                                <button id="checkoutButton" type="button"
+                                    class="text-sm px-4 py-2.5 w-full font-semibold tracking-wide bg-gray-800 hover:bg-gray-900 text-white rounded-md">
+                                    Checkout
+                                </button>
                                 <button type="button" onclick="window.location.href='/shopall'"
                                     class="text-sm px-4 py-2.5 w-full font-semibold tracking-wide bg-transparent text-gray-800 border border-gray-300 rounded-md">
                                     Continue Shopping
@@ -196,30 +196,27 @@
                 y: "bottom",
             },
         });
-document.getElementById('checkoutButton').addEventListener('click', function() {
-    let outOfStock = false;
+        document.getElementById('checkoutButton').addEventListener('click', function () {
+            let outOfStock = false;
 
-    // Iterate over each cart item to check for out-of-stock status
-    document.querySelectorAll('[data-cart-item-id]').forEach(function(cartItem) {
-        const quantity = parseInt(cartItem.querySelector('#variantQuantityTag').innerText, 10);
-        if (quantity === 0) {
-            outOfStock = true;
-        }
-    });
+            document.querySelectorAll('[data-cart-item-id]').forEach(function (cartItem) {
+                const quantity = parseInt(cartItem.querySelector('#variantQuantityTag').innerText, 10);
+                if (quantity === 0) {
+                    outOfStock = true;
+                }
+            });
 
-    if (outOfStock) {
-        // Show alert if there is any out-of-stock item
-        Swal.fire({
-            icon: 'warning',
-            title: 'Out of Stock',
-            text: "Please remove the out of stock item's from your cart before proceeding to checkout.",
-            confirmButtonText: 'OK'
+            if (outOfStock) {
+                Swal.fire({
+                    icon: 'warning',
+                    title: 'Out of Stock',
+                    text: "Please remove the out of stock item's from your cart before proceeding to checkout.",
+                    confirmButtonText: 'OK'
+                });
+            } else {
+                window.location.href = '/cart/checkout';
+            }
         });
-    } else {
-        // Proceed to checkout
-        window.location.href = '/cart/checkout';
-    }
-});
 
 
         async function removeFromCart(cartItemId) {
