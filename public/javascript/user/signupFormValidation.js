@@ -9,7 +9,7 @@ function validateFullName() {
   } else {
     fullNameError.textContent = "";
     return true;
-    }
+  }
 }
 
 function validateEmail() {
@@ -92,11 +92,10 @@ function togglePasswordVisibility(id) {
   }
 }
 
-let timer; 
+let timer;
 
 let otpTimer;
 let otpTimeout;
-
 
 function disableFields() {
   document.getElementById("fullName").disabled = true;
@@ -112,12 +111,13 @@ function enableFields() {
   document.getElementById("confirmPassword").disabled = false;
 }
 
-
 // -------------------------------------------------------
 
 async function handleSignup(event) {
-  event.preventDefault();
+  const loadingIndicator = document.getElementById("loadingIndicator");
+  loadingIndicator.classList.remove("hidden");
 
+  event.preventDefault();
   const isFormValid = validateForm();
   if (!isFormValid) {
     return;
@@ -138,6 +138,8 @@ async function handleSignup(event) {
 
     const data = await response.json();
     if (response.status === 200) {
+      loadingIndicator.classList.add("hidden");
+
       swal("", data.message, "success");
 
       document.getElementById("google-auth-div").style.display = "none";
@@ -152,11 +154,14 @@ async function handleSignup(event) {
       document.getElementById("email-error").textContent = data.message;
     }
   } catch (error) {
-    console.log('error')
+    console.log("error");
   }
 }
 
 async function handleResendOTP(event) {
+  const loadingIndicator = document.getElementById("loadingIndicator");
+  loadingIndicator.classList.remove("hidden");
+
   event.preventDefault();
 
   const email = document.getElementById("email").value;
@@ -172,9 +177,11 @@ async function handleResendOTP(event) {
 
     const data = await response.json();
     if (response.status === 200) {
+      loadingIndicator.classList.add("hidden");
+
       swal("", data.message, "success");
 
-      startTimer(30); 
+      startTimer(30);
     } else {
       document.getElementById("otp-error").textContent = data.message;
     }
@@ -184,29 +191,25 @@ async function handleResendOTP(event) {
   }
 }
 
-
-
 function startTimer(duration) {
   let timeRemaining = duration;
   const timerDisplay = document.getElementById("timer");
   const resendButton = document.getElementById("resend-otp");
 
-  resendButton.style.display = 'none';
+  resendButton.style.display = "none";
   console.log("timer started");
   timer = setInterval(() => {
     if (timeRemaining <= 0) {
       clearInterval(timer);
       timerDisplay.textContent = "You can now resend the OTP.";
-      
-      resendButton.style.display = 'block';
+
+      resendButton.style.display = "block";
     } else {
       timeRemaining--;
       timerDisplay.textContent = `Resend OTP in ${timeRemaining} seconds.`;
     }
   }, 1000);
 }
-
-
 
 async function handleOTPVerification(event) {
   event.preventDefault();
