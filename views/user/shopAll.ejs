@@ -290,14 +290,18 @@
                 sort: elements.sortFilter.value,
               };
 
+              const query = elements.searchInput.value.trim();
+
               // Build query string
               const queryParams = new URLSearchParams();
               Object.entries(filters).forEach(([key, value]) => {
                 if (value) queryParams.append(key, value);
               });
 
+              console.log(565656500);
+              console.log(query);
               // Make API call
-              const response = await fetch(`/products/filter?${queryParams}`);
+              const response = await fetch(`/products/searchFilter?${queryParams}&query=${query}`);
               const data = await response.json();
 
               if (!data.products) {
@@ -381,6 +385,7 @@
             elements.minPrice.value = "";
             elements.maxPrice.value = "";
             elements.searchInput.value = "";
+            
 
             // Update products with default filters
             updateProducts();
@@ -393,80 +398,8 @@
           });
 
           // Handle search
-          async function handleSearch() {
-            try {
-              const query = elements.searchInput.value.trim();
-              if (!query) {
-                await updateProducts(); // If search is empty, show all products
-                return;
-              }
-
-              const response = await fetch(`/products/search?query=${query}`);
-              const data = await response.json();
-
-              if (!data.products) {
-                console.error("No products returned from search");
-                return;
-              }
-
-              // Update product grid with search results
-              elements.productGrid.innerHTML = "";
-              data.products.forEach((product) => {
-                const productCard = `
-          <div class="bg-white rounded-lg shadow-md p-4 flex flex-col">
-            <a href="/product/${product._id}">
-              <img 
-                class="w-full h-auto rounded-lg mb-4" 
-                src="${product.imageUrl}" 
-                alt="${product.productName}"
-              />
-            </a>
-            <h3 class="text-lg font-semibold text-gray-800">
-              <span class="font-bold">${product.brand}</span>
-              <span class="text-gray-800">${product.productName}</span>
-            </h3>
-        <div>
-          <p class="ml-1 text-gray-800 font-medium">
-            ${product.color}
-          </p>
-        </div>
-            <div class="text-yellow-500 flex items-center">
-              <i class="fa fa-star"></i>
-              <p class="ml-1 text-gray-800 font-medium">
-                ${product.rating || "No rating"}
-              </p>
-            </div>
-            ${product.price && product.discountPrice
-                    ? `
-              <div class="flex gap-2">
-                <div class="text-xl font-bold text-gray-900">₹${product.discountPrice.toLocaleString()}</div>
-                <div class="text-gray-500 line-through mt-1">₹${product.price.toLocaleString()}</div>
-              </div>
-            `
-                    : `
-              <div class="text-xl font-bold text-gray-900">Price Not Available</div>
-            `
-                  }
-            <div class="flex justify-between items-center mt-4">
-              <a href="#" class="hover:text-slate-500">
-                <i class="fa-regular fa-heart"></i>
-              </a>
-            </div>
-          </div>
-        `;
-                elements.productGrid.innerHTML += productCard;
-              });
-            } catch (error) {
-              console.error("Error performing search:", error);
-            }
-          }
-
+          
           // Debounced versions for search and price inputs
-          const debouncedSearch = debounce(handleSearch, 300);
-          const debouncedUpdateProducts = debounce(updateProducts, 300);
-
-          // Add event listeners
-          elements.searchInput.addEventListener("input", debouncedSearch);
 
           // Add event listeners for filters
           [
@@ -476,6 +409,7 @@
             elements.category,
             elements.stockFilter,
             elements.sortFilter,
+            elements.searchInput,
           ].forEach((element) => {
             element.addEventListener("change", updateProducts);
           });
