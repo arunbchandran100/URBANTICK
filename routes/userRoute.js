@@ -20,6 +20,15 @@ const userAuthenticated = require("../middleware/userauthmildware");
 router.get("/user/login", User.loginGET);
 router.post("/user/login", User.loginPOST);
 
+//--------------------user Login --------------------
+const forgotPassword = require("../controllers/forgotPasswordController");
+
+router.get("/user/forgotPassword", forgotPassword.getForgotPassword);
+router.post("/user/forgotPassword/send-otp", forgotPassword.sendForgotPasswordOTP);
+router.post("/user/forgotPassword/verify-otp", forgotPassword.verifyForgotPasswordOTP);
+router.post("/user/forgotPassword/reset-password", forgotPassword.resetPassword);
+router.post("/user/forgotPassword/resend-otp", forgotPassword.resendForgotPasswordOTP);
+
 //--------------------user Signup --------------------
 router.get("/user/signup", User.signupGET);
 router.post("/user/signup", User.signupPOST);

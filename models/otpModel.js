@@ -4,12 +4,12 @@ const otpSchema = new mongoose.Schema(
   {
     email: String,
     otp: String,
-    createdAt: { type: Date, default: Date.now, expires: 28 }, // Expire after 28 seconds
+    createdAt: { type: Date, default: Date.now, expires: 60 }, // Expire after 28 seconds
   },
   { timestamps: true }
 );
 
-otpSchema.index({ createdAt: 1 }, { expireAfterSeconds: 28 }); // Ensure TTL index is set
+otpSchema.index({ createdAt: 1 }, { expireAfterSeconds: 60 }); // Ensure TTL index is set
 
 const OTP = mongoose.model("OTP", otpSchema);
 

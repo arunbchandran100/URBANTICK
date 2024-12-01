@@ -39,7 +39,6 @@ exports.loginPOST = async (req, res) => {
 
     req.session.user = user;
 
-    // Redirect to the home page after successful login
     res.redirect("/user/profile");
   } catch (error) {
     console.error("Error during login:", error);
