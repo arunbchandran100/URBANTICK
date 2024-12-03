@@ -197,8 +197,11 @@
                       </div>
                       <% } %>
                         <div class="flex justify-between items-center mt-4">
-                          <a href="#" class="hover:text-slate-500"><i class="fa-regular fa-heart"></i></a>
-
+<a href="javascript:void(0)" 
+   class="hover:text-slate-500" 
+   onclick="addToWishlist('<%= product._id %>', '<%= product.variants_id %>')">
+  <i class="fa-regular fa-heart"></i>
+</a>
                           <% if (product.stock> 0) { %>
                             <div class="mt-2 text-green-500"></div>
                             <% } else { %>
@@ -222,6 +225,28 @@
     <!-- ------------- -->
 
     <script>
+      async function addToWishlist(productId, variantId) {
+    try {
+      const response = await fetch('/wishlist/add', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({ productId, variantId }),
+      });
+
+      if (response.ok) {
+        alert('Product added to wishlist!');
+      } else {
+        const errorData = await response.json();
+        alert(errorData.error || 'Failed to add to wishlist.');
+      }
+    } catch (error) {
+      console.error('Error adding to wishlist:', error);
+      alert('An error occurred while adding to wishlist.');
+    }
+  }
+
       document.addEventListener("DOMContentLoaded", async () => {
         // Get all filter elements
         const elements = {

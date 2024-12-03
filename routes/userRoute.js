@@ -103,7 +103,12 @@ router.get("/user/changePassword", userAuthenticated,changePassword.getChangePas
 router.post("/user/changePassword", changePassword.postChangePassword);
 
 
+//--------------------Wishlist----------------------------------------- 
+const wishlistController = require("../controllers/user/wishlistController");
 
+router.get("/user/wishlist", userAuthenticated, wishlistController.getwishlist);
+
+router.post("/wishlist/add",  wishlistController.addToWishlist);
 
 
 //--------------------Cart----------------------------------------- 
