@@ -54,7 +54,7 @@ exports.shopAll = async (req, res) => {
             stock: product.variants.stock,
         }));
 
-        console.log(formattedProducts);
+        // console.log(formattedProducts);
         res.render("user/shopAll", { products: formattedProducts });
     } catch (err) {
         console.error("Error fetching products for Shop All page:", err.message);
