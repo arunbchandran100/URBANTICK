@@ -112,10 +112,12 @@
                   <%= product.productName %>
               </h1>
   
-              <a href="javascript:void(0)" class="hover:text-slate-500"
-                onclick="addToWishlist('<%= product._id %>', '<%= product.variants[0].variants_id %>')">
-                <i class="fa-regular fa-heart"></i>
-              </a>
+<a href="javascript:void(0)" 
+   class="hover:text-slate-500 wishlist-button"
+   onclick="addToWishlist('<%= product._id %>', '<%= product.variants[0].variants_id %>')">
+   <i class="fa-regular fa-heart"></i>
+</a>
+
             </div>
 
             <!-- Pricing -->
@@ -437,6 +439,17 @@
               console.error("Error updating cart count:", error);
             }
           }
+
+
+          // Update wishlist button
+        const wishlistButton = document.querySelector(".wishlist-button"); // Use a class or ID to target the wishlist link
+        if (wishlistButton) {
+            wishlistButton.setAttribute(
+                "onclick",
+                `addToWishlist('${variant.productId}', '${variant.variantId}')`
+            );
+        }
+        
         } else {
           stockElement.innerHTML = '<div class="font-semibold text-red-600 bg-red-100 border border-red-600 rounded-lg p-2" style="width: fit-content;">Out of Stock</div>';
           //buyNowButton.style.display = "none"; // Hide the buttons
@@ -446,6 +459,8 @@
         }
       }
 
+
+      /////////////////////////////////////////
       // Event listener for color change
       document.getElementById("color").addEventListener("change", function () {
         const selectedColor = this.value;
