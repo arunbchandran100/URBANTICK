@@ -223,6 +223,7 @@ exports.viewProduct = async (req, res) => {
           gender: 1,
           brand: 1,
           categoriesId : 1,
+          "variants._id": 1,
           "variants.price": 1,
           "variants.discountPrice": 1,
           "variants.discountPercentage": 1,
@@ -246,6 +247,7 @@ exports.viewProduct = async (req, res) => {
       brand: product[0].brand,
       categoriesId: product[0].categoriesId,
       variants: product[0].variants.map((variant) => ({
+        variants_id: variant._id,
         price: variant.price || "N/A",
         discountPrice: variant.discountPrice || "N/A",
         discountPercentage: variant.discountPercentage || "N/A",
@@ -256,40 +258,41 @@ exports.viewProduct = async (req, res) => {
     };
 ////////////////////////////
  const products = await Product.aggregate([
-  {
-    $lookup: {
-      from: "variants",
-      localField: "_id",
-      foreignField: "productId",
-      as: "variants",
-    },
-  },
-  {
-    $unwind: {
-      path: "$variants",
-      preserveNullAndEmptyArrays: true,
-    },
-  },
-  {
-    $match: {
-      categoriesId: formattedProduct.categoriesId, 
-    },
-  },
-  {
-    $project: {
-      _id: 1,
-      brand: 1,
-      productName: 1,
-      imageUrl: 1,
-      "variants.color": 1,
-      "variants.price": 1,
-      "variants.rating": 1,
-      "variants.discountPrice": 1,
-      "variants.discountPercentage": 1,
-      "variants.stock": 1,
-    },
-  },
-]);
+   {
+     $lookup: {
+       from: "variants",
+       localField: "_id",
+       foreignField: "productId",
+       as: "variants",
+     },
+   },
+   {
+     $unwind: {
+       path: "$variants",
+       preserveNullAndEmptyArrays: true,
+     },
+   },
+   {
+     $match: {
+       categoriesId: formattedProduct.categoriesId,
+     },
+   },
+   {
+     $project: {
+       _id: 1,
+       brand: 1,
+       productName: 1,
+       imageUrl: 1,
+       "variants._id": 1,
+       "variants.color": 1,
+       "variants.price": 1,
+       "variants.rating": 1,
+       "variants.discountPrice": 1,
+       "variants.discountPercentage": 1,
+       "variants.stock": 1,
+     },
+   },
+ ]);
 
 const formattedRelatedProducts = products.map((product) => ({
   _id: product._id,
@@ -299,6 +302,8 @@ const formattedRelatedProducts = products.map((product) => ({
     Array.isArray(product.imageUrl) && product.imageUrl.length > 0
       ? product.imageUrl[0]
       : "/images/default-product.jpg",
+  variants_id: product.variants?._id,
+
   color: product.variants?.color,
   price: product.variants?.price || null,
   rating: product.variants?.rating || null,
