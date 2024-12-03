@@ -6,11 +6,8 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <link rel="stylesheet" href="style.css" />
   <title>Home Page</title>
-  <script src="https://cdn.tailwindcss.com"></script>
-  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.6.0/css/all.min.css"
-    integrity="sha512-Kc323vGBEqzTmouAECnVceyQqyqdsSiqLQISBL29aUW4U/M7pSPA/gEUZQqv1cwx4OnYxTxve5UMg5GT6L4JJg=="
-    crossorigin="anonymous" referrerpolicy="no-referrer" />
-</head>
+    <%- include("partials/headerHTML") %>
+
 
 <body class="bg-gray-100">
   <!------------ Navbar ---------->
@@ -65,8 +62,13 @@
                   </div>
                   <% } %>
                     <div class="flex justify-between items-center mt-4">
-                      <a href="#" class="hover:text-slate-500"><i class="fa-regular fa-heart"></i></a>
-
+                      <a
+                    href="javascript:void(0)"
+                    class="hover:text-slate-500"
+                    onclick="addToWishlist('<%= product._id %>', '<%= product.variants_id %>')"
+                  >
+                    <i class="fa-regular fa-heart"></i>
+                  </a>
                       <% if (product.stock> 0) { %>
                         <div class=" text-green-500"></div>
                         <% } else { %>
@@ -83,6 +85,47 @@
 
     <!------------- Footer ------------>
     <%- include("partials/footer") %>
+
+    <script>
+            const notyf = new Notyf({
+        duration: 3000, // Notification duration in milliseconds
+        position: {
+          x: "right",
+          y: "bottom",
+        },
+      });
+
+        async function addToWishlist(productId, variantId) {
+      try {
+          // Make a POST request to add the product to the wishlist
+          const response = await fetch("/wishlist/add", {
+              method: "POST",
+              headers: {
+                  "Content-Type": "application/json",
+              },
+              body: JSON.stringify({ productId, variantId }),
+          });
+
+          // Check if the request was successful
+          if (response.ok) {
+              notyf.success("Product added to wishlist!");
+          } else {
+              // Handle errors from the server
+              const errorData = await response.json();
+              if (errorData.error === "Product is already in your wishlist.") {
+                  notyf.success(errorData.error); // Use info for non-critical notifications
+              } else {
+                  notyf.error(errorData.error || "Failed to add to wishlist.");
+              }
+          }
+      } catch (error) {
+          // Handle network or unexpected errors
+          console.error("Error adding to wishlist:", error);
+          notyf.error("An error occurred while adding to wishlist.");
+      }
+  }
+
+    </script>
 </body>
 
 </html>

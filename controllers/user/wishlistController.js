@@ -39,7 +39,7 @@ exports.addToWishlist = async (req, res) => {
     await newWishlistItem.save();
 
     res.status(201).json({ message: "Product added to wishlist." });
-    console.log(665522222000000);
+    // console.log(665522222000000);
 
   } catch (error) {
     console.error("Error adding to wishlist:", error);

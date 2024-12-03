@@ -159,6 +159,7 @@ exports.home = async (req, res) => {
           brand: 1,
           productName: 1,
           imageUrl: 1,
+          "variants._id": 1,
           "variants.color": 1,
           "variants.price": 1,
           "variants.rating": 1,
@@ -177,6 +178,7 @@ exports.home = async (req, res) => {
         Array.isArray(product.imageUrl) && product.imageUrl.length > 0
           ? product.imageUrl[0]
           : "/images/default-product.jpg",
+      variants_id: product.variants?._id,
       color: product.variants?.color,
       price: product.variants?.price || null,
       rating: product.variants?.rating || null,
