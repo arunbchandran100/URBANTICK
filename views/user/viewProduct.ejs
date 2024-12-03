@@ -111,12 +111,11 @@
                 <%= product.brand %>
                   <%= product.productName %>
               </h1>
-  
-<a href="javascript:void(0)" 
-   class="hover:text-slate-500 wishlist-button"
-   onclick="addToWishlist('<%= product._id %>', '<%= product.variants[0].variants_id %>')">
-   <i class="fa-regular fa-heart"></i>
-</a>
+
+              <a href="javascript:void(0)" class="hover:text-slate-500 wishlist-button"
+                onclick="addToWishlist('<%= product._id %>', '<%= product.variants[0].variants_id %>')">
+                <i class="fa-regular fa-heart"></i>
+              </a>
 
             </div>
 
@@ -374,6 +373,19 @@
 
       // Function to update variant details
       function updateVariantDetails(variant) {
+
+          // Update wishlist button
+          const wishlistButton = document.querySelector(".wishlist-button"); // Use a class or ID to target the wishlist link
+          if (wishlistButton) {
+            console.log(85898989898989);
+            console.log(variant.productId)
+            console.log(variant._id)
+            wishlistButton.setAttribute(
+              "onclick",
+              `addToWishlist('${variant.productId}', '${variant._id}')`
+            );
+          }
+
         const buyNowButton = document.getElementById("buyNowButton");
         const addToCartButton = document.getElementById("div-for-addToCart");
 
@@ -400,6 +412,7 @@
               const variantId = document.getElementById("color").value; // Selected variant ID
               const quantity = 1; // Default quantity for now, can add quantity selection
 
+              console.log("variant is id " + variantId);
               fetch("/cart/add", {
                 method: "POST",
                 headers: {
@@ -441,15 +454,8 @@
           }
 
 
-          // Update wishlist button
-        const wishlistButton = document.querySelector(".wishlist-button"); // Use a class or ID to target the wishlist link
-        if (wishlistButton) {
-            wishlistButton.setAttribute(
-                "onclick",
-                `addToWishlist('${variant.productId}', '${variant.variantId}')`
-            );
-        }
-        
+
+
         } else {
           stockElement.innerHTML = '<div class="font-semibold text-red-600 bg-red-100 border border-red-600 rounded-lg p-2" style="width: fit-content;">Out of Stock</div>';
           //buyNowButton.style.display = "none"; // Hide the buttons
@@ -474,8 +480,8 @@
           return;
         }
 
-        console.log("Selected color is: " + selectedColor);
-        console.log("Product ID is: " + productId);
+        //console.log("Selected color is: " + selectedColor);
+        //console.log("Product ID is: " + productId);
 
         // Fetch the variant details
         fetch(

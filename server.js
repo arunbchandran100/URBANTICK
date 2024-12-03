@@ -29,17 +29,17 @@ app.use(
   })
 );
 
-// app.use((req, res, next) => {
-//   req.session.user = {
-//     _id: "674ad2c9d7fa0100fe7ea73a",
-//     fullName: "Arun b chandran",
-//     email: "arunbchandran100@gmail.com",
-//     password: "$2a$10$$2a$10$A6WnIA./kUwvjoQYaxtsbOJhYMksp7jJyUr2yB8hsgrP8IhD.bnUO",
-//     status: "active",
-//     __v: 0,
-//   };
-//   next();
-// });
+app.use((req, res, next) => {
+  req.session.user = {
+    _id: "674ad2c9d7fa0100fe7ea73a",
+    fullName: "Arun b chandran",
+    email: "arunbchandran100@gmail.com",
+    password: "$2a$10$$2a$10$A6WnIA./kUwvjoQYaxtsbOJhYMksp7jJyUr2yB8hsgrP8IhD.bnUO",
+    status: "active",
+    __v: 0,
+  };
+  next();
+});
 
 ///////////////////////////////
 
