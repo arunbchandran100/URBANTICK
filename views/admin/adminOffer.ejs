@@ -1,0 +1,257 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+
+    <%- include("partials/headerHTML.ejs") %>
+
+</head>
+
+<body class="bg-black text-white min-h-screen">
+    <!-- Sidebar -->
+    <%- include("partials/sidebar") %>
+        <main class="ml-64 p-8">
+            <!-- Offer Table -->
+            <div class="bg-zinc-800 rounded-lg p-6">
+                <header class="flex items-center justify-between mb-4">
+                    <h1 class="text-2xl font-semibold text-gray-200">Manage Offers</h1>
+                </header>
+
+                <table class="min-w-full text-left text-gray-400">
+                    <thead>
+                        <tr class="border-b border-gray-700">
+                            <th class="py-3 px-4">S.No</th>
+                            <th class="py-3 px-4">Title</th>
+                            <th class="py-3 px-4">Discount (%)</th>
+                            <th class="py-3 px-4">Type</th>
+                            <th class="py-3 px-4">Applicable To</th>
+                            <th class="py-3 px-4">Active</th>
+                            <th class="py-3 px-4">Action</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <% offers.forEach((offer, index)=> { %>
+                            <tr class="border-b border-gray-700">
+                                <td class="py-3 px-4 text-white">
+                                    <%= (currentPage - 1) * 5 + index + 1 %>
+                                </td>
+                                <td class="py-3 px-4 text-white">
+                                    <%= offer.title %>
+                                </td>
+                                <td class="py-3 px-4 text-white">
+                                    <%= offer.discountPercentage %>%
+                                </td>
+                                <td class="py-3 px-4 text-white">
+                                    <%= offer.offerType %>
+                                </td>
+                                <td class="py-3 px-4 text-white">
+                                    <% if (offer.offerType==='Product' ) { %>
+                                        <%= offer.applicableProduct.productName %>
+                                            <% } else { %>
+                                                <%= offer.applicableCategory.categoriesName %>
+                                                    <% } %>
+                                </td>
+                                <td class="py-3 px-4 text-white">
+                                    <%= offer.isActive ? 'Yes' : 'No' %>
+                                </td>
+                                <td class="px-4 py-2">
+                                    <button class="bg-green-500 text-white px-3 py-1 rounded-lg hover:bg-green-600"
+                                        onclick="openEditOfferModal('<%= offer._id %>', '<%= offer.title %>', '<%= offer.discountPercentage %>', '<%= offer.offerType %>', '<%= offer.isActive %>')">
+                                        Edit
+                                    </button>
+                                    <button class="bg-red-500 text-white px-3 py-1 rounded-lg hover:bg-red-600"
+                                        onclick="deleteOffer('<%= offer._id %>')">
+                                        Delete
+                                    </button>
+                                </td>
+                            </tr>
+                            <% }); %>
+                    </tbody>
+                </table>
+
+                <!-- Add Offer Button -->
+                <div class="flex items-center justify-between mt-6">
+                    <button onclick="openAddOfferModal()"
+                        class="bg-transparent border border-white text-white px-4 py-2 rounded-lg hover:bg-gray-700">
+                        Add Offer
+                    </button>
+                </div>
+
+                <!-- Add Offer Modal -->
+                <div id="addOfferModal" class="fixed inset-0 flex items-center justify-center z-50 hidden">
+                    <div class="bg-zinc-500 bg-opacity-50 absolute inset-0"></div>
+                    <div class="bg-black text-white rounded-lg shadow-xl relative z-10 p-6 w-1/3">
+                        <h2 class="text-xl font-semibold mb-4">Add New Offer</h2>
+                        <form id="addOfferForm" method="POST" action="/admin/offer/add">
+                            <!-- Offer Title -->
+                            <div class="mb-4">
+                                <label for="offerTitle" class="block text-gray-300">Offer Title</label>
+                                <input type="text" id="offerTitle" name="title"
+                                    class="bg-zinc-900 w-full px-4 py-2 border rounded-lg" required />
+                            </div>
+
+                            <!-- Discount Percentage -->
+                            <div class="mb-4">
+                                <label for="discountPercentage" class="block text-gray-300">Discount (%)</label>
+                                <input type="number" id="discountPercentage" name="discountPercentage"
+                                    class="bg-zinc-900 w-full px-4 py-2 border rounded-lg" required min="0" max="100" />
+                            </div>
+
+                            <!-- Offer Type -->
+                            <div class="mb-4">
+                                <label for="offerType" class="block text-gray-300">Offer Type</label>
+                                <select id="offerType" name="offerType"
+                                    class="bg-zinc-900 w-full px-4 py-2 border rounded-lg" required>
+                                    <option value="Product">Product</option>
+                                    <option value="Category">Category</option>
+                                </select>
+                            </div>
+
+                            <!-- Applicable To -->
+                            <div class="mb-4">
+                                <label for="applicableTo" class="block text-gray-300">Applicable To</label>
+                                <select id="applicableTo" name="applicableTo"
+                                    class="bg-zinc-900 w-full px-4 py-2 border rounded-lg" required>
+                                    <!-- Options for Products -->
+                                    <% products.forEach(product=> { %>
+                                        <option data-type="Product" value="<%= product._id %>">
+                                            <%= product.productName %>
+                                        </option>
+                                        <% }); %>
+
+                                            <!-- Options for Categories -->
+                                            <% categories.forEach(category=> { %>
+                                                <option data-type="Category" value="<%= category._id %>">
+                                                    <%= category.categoriesName %>
+                                                </option>
+                                                <% }); %>
+                                </select>
+                            </div>
+
+                            <!-- Start Date -->
+                            <div class="mb-4">
+                                <label for="startDate" class="block text-gray-300">Start Date</label>
+                                <input type="date" id="startDate" name="startDate"
+                                    class="bg-zinc-900 w-full px-4 py-2 border rounded-lg" required />
+                            </div>
+
+                            <!-- End Date -->
+                            <div class="mb-4">
+                                <label for="endDate" class="block text-gray-300">End Date</label>
+                                <input type="date" id="endDate" name="endDate"
+                                    class="bg-zinc-900 w-full px-4 py-2 border rounded-lg" required />
+                            </div>
+
+                            <!-- Active Toggle -->
+                            <div class="mb-4 flex items-center">
+                                <label for="isActive" class="block text-gray-300 mr-2">Active</label>
+                                <input type="checkbox" id="isActive" name="isActive"
+                                    class="bg-zinc-900 rounded-lg w-6 h-6" checked />
+                            </div>
+
+                            <!-- Buttons -->
+                            <div class="flex justify-end space-x-4">
+                                <button type="button" onclick="closeAddOfferModal()"
+                                    class="px-4 py-2 bg-gray-700 text-white rounded-lg">
+                                    Cancel
+                                </button>
+                                <button type="submit" class="px-4 py-2 bg-green-500 text-white rounded-lg">
+                                    Add
+                                </button>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+
+                <!-- Pagination -->
+                <div class="flex justify-center items-center space-x-4 mt-6">
+                    <% if (currentPage> 1) { %>
+                        <a href="/admin/offer?page=<%= currentPage - 1 %>" class="px-4 py-2 bg-gray-700 rounded-lg">
+                            Previous
+                        </a>
+                        <% } %>
+                            <% for (let i=1; i <=totalPages; i++) { %>
+                                <a href="/admin/offer?page=<%= i %>" class="px-3 py-1 bg-gray-600 rounded-lg">
+                                    <%= i %>
+                                </a>
+                                <% } %>
+                                    <% if (currentPage < totalPages) { %>
+                                        <a href="/admin/offer?page=<%= currentPage + 1 %>"
+                                            class="px-4 py-2 bg-gray-700 rounded-lg">
+                                            Next
+                                        </a>
+                                        <% } %>
+                </div>
+            </div>
+        </main>
+
+        <script>
+
+            // JavaScript to open date picker on input click
+document.querySelectorAll('input[type="date"]').forEach(input => {
+    input.addEventListener('click', () => {
+        input.showPicker();
+    });
+});
+
+            document.addEventListener("DOMContentLoaded", () => {
+                const offerTypeSelect = document.getElementById("offerType");
+                const applicableToSelect = document.getElementById("applicableTo");
+
+                // Function to filter applicable options based on selected offer type
+                function filterApplicableOptions() {
+                    const selectedType = offerTypeSelect.value;
+
+                    // Show or hide options based on the selected type
+                    Array.from(applicableToSelect.options).forEach(option => {
+                        if (option.getAttribute("data-type") === selectedType) {
+                            option.style.display = "block";
+                        } else {
+                            option.style.display = "none";
+                        }
+                    });
+
+                    // Reset the selection to the first visible option
+                    const firstVisibleOption = Array.from(applicableToSelect.options).find(
+                        option => option.style.display === "block"
+                    );
+                    applicableToSelect.value = firstVisibleOption ? firstVisibleOption.value : "";
+                }
+
+                // Add event listener to the offer type dropdown
+                offerTypeSelect.addEventListener("change", filterApplicableOptions);
+
+                // Initialize filtering on page load
+                filterApplicableOptions();
+            });
+
+
+            function openAddOfferModal() {
+                document.getElementById('addOfferModal').classList.remove('hidden');
+            }
+            function closeAddOfferModal() {
+                document.getElementById('addOfferModal').classList.add('hidden');
+            }
+            function openEditOfferModal(id, title, discountPercentage, type, isActive) {
+                // Set the values dynamically for the edit modal
+                // Show the modal
+            }
+            function deleteOffer(offerId) {
+                if (confirm('Are you sure you want to delete this offer?')) {
+                    fetch(`/admin/offer/delete/${offerId}`, { method: 'DELETE' })
+                        .then(res => res.json())
+                        .then(data => {
+                            alert(data.message);
+                            location.reload();
+                        })
+                        .catch(err => console.error(err));
+                }
+            }
+
+        </script>
+</body>
+
+</html>

@@ -63,4 +63,11 @@ router.post("/orders/update-status", adminOrders.updateOrderStatus);
 
 
 
+// Admin Offer
+const adminOffer = require("../controllers/admin/adminOfferController");
+
+router.get("/offer", adminOffer.getAdminOffers);
+router.post("/offer/add", adminOffer.addOffer);
+
+
 module.exports = router;
