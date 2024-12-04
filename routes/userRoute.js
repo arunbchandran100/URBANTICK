@@ -106,7 +106,7 @@ router.post("/user/changePassword", changePassword.postChangePassword);
 //--------------------Wishlist----------------------------------------- 
 const wishlistController = require("../controllers/user/wishlistController");
 
-router.get("/user/wishlist", userAuthenticated, wishlistController.getwishlist);
+router.get("/user/wishlist", userAuthenticated, wishlistController.getWishlist);
 
 router.post("/wishlist/add",  wishlistController.addToWishlist);
 
