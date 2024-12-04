@@ -54,9 +54,33 @@
                                                 <%= offer.applicableCategory.categoriesName %>
                                                     <% } %>
                                 </td>
-                                <td class="py-3 px-4 text-white">
-                                    <%= offer.isActive ? 'Yes' : 'No' %>
-                                </td>
+          <td class="py-3 px-4 text-white">
+    <% 
+        const today = new Date();
+        const startDate = new Date(offer.startDate);
+        const endDate = new Date(offer.endDate);
+        
+        // Check if the end date is in the past
+        if (endDate < today) {
+            %>
+            Expired on <%= endDate.toLocaleDateString() %>
+            <%
+        } 
+        // Check if the start date is in the future
+        else if (startDate > today) {
+            %>
+            Will start in <%= startDate.toLocaleDateString() %>
+            <%
+        } 
+        // Otherwise, check if the offer is active
+        else {
+            %>
+            <%= offer.isActive ? 'Yes' : 'No' %>
+            <%
+        }
+    %>
+</td>
+
                                 <td class="px-4 py-2">
                                     <button class="bg-green-500 text-white px-3 py-1 rounded-lg hover:bg-green-600"
                                         onclick="openEditOfferModal(
