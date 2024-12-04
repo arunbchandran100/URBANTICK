@@ -3,58 +3,58 @@ const Product = require("../../models/productSchema"); // Import the Product mod
 const mongoose = require("mongoose"); // Import mongoose
 
 exports.getWishlist = async (req, res) => {
-  try {
-    const userId = req.session.user?._id; // Assuming userId is stored in the session
-    // console.log(userId);
+    try {
+        const userId = req.session.user?._id; // Assuming userId is stored in the session
+        // console.log(userId);
 
-    // Fetch wishlist items for the user
-    const wishlistItems = await Wishlist.aggregate([
-      { $match: { userId: new mongoose.Types.ObjectId(userId) } },
-      {
-        $lookup: {
-          from: "products", // Link to the Product collection
-          localField: "productId",
-          foreignField: "_id",
-          as: "productDetails",
-        },
-      },
-      {
-        $lookup: {
-          from: "variants", // Link to the Variant collection
-          localField: "variantId",
-          foreignField: "_id",
-          as: "variantDetails",
-        },
-      },
-      {
-        $unwind: "$productDetails", // Flatten productDetails array
-      },
-      {
-        $unwind: "$variantDetails", // Flatten variantDetails array
-      },
-      {
-        $project: {
-          _id: 1,
-          productId: 1,
-          variantId: 1,
-          addedAt: 1,
-          "productDetails.productName": 1,
-          "productDetails.imageUrl": 1,
-          "productDetails.brand": 1,
-          "variantDetails.color": 1,
-          "variantDetails.price": 1,
-          "variantDetails.discountPrice": 1,
-          "variantDetails.stock": 1,
-        },
-      },
-    ]);
+        // Fetch wishlist items for the user
+        const wishlistItems = await Wishlist.aggregate([
+            { $match: { userId: new mongoose.Types.ObjectId(userId) } },
+            {
+                $lookup: {
+                    from: "products", // Link to the Product collection
+                    localField: "productId",
+                    foreignField: "_id",
+                    as: "productDetails",
+                },
+            },
+            {
+                $lookup: {
+                    from: "variants", // Link to the Variant collection
+                    localField: "variantId",
+                    foreignField: "_id",
+                    as: "variantDetails",
+                },
+            },
+            {
+                $unwind: "$productDetails", // Flatten productDetails array
+            },
+            {
+                $unwind: "$variantDetails", // Flatten variantDetails array
+            },
+            {
+                $project: {
+                    _id: 1,
+                    productId: 1,
+                    variantId: 1,
+                    addedAt: 1,
+                    "productDetails.productName": 1,
+                    "productDetails.imageUrl": 1,
+                    "productDetails.brand": 1,
+                    "variantDetails.color": 1,
+                    "variantDetails.price": 1,
+                    "variantDetails.discountPrice": 1,
+                    "variantDetails.stock": 1,
+                },
+            },
+        ]);
 
 
-    res.render("user/wishlist", { wishlistItems });
-  } catch (error) {
-    console.error("Error fetching wishlist:", error);
-    res.status(500).send("An error occurred while fetching the wishlist.");
-  }
+        res.render("user/wishlist", { wishlistItems });
+    } catch (error) {
+        console.error("Error fetching wishlist:", error);
+        res.status(500).send("An error occurred while fetching the wishlist.");
+    }
 };
 
 
@@ -103,5 +103,17 @@ exports.addToWishlist = async (req, res) => {
     } catch (error) {
         console.error("Error adding to wishlist:", error);
         res.status(500).json({ error: "Failed to add to wishlist." });
+    }
+};
+
+
+exports.removeFromWishlist = async (req, res) => {
+    try {
+        const { wishlistId } = req.params; 
+        await Wishlist.findByIdAndDelete(wishlistId);
+        res.status(200).send({ message: "Item removed from wishlist." });
+    } catch (error) {
+        console.error("Error removing wishlist item:", error);
+        res.status(500).send({ error: "Failed to remove item from wishlist." });
     }
 };

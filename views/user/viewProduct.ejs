@@ -411,8 +411,7 @@
               const productId = "<%= product._id %>"; // Pass dynamically from server
               const variantId = document.getElementById("color").value; // Selected variant ID
               const quantity = 1; // Default quantity for now, can add quantity selection
-
-              console.log("variant is id " + variantId);
+  
               fetch("/cart/add", {
                 method: "POST",
                 headers: {
@@ -438,20 +437,6 @@
                   notyf.error(error.message);
                 });
             });
-
-          // Helper function to update cart count
-          async function updateCartCount() {
-            try {
-              const response = await fetch("/api/cart/count");
-              const data = await response.json();
-              const cartCountElement = document.getElementById("cartCount");
-              if (cartCountElement) {
-                cartCountElement.textContent = data.count;
-              }
-            } catch (error) {
-              console.error("Error updating cart count:", error);
-            }
-          }
 
 
 

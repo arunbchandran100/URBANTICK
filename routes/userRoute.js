@@ -107,9 +107,8 @@ router.post("/user/changePassword", changePassword.postChangePassword);
 const wishlistController = require("../controllers/user/wishlistController");
 
 router.get("/user/wishlist", userAuthenticated, wishlistController.getWishlist);
-
 router.post("/wishlist/add",  wishlistController.addToWishlist);
-
+router.delete('/wishlist/remove/:wishlistId', wishlistController.removeFromWishlist);
 
 //--------------------Cart----------------------------------------- 
 const cartController = require("../controllers/user/cartController");
