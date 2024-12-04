@@ -8,12 +8,32 @@ const Offer = require("../../models/offerModel");
 
 exports.getAdminOffers = async (req, res) => {
     try {
+
+        let offers = await Offer.find();
+
+        // Get the current date
+        let today = new Date();
+        today.setHours(0, 0, 0, 0); // Set time to midnight for accurate date comparison
+
+        // Loop through each offer and check if the end date is in the past
+        offers.forEach(async (offer) => {
+            const offerEndDate = new Date(offer.endDate);
+            if (offerEndDate < today) {
+                // Set isActive to false if the end date is in the past
+                offer.isActive = false;
+
+                // Save the updated offer
+                await offer.save();
+            }
+        });
+
+
         const ITEMS_PER_PAGE = 5; // Define how many offers to display per page
         const page = parseInt(req.query.page, 10) || 1;
 
         // Fetch offers with pagination
         const totalOffers = await Offer.countDocuments();
-        const offers = await Offer.find()
+        offers = await Offer.find()
             .populate("applicableProduct") // Populate product details
             .populate("applicableCategory") // Populate category details
             .skip((page - 1) * ITEMS_PER_PAGE)
@@ -54,7 +74,7 @@ exports.addOffer = async (req, res) => {
             isActive,
         } = req.body;
 
-        // Validate inputs
+
         if (
             !title ||
             !discountPercentage ||
@@ -66,14 +86,14 @@ exports.addOffer = async (req, res) => {
             return res.status(400).json({ message: "All fields are required." });
         }
 
-        // Ensure the discount percentage is within range
+
         if (discountPercentage < 0 || discountPercentage > 100) {
             return res
                 .status(400)
                 .json({ message: "Discount percentage must be between 0 and 100." });
         }
 
-        // Validate date formats
+
         const parsedStartDate = new Date(startDate);
         const parsedEndDate = new Date(endDate);
 
@@ -81,23 +101,43 @@ exports.addOffer = async (req, res) => {
             return res.status(400).json({ message: "Invalid date format." });
         }
 
-        // Check if startDate is before endDate
+
         if (parsedStartDate >= parsedEndDate) {
             return res
                 .status(400)
                 .json({ message: "Start date must be before the end date." });
         }
 
-        // Check if the end date is not in the past
+
         const today = new Date();
-        today.setHours(0, 0, 0, 0); // Clear time for date-only comparison
+        today.setHours(0, 0, 0, 0);
         if (parsedEndDate < today) {
             return res
                 .status(400)
                 .json({ message: "End date cannot be in the past." });
         }
 
-        // Create a new offer
+
+        const existingOffer = await Offer.findOne({
+            isActive: true,
+            $or: [
+                { applicableProduct: applicableTo },
+                { applicableCategory: applicableTo },
+            ],
+        });
+
+        if (existingOffer) {
+            return res
+                .status(400)
+                .json({
+                    message:
+                        "There is already an active offer for this product or category.",
+                });
+        }
+
+
+
+
         const newOffer = new Offer({
             title,
             discountPercentage,
@@ -106,14 +146,13 @@ exports.addOffer = async (req, res) => {
             applicableCategory: offerType === "Category" ? applicableTo : null,
             startDate: parsedStartDate,
             endDate: parsedEndDate,
-            isActive: isActive === "on", // Checkbox returns 'on' if checked
+            isActive: isActive === "on",
         });
 
-        // Save the offer
         await newOffer.save();
 
-        // Redirect to admin offers page or respond with success
-        res.redirect("/admin/offer"); // Replace with your route for listing offers
+
+        res.redirect("/admin/offer");
     } catch (error) {
         console.error("Error adding offer:", error);
         res.status(500).json({ message: "Internal server error." });
@@ -127,6 +166,28 @@ exports.addOffer = async (req, res) => {
 // POST: Update Offer
 exports.updateOffer = async (req, res) => {
     try {
+
+
+        const offers = await Offer.find();
+
+        // Get the current date
+        let today = new Date();
+        today.setHours(0, 0, 0, 0); // Set time to midnight for accurate date comparison
+
+        // Loop through each offer and check if the end date is in the past
+        offers.forEach(async (offer) => {
+            const offerEndDate = new Date(offer.endDate);
+            if (offerEndDate < today) {
+                // Set isActive to false if the end date is in the past
+                offer.isActive = false;
+
+                // Save the updated offer
+                await offer.save();
+            }
+        });
+
+
+
         const {
             offerId,
             title,
@@ -174,12 +235,30 @@ exports.updateOffer = async (req, res) => {
         }
 
         // Check if the end date is not in the past
-        const today = new Date();
+        today = new Date();
         today.setHours(0, 0, 0, 0); // Clear time for date-only comparison
         if (parsedEndDate < today) {
             return res
                 .status(400)
                 .json({ message: "End date cannot be in the past." });
+        }
+
+        // Check if there is an active offer for the same product or category
+        const existingOffer = await Offer.findOne({
+            isActive: true,
+            $or: [
+                { applicableProduct: applicableTo },
+                { applicableCategory: applicableTo },
+            ],
+        });
+
+        if (existingOffer) {
+            return res
+                .status(400)
+                .json({
+                    message:
+                        "There is already an active offer for this product or category.",
+                });
         }
 
         // Update the offer
