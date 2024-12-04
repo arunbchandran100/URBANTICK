@@ -59,9 +59,20 @@
                                 </td>
                                 <td class="px-4 py-2">
                                     <button class="bg-green-500 text-white px-3 py-1 rounded-lg hover:bg-green-600"
-                                        onclick="openEditOfferModal('<%= offer._id %>', '<%= offer.title %>', '<%= offer.discountPercentage %>', '<%= offer.offerType %>', '<%= offer.isActive %>')">
+                                        onclick="openEditOfferModal(
+        '<%= offer._id %>',
+        '<%= offer.title %>',
+        '<%= offer.discountPercentage %>',
+        '<%= offer.offerType %>',
+        '<%= offer.offerType === 'Product' ? offer.applicableProduct._id : offer.applicableCategory._id %>',
+        '<%= offer.startDate.toISOString().split('T')[0] %>',
+        '<%= offer.endDate.toISOString().split('T')[0] %>',
+        '<%= offer.isActive %>'
+    )">
                                         Edit
                                     </button>
+
+
                                     <button class="bg-red-500 text-white px-3 py-1 rounded-lg hover:bg-red-600"
                                         onclick="deleteOffer('<%= offer._id %>')">
                                         Delete
@@ -79,6 +90,94 @@
                         Add Offer
                     </button>
                 </div>
+
+                <!-- Edit Offer Modal -->
+                <div id="editOfferModal" class="fixed inset-0 flex items-center justify-center z-50 hidden">
+                    <div class="bg-zinc-500 bg-opacity-50 absolute inset-0"></div>
+                    <div class="bg-black text-white rounded-lg shadow-xl relative z-10 p-6 w-1/3">
+                        <h2 class="text-xl font-semibold mb-4">Edit Offer</h2>
+                        <form id="editOfferForm" method="POST" action="/admin/offer/update">
+                            <!-- Hidden Input for Offer ID -->
+                            <input type="hidden" id="editOfferId" name="offerId" />
+
+                            <!-- Offer Title -->
+                            <div class="mb-4">
+                                <label for="editOfferTitle" class="block text-gray-300">Offer Title</label>
+                                <input type="text" id="editOfferTitle" name="title"
+                                    class="bg-zinc-900 w-full px-4 py-2 border rounded-lg" required />
+                            </div>
+
+                            <!-- Discount Percentage -->
+                            <div class="mb-4">
+                                <label for="editDiscountPercentage" class="block text-gray-300">Discount (%)</label>
+                                <input type="number" id="editDiscountPercentage" name="discountPercentage"
+                                    class="bg-zinc-900 w-full px-4 py-2 border rounded-lg" required min="0" max="100" />
+                            </div>
+
+                            <!-- Offer Type -->
+                            <div class="mb-4">
+                                <label for="editOfferType" class="block text-gray-300">Offer Type</label>
+                                <select id="editOfferType" name="offerType"
+                                    class="bg-zinc-900 w-full px-4 py-2 border rounded-lg" required
+                                    onchange="filterApplicableOptions()">
+                                    <option value="Product">Product</option>
+                                    <option value="Category">Category</option>
+                                </select>
+                            </div>
+
+                            <!-- Applicable To -->
+                            <div class="mb-4">
+                                <label for="editApplicableTo" class="block text-gray-300">Applicable To</label>
+                                <select id="editApplicableTo" name="applicableTo"
+                                    class="bg-zinc-900 w-full px-4 py-2 border rounded-lg" required>
+                                    <% products.forEach(product=> { %>
+                                        <option data-type="Product" value="<%= product._id %>">
+                                            <%= product.productName %>
+                                        </option>
+                                        <% }); %>
+                                            <% categories.forEach(category=> { %>
+                                                <option data-type="Category" value="<%= category._id %>">
+                                                    <%= category.categoriesName %>
+                                                </option>
+                                                <% }); %>
+                                </select>
+                            </div>
+
+                            <!-- Start Date -->
+                            <div class="mb-4">
+                                <label for="editStartDate" class="block text-gray-300">Start Date</label>
+                                <input type="date" id="editStartDate" name="startDate"
+                                    class="bg-zinc-900 w-full px-4 py-2 border rounded-lg" required />
+                            </div>
+
+                            <!-- End Date -->
+                            <div class="mb-4">
+                                <label for="editEndDate" class="block text-gray-300">End Date</label>
+                                <input type="date" id="editEndDate" name="endDate"
+                                    class="bg-zinc-900 w-full px-4 py-2 border rounded-lg" required />
+                            </div>
+
+                            <!-- Active Toggle -->
+                            <div class="mb-4 flex items-center">
+                                <label for="editIsActive" class="block text-gray-300 mr-2">Active</label>
+                                <input type="checkbox" id="editIsActive" name="isActive"
+                                    class="bg-zinc-900 rounded-lg w-6 h-6" />
+                            </div>
+
+                            <!-- Buttons -->
+                            <div class="flex justify-end space-x-4">
+                                <button type="button" onclick="closeEditOfferModal()"
+                                    class="px-4 py-2 bg-gray-700 text-white rounded-lg">
+                                    Cancel
+                                </button>
+                                <button type="submit" class="px-4 py-2 bg-green-500 text-white rounded-lg">
+                                    Update
+                                </button>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+
 
                 <!-- Add Offer Modal -->
                 <div id="addOfferModal" class="fixed inset-0 flex items-center justify-center z-50 hidden">
@@ -190,12 +289,149 @@
 
         <script>
 
+
+            document.getElementById("addOfferForm").addEventListener("submit", async function (event) {
+                event.preventDefault(); // Prevent default form submission
+
+                const form = event.target;
+                const formData = new FormData(form);
+
+                try {
+                    const response = await fetch(form.action, {
+                        method: form.method,
+                        body: new URLSearchParams(formData), // Convert FormData to URL-encoded format
+                        headers: {
+                            "Content-Type": "application/x-www-form-urlencoded",
+                        },
+                    });
+
+                    if (!response.ok) {
+                        const errorData = await response.json();
+                        // Show SweetAlert for validation errors
+                        Swal.fire({
+                            icon: "error",
+                            title: "Validation Error",
+                            text: errorData.message, // Use the message from the server
+                        });
+                    } else {
+                        // Success alert
+                        Swal.fire({
+                            icon: "success",
+                            title: "Offer Added",
+                            text: "The offer has been successfully added.",
+                        }).then(() => {
+                            window.location.reload(); // Reload the page or redirect to another page
+                        });
+                    }
+                } catch (error) {
+                    console.error("Error submitting form:", error);
+                    Swal.fire({
+                        icon: "error",
+                        title: "Submission Error",
+                        text: "An error occurred while submitting the form. Please try again later.",
+                    });
+                }
+            });
+
+
+
+
+            document.getElementById("editOfferForm").addEventListener("submit", async function (event) {
+                event.preventDefault(); // Prevent default form submission
+
+                const form = event.target;
+                const formData = new FormData(form);
+
+                try {
+                    const response = await fetch(form.action, {
+                        method: form.method,
+                        body: new URLSearchParams(formData),
+                        headers: {
+                            "Content-Type": "application/x-www-form-urlencoded",
+                        },
+                    });
+
+                    if (!response.ok) {
+                        const errorData = await response.json();
+                        Swal.fire({
+                            icon: "error",
+                            title: "Validation Error",
+                            text: errorData.message,
+                        });
+                    } else {
+                        Swal.fire({
+                            icon: "success",
+                            title: "Offer Updated",
+                            text: "The offer has been successfully updated.",
+                        }).then(() => {
+                            window.location.reload(); // Reload the page or redirect
+                        });
+                    }
+                } catch (error) {
+                    console.error("Error updating offer:", error);
+                    Swal.fire({
+                        icon: "error",
+                        title: "Update Error",
+                        text: "An error occurred while updating the offer. Please try again later.",
+                    });
+                }
+            });
+
+
+            function filterApplicableOptions() {
+                const offerType = document.getElementById('editOfferType').value;
+                const applicableToSelect = document.getElementById('editApplicableTo');
+
+                // Show/Hide options based on selected Offer Type
+                const options = Array.from(applicableToSelect.options);
+                let firstVisibleOption = null;
+
+                options.forEach(option => {
+                    if (option.dataset.type === offerType) {
+                        option.style.display = 'block'; // Show relevant options
+                        if (!firstVisibleOption) {
+                            firstVisibleOption = option; // Mark the first visible option
+                        }
+                    } else {
+                        option.style.display = 'none'; // Hide irrelevant options
+                    }
+                });
+
+                // Automatically select the first visible option in the filtered list
+                if (firstVisibleOption) {
+                    applicableToSelect.value = firstVisibleOption.value;
+                }
+            }
+
+            function openEditOfferModal(id, title, discountPercentage, offerType, applicableTo, startDate, endDate, isActive) {
+                // Populate the fields
+                document.getElementById('editOfferId').value = id;
+                document.getElementById('editOfferTitle').value = title;
+                document.getElementById('editDiscountPercentage').value = discountPercentage;
+                document.getElementById('editOfferType').value = offerType;
+                document.getElementById('editApplicableTo').value = applicableTo;
+                document.getElementById('editStartDate').value = startDate;
+                document.getElementById('editEndDate').value = endDate;
+                document.getElementById('editIsActive').checked = isActive === 'true';
+
+                // Filter the options based on the selected offer type
+                filterApplicableOptions();
+
+                // Show the modal
+                document.getElementById('editOfferModal').classList.remove('hidden');
+            }
+
+            function closeEditOfferModal() {
+                document.getElementById('editOfferModal').classList.add('hidden');
+            }
+
+
             // JavaScript to open date picker on input click
-document.querySelectorAll('input[type="date"]').forEach(input => {
-    input.addEventListener('click', () => {
-        input.showPicker();
-    });
-});
+            document.querySelectorAll('input[type="date"]').forEach(input => {
+                input.addEventListener('click', () => {
+                    input.showPicker();
+                });
+            });
 
             document.addEventListener("DOMContentLoaded", () => {
                 const offerTypeSelect = document.getElementById("offerType");
@@ -235,10 +471,12 @@ document.querySelectorAll('input[type="date"]').forEach(input => {
             function closeAddOfferModal() {
                 document.getElementById('addOfferModal').classList.add('hidden');
             }
-            function openEditOfferModal(id, title, discountPercentage, type, isActive) {
-                // Set the values dynamically for the edit modal
-                // Show the modal
+
+
+            function closeEditOfferModal() {
+                document.getElementById('editOfferModal').classList.add('hidden');
             }
+
             function deleteOffer(offerId) {
                 if (confirm('Are you sure you want to delete this offer?')) {
                     fetch(`/admin/offer/delete/${offerId}`, { method: 'DELETE' })
@@ -250,6 +488,34 @@ document.querySelectorAll('input[type="date"]').forEach(input => {
                         .catch(err => console.error(err));
                 }
             }
+
+
+            function deleteOffer(offerId) {
+                Swal.fire({
+                    title: "Are you sure?",
+                    text: "You won't be able to undo this action!",
+                    icon: "warning",
+                    showCancelButton: true,
+                    confirmButtonColor: "#d33",
+                    cancelButtonColor: "#3085d6",
+                    confirmButtonText: "Yes, delete it!",
+                }).then((result) => {
+                    if (result.isConfirmed) {
+                        fetch(`/admin/offer/delete/${offerId}`, { method: "DELETE" })
+                            .then((res) => res.json())
+                            .then((data) => {
+                                Swal.fire("Deleted!", data.message, "success").then(() => {
+                                    location.reload(); // Reload the page after successful deletion
+                                });
+                            })
+                            .catch((err) => {
+                                console.error(err);
+                                Swal.fire("Error!", "An error occurred while deleting the offer.", "error");
+                            });
+                    }
+                });
+            }
+
 
         </script>
 </body>

@@ -25,6 +25,8 @@ router.post("/customers/unblock/:id", adminController.unblockCustomer);
 router.post("/customers/block/:id", adminController.blockCustomer);
 router.post("/customers/updateStatus/:id", adminController.updateStatus);
 
+
+// Admin  Category
 router.get("/category", adminAuthenticated, adminController.getCategories);
 router.post("/category/add", adminController.addCategory);
 router.post("/category/update/:id", adminController.updateCategory);
@@ -68,6 +70,9 @@ const adminOffer = require("../controllers/admin/adminOfferController");
 
 router.get("/offer", adminOffer.getAdminOffers);
 router.post("/offer/add", adminOffer.addOffer);
+router.post("/offer/update", adminOffer.updateOffer);
+router.delete("/offer/delete/:offerId", adminOffer.deleteOffer);
+
 
 
 module.exports = router;

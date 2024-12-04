@@ -41,7 +41,7 @@ exports.getProducts = [
       const totalProducts = await Product.countDocuments();
       const totalPages = Math.ceil(totalProducts / limit);
 
-      // console.log(products)
+      console.log(products)
       res.render("admin/adminProduct", {
         message: req.query.message || undefined,
         products,
