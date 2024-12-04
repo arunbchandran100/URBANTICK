@@ -374,17 +374,17 @@
       // Function to update variant details
       function updateVariantDetails(variant) {
 
-          // Update wishlist button
-          const wishlistButton = document.querySelector(".wishlist-button"); // Use a class or ID to target the wishlist link
-          if (wishlistButton) {
-            console.log(85898989898989);
-            console.log(variant.productId)
-            console.log(variant._id)
-            wishlistButton.setAttribute(
-              "onclick",
-              `addToWishlist('${variant.productId}', '${variant._id}')`
-            );
-          }
+        // Update wishlist button
+        const wishlistButton = document.querySelector(".wishlist-button"); // Use a class or ID to target the wishlist link
+        if (wishlistButton) {
+          console.log(85898989898989);
+          console.log(variant.productId)
+          console.log(variant._id)
+          wishlistButton.setAttribute(
+            "onclick",
+            `addToWishlist('${variant.productId}', '${variant._id}')`
+          );
+        }
 
         const buyNowButton = document.getElementById("buyNowButton");
         const addToCartButton = document.getElementById("div-for-addToCart");
@@ -411,7 +411,7 @@
               const productId = "<%= product._id %>"; // Pass dynamically from server
               const variantId = document.getElementById("color").value; // Selected variant ID
               const quantity = 1; // Default quantity for now, can add quantity selection
-  
+
               fetch("/cart/add", {
                 method: "POST",
                 headers: {
@@ -500,16 +500,15 @@
               quantity,
             }),
           })
-            .then((response) => {
-              if (response.ok) {
-                notyf.success("Item added to cart successfully!");
+            .then(response => response.json().then(data => ({ status: response.status, body: data })))
+            .then(({ status, body }) => {
+              if (status === 200) {
+                notyf.success(body.message);
               } else {
-                return response.json().then((data) => {
-                  throw new Error(data.message || "Failed to add to cart.");
-                });
+                throw new Error(body.message || "Failed to add to cart.");
               }
             })
-            .catch((error) => {
+            .catch(error => {
               console.error("Error adding to cart:", error.message);
               notyf.error(error.message);
             });

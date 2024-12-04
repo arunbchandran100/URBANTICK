@@ -94,12 +94,11 @@
                                                 <i class="fa-solid fa-trash text-red-500"></i>
                                             </button>
                                             <% if (item.variantDetails.stock> 0) { %>
-                        <button id="addToCartButton" 
-                                data-product-id="<%= item.productId %>" 
-                                data-variant-id="<%= item.variantDetails.color %>"
-                                class="px-6 py-3 bg-black text-white rounded-lg font-bold shadow-md hover:bg-gray-800">
-                            Add To Cart
-                        </button>
+                                                <button id="addToCartButton" data-product-id="<%= item.productId %>"
+                                                    data-variant-id="<%= item.variantDetails.color %>"
+                                                    class="px-6 py-3 bg-black text-white rounded-lg font-bold shadow-md hover:bg-gray-800">
+                                                    Add To Cart
+                                                </button>
                                                 <% } else { %>
                                                     <div
                                                         class="mt-2 font-semibold text-red-600 bg-red-100 border border-red-600 rounded-lg p-2">
@@ -194,39 +193,37 @@
 
 
 
-    document.querySelectorAll("#addToCartButton").forEach(button => {
-    button.addEventListener("click", function () {
-        const productId = button.getAttribute("data-product-id");
-        const variantId = button.getAttribute("data-variant-id");
-        const quantity = 1; // Default quantity for now, can add quantity selection
-        console.log(variantId +" 22");
+            document.querySelectorAll("#addToCartButton").forEach(button => {
+                button.addEventListener("click", function () {
+                    const productId = button.getAttribute("data-product-id");
+                    const variantId = button.getAttribute("data-variant-id");
+                    const quantity = 1; // Default quantity for now, can add quantity selection
 
-        fetch("/cart/add", {
-            method: "POST",
-            headers: {
-                "Content-Type": "application/json",
-            },
-            body: JSON.stringify({
-                productId,
-                variantId,
-                quantity,
-            }),
-        })
-        .then(response => {
-            if (response.ok) {
-                notyf.success("Item added to cart successfully!");
-            } else {
-                return response.json().then(data => {
-                    throw new Error(data.message || "Failed to add to cart.");
+                    fetch("/cart/add", {
+                        method: "POST",
+                        headers: {
+                            "Content-Type": "application/json",
+                        },
+                        body: JSON.stringify({
+                            productId,
+                            variantId,
+                            quantity,
+                        }),
+                    })
+                        .then(response => response.json().then(data => ({ status: response.status, body: data })))
+                        .then(({ status, body }) => {
+                            if (status === 200) {
+                                notyf.success(body.message);
+                            } else {
+                                throw new Error(body.message || "Failed to add to cart.");
+                            }
+                        })
+                        .catch(error => {
+                            console.error("Error adding to cart:", error.message);
+                            notyf.error(error.message);
+                        });
                 });
-            }
-        })
-        .catch(error => {
-            console.error("Error adding to cart:", error.message);
-            notyf.error(error.message);
-        });
-    });
-});
+            });
 
 
 
