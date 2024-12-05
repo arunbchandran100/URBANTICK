@@ -81,6 +81,9 @@ exports.getCart = async (req, res) => {
       .populate("productId")
       .populate("variantId");
 
+    let subtotal = 0;
+    let totalDiscount = 0;
+
     const formattedCartItems = cartItems.map((item) => {
       const product = item.productId;
       const discountPrice = item.variantId.discountPrice;
@@ -113,12 +116,12 @@ exports.getCart = async (req, res) => {
       const offerPercentage = bestOffer.discountPercentage || 0;
       const offerAmount = (discountPrice * offerPercentage) / 100;
       const afterOfferPrice = discountPrice - offerAmount;
-      const offerType = bestOffer.offerType || null;
-      const offerTitle = bestOffer.offerTitle || null;
 
-      // Check if a coupon is applied
-      const couponIsApplied = bestOffer.discountPercentage > 0;
+      subtotal += discountPrice * item.quantity;
+      totalDiscount += offerAmount * item.quantity;
 
+      // console.log(14141414 );
+      // console.log(bestOffer.title );
       return {
         _id: item._id,
         product,
@@ -127,19 +130,27 @@ exports.getCart = async (req, res) => {
         offerPercentage,
         offerAmount,
         afterOfferPrice: afterOfferPrice > 0 ? afterOfferPrice : 0,
-        offerType,
-        offerTitle,
-        couponIsApplied,
+        offerType: bestOffer.offerType || null,
+        offerTitle: bestOffer.title,
+        couponIsApplied: bestOffer.discountPercentage > 0,
       };
     });
 
     console.log(formattedCartItems);
-    res.render("user/cart", { cartItems: formattedCartItems });
+    const totalAfterDiscount = subtotal - totalDiscount;
+
+    res.render("user/cart", {
+      cartItems: formattedCartItems,
+      subtotal,
+      totalDiscount,
+      totalAfterDiscount,
+    });
   } catch (error) {
     console.error("Error fetching cart items:", error);
     res.status(500).send("Server Error");
   }
 };
+
 
 
 exports.deleteFromCart = async (req, res) => {
