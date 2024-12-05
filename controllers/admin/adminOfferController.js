@@ -39,13 +39,13 @@ exports.getAdminOffers = async (req, res) => {
             .skip((page - 1) * ITEMS_PER_PAGE)
             .limit(ITEMS_PER_PAGE);
 
-        console.log(22222222222);
-        console.log(offers);
+        // console.log(offers);
 
         // Fetch all products and categories for the dropdowns
         const products = await Product.find({}, "productName");
         const categories = await Category.find({}, "categoriesName");
-        //console.log(products);
+        // console.log(55226633);
+        // console.log(products);
         res.render("admin/adminOffer", {
             offers,
             products,
@@ -166,27 +166,20 @@ exports.addOffer = async (req, res) => {
 // POST: Update Offer
 exports.updateOffer = async (req, res) => {
     try {
-
-
         const offers = await Offer.find();
 
         // Get the current date
         let today = new Date();
-        today.setHours(0, 0, 0, 0); // Set time to midnight for accurate date comparison
+        today.setHours(0, 0, 0, 0);
 
-        // Loop through each offer and check if the end date is in the past
         offers.forEach(async (offer) => {
             const offerEndDate = new Date(offer.endDate);
             if (offerEndDate < today) {
-                // Set isActive to false if the end date is in the past
                 offer.isActive = false;
 
-                // Save the updated offer
                 await offer.save();
             }
         });
-
-
 
         const {
             offerId,
@@ -199,7 +192,6 @@ exports.updateOffer = async (req, res) => {
             isActive,
         } = req.body;
 
-        // Validate inputs
         if (
             !offerId ||
             !title ||
@@ -243,22 +235,21 @@ exports.updateOffer = async (req, res) => {
                 .json({ message: "End date cannot be in the past." });
         }
 
-        // Check if there is an active offer for the same product or category
+        // Check if there is an active offer for the same product or category, excluding the current offer
         const existingOffer = await Offer.findOne({
             isActive: true,
             $or: [
                 { applicableProduct: applicableTo },
                 { applicableCategory: applicableTo },
             ],
+            _id: { $ne: offerId },  
         });
 
         if (existingOffer) {
-            return res
-                .status(400)
-                .json({
-                    message:
-                        "There is already an active offer for this product or category.",
-                });
+            return res.status(400).json({
+                message:
+                    "There is already an active offer for this product or category.",
+            });
         }
 
         // Update the offer
@@ -281,7 +272,7 @@ exports.updateOffer = async (req, res) => {
             return res.status(404).json({ message: "Offer not found." });
         }
 
-        res.redirect("/admin/offer"); // Redirect to the offers page
+        res.redirect("/admin/offer");
     } catch (error) {
         console.error("Error updating offer:", error);
         res.status(500).json({ message: "Internal server error." });

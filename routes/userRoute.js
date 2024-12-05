@@ -114,8 +114,8 @@ router.delete('/wishlist/remove/:wishlistId', wishlistController.removeFromWishl
 const cartController = require("../controllers/user/cartController");
 
 
-router.post("/cart/add", cartController.addToCart);
 router.get("/shop/cart", userAuthenticated, cartController.getCart);
+router.post("/cart/add", cartController.addToCart);
 router.delete("/cart/:id", cartController.deleteFromCart);
 router.put("/cart/:id", cartController.updateCartQuantity);
 // router.get("/variant/:cartItemId", cartController.getVariantStock);

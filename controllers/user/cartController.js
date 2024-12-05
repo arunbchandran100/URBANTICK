@@ -1,6 +1,7 @@
 const Variant = require("../../models/variantSchema");
 const mongoose = require("mongoose");
 const Cart = require("../../models/cartModel");
+const Offer = require("../../models/offerModel");
 
 exports.addToCart = async (req, res) => {
   try {
@@ -49,28 +50,93 @@ exports.addToCart = async (req, res) => {
   }
 };
 
+// exports.getCart = async (req, res) => {
+//   try {
+//     const userId = req.session.user._id;
+
+//     const cartItems = await Cart.find({ userId })
+//       .populate("productId")
+//       .populate("variantId");
+
+//     const formattedCartItems = cartItems.map((item) => ({
+//       _id: item._id,
+//       product: item.productId,
+//       variant: item.variantId,
+//       quantity: item.variantId && item.variantId.stock > 0 ? item.quantity : 0,
+//     }));
+
+//     res.render("user/cart", { cartItems: formattedCartItems });
+//   } catch (error) {
+//     console.error("Error fetching cart items:", error);
+//     res.status(500).send("Server Error");
+//   }
+// };
 
 exports.getCart = async (req, res) => {
   try {
     const userId = req.session.user._id;
 
+    const offers = await Offer.find({ isActive: true });
     const cartItems = await Cart.find({ userId })
       .populate("productId")
       .populate("variantId");
 
-    const formattedCartItems = cartItems.map((item) => ({
-      _id: item._id,
-      product: item.productId,
-      variant: item.variantId,
-      quantity: item.variantId && item.variantId.stock > 0 ? item.quantity : 0,
-    }));
+    const formattedCartItems = cartItems.map((item) => {
+      const product = item.productId;
+      const discountPrice = item.variantId.discountPrice;
+      const variant = item.variantId;
 
+      let applicableOffers = [];
+      let bestOffer = { discountPercentage: 0 };
+
+      applicableOffers = offers.filter(
+        (offer) =>
+          offer.offerType === "Product" &&
+          String(offer.applicableProduct) === String(product._id)
+      );
+
+      if (product.categoriesId) {
+        const categoryOffers = offers.filter(
+          (offer) =>
+            offer.offerType === "Category" &&
+            String(offer.applicableCategory) === String(product.categoriesId)
+        );
+        applicableOffers = applicableOffers.concat(categoryOffers);
+      }
+
+      if (applicableOffers.length > 0) {
+        bestOffer = applicableOffers.reduce((max, current) =>
+          current.discountPercentage > max.discountPercentage ? current : max
+        );
+      }
+
+      const offerPercentage = bestOffer.discountPercentage || 0;
+      const offerAmount = (discountPrice * offerPercentage) / 100;
+      const afterOfferPrice = discountPrice - offerAmount;
+      const offerType = bestOffer.offerType || null;
+      const offerTitle = bestOffer.title || null;
+
+      return {
+        _id: item._id,
+        product,
+        variant,
+        quantity: variant && variant.stock > 0 ? item.quantity : 0,
+        offerPercentage,
+        offerAmount,
+        afterOfferPrice: afterOfferPrice > 0 ? afterOfferPrice : 0,
+        offerType,
+        offerTitle,
+      };
+    });
+
+    console.log(formattedCartItems);
     res.render("user/cart", { cartItems: formattedCartItems });
   } catch (error) {
     console.error("Error fetching cart items:", error);
     res.status(500).send("Server Error");
   }
 };
+
 
 exports.deleteFromCart = async (req, res) => {
   try {
