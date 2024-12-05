@@ -114,7 +114,10 @@ exports.getCart = async (req, res) => {
       const offerAmount = (discountPrice * offerPercentage) / 100;
       const afterOfferPrice = discountPrice - offerAmount;
       const offerType = bestOffer.offerType || null;
-      const offerTitle = bestOffer.title || null;
+      const offerTitle = bestOffer.offerTitle || null;
+
+      // Check if a coupon is applied
+      const couponIsApplied = bestOffer.discountPercentage > 0;
 
       return {
         _id: item._id,
@@ -126,6 +129,7 @@ exports.getCart = async (req, res) => {
         afterOfferPrice: afterOfferPrice > 0 ? afterOfferPrice : 0,
         offerType,
         offerTitle,
+        couponIsApplied,
       };
     });
 
