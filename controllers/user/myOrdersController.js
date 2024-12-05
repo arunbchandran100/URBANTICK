@@ -29,7 +29,7 @@ exports.getMyOrders = async (req, res) => {
         day: "numeric",
         hour: "2-digit",
         minute: "2-digit",
-        hour12: true, 
+        hour12: true,
       }),
       totalPrice: order.totalPrice,
       paymentMethod: order.paymentMethod,
@@ -41,9 +41,9 @@ exports.getMyOrders = async (req, res) => {
         discountPrice: item.variant.discountPrice,
         quantity: item.quantity,
         orderStatus: item.orderStatus,
+        itemTotalPrice: item.itemTotalPrice,
       })),
     }));
-
 
     res.render("user/userMyOrders", {
       orders: ordersWithDetails,
@@ -79,7 +79,7 @@ exports.getOrderDetails = async (req, res) => {
         day: "numeric",
         hour: "2-digit",
         minute: "2-digit",
-        hour12: true, 
+        hour12: true,
       }),
       totalPrice: order.totalPrice,
       paymentMethod: order.paymentMethod,
@@ -93,6 +93,11 @@ exports.getOrderDetails = async (req, res) => {
         discountPrice: item.variant.discountPrice,
         quantity: item.quantity,
         orderStatus: item.orderStatus,
+        offerPercentage: item.offerPercentage,
+        offerAmount: item.offerAmount,
+        priceAfterOffer: item.priceAfterOffer,
+        priceWithoutOffer: item.priceWithoutOffer,
+        itemTotalPrice: item.itemTotalPrice,
       })),
       shippingAddress: {
         name: order.shippingAddress.Name,

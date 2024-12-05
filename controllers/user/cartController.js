@@ -136,7 +136,7 @@ exports.getCart = async (req, res) => {
       };
     });
 
-    console.log(formattedCartItems);
+    //console.log(formattedCartItems);
     const totalAfterDiscount = subtotal - totalDiscount;
 
     res.render("user/cart", {

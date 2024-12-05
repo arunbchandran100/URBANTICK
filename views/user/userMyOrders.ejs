@@ -115,11 +115,10 @@
 
                                 <!-- 4th Section: Price -->
                                 <div class="flex-1">
-                                    <p
-                                        class="text-lg font-medium text-gray-600">
-                                        Subtotal: ₹<%=
-                                        (item.discountPrice*item.quantity).toLocaleString() %>
-                                    </p>
+                             <p class="text-lg font-medium text-gray-600">
+    Subtotal: ₹<%= (item.itemTotalPrice || 0).toLocaleString() %>
+</p>
+ 
                                 </div>
 
                                 <!-- 5th Section: Status -->

@@ -1,190 +1,174 @@
 <!DOCTYPE html>
 <html lang="en">
 
-    <head>
-        <meta charset="UTF-8">
-        <meta name="viewport" content="width=device-width, initial-scale=1.0">
-        <title>Document</title>
-        <!-- Tailwind CSS -->
-        <script src="https://cdn.tailwindcss.com"></script>
-        <script
-            src="https://cdn.jsdelivr.net/npm/axios/dist/axios.min.js"></script>
-        <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
-        <!-- Material Icons -->
-        <link href="https://fonts.googleapis.com/icon?family=Material+Icons"
-            rel="stylesheet" />
-        <link rel="stylesheet" href="style.css" />
-        <link rel="stylesheet"
-            href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.6.0/css/all.min.css"
-            integrity="sha512-Kc323vGBEqzTmouAECnVceyQqyqdsSiqLQISBL29aUW4U/M7pSPA/gEUZQqv1cwx4OnYxTxve5UMg5GT6L4JJg=="
-            crossorigin="anonymous" referrerpolicy="no-referrer" />
-        <link rel="stylesheet"
-            href="https://cdn.jsdelivr.net/npm/sweetalert2@11.1.9/dist/sweetalert2.min.css" />
-        <link rel="stylesheet"
-            href="https://cdnjs.cloudflare.com/ajax/libs/toastr.js/latest/toastr.min.css" />
-        <script
-            src="https://cdn.jsdelivr.net/npm/sweetalert2@11.1.9/dist/sweetalert2.all.min.js"></script>
-        <script
-            src="https://cdnjs.cloudflare.com/ajax/libs/toastr.js/latest/toastr.min.js"></script>
-        <link href="https://cdn.jsdelivr.net/npm/notyf@3/notyf.min.css"
-            rel="stylesheet" />
-        <script
-            src="https://cdn.jsdelivr.net/npm/notyf@3/notyf.min.js"></script>
-    </head>
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+    <!-- Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://cdn.jsdelivr.net/npm/axios/dist/axios.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+    <!-- Material Icons -->
+    <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet" />
+    <link rel="stylesheet" href="style.css" />
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.6.0/css/all.min.css"
+        integrity="sha512-Kc323vGBEqzTmouAECnVceyQqyqdsSiqLQISBL29aUW4U/M7pSPA/gEUZQqv1cwx4OnYxTxve5UMg5GT6L4JJg=="
+        crossorigin="anonymous" referrerpolicy="no-referrer" />
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/sweetalert2@11.1.9/dist/sweetalert2.min.css" />
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/toastr.js/latest/toastr.min.css" />
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11.1.9/dist/sweetalert2.all.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/toastr.js/latest/toastr.min.js"></script>
+    <link href="https://cdn.jsdelivr.net/npm/notyf@3/notyf.min.css" rel="stylesheet" />
+    <script src="https://cdn.jsdelivr.net/npm/notyf@3/notyf.min.js"></script>
+</head>
 </head>
 
 <body class="bg-gray-50">
     <%- include("partials/navBar") %>
-    <div class="mt-16"></div>
+        <div class="mt-16"></div>
 
-    <div class="flex min-h-screen bg-stone-100">
-        <!-- Sidebar -->
-        <div class="fixed bg-stone-100">
-            <%- include("partials/userProfileSideBar") %>
-        </div>
-
-        <!-- Main Content -->
-        <div class="flex-1 ml-64 bg-white p-6 shadow-md">
-            <h1 class="text-2xl font-semibold text-gray-800 mb-6">Order
-                Details</h1>
-
-            <!-- Section 1: Order Information -->
-            <div
-                class="mb-6 border border-gray-300 rounded-lg bg-white p-6 shadow-md">
-                <h2 class="text-xl font-semibold text-gray-800 mb-4">Order
-                    ID</h2>
-                <p class="text-sm font-semibold text-gray-600">Order ID: <span
-                        class="text-gray-800">
-                        <%= order._id %>
-                    </span></p>
-                <p class="text-sm text-gray-500">Order Date: <%= order.orderDate
-                    %>
-                </p>
-                <p class="text-sm text-gray-500">Payment Method: <%=
-                    order.paymentMethod %>
-                </p>
-                <p class="text-lg font-semibold text-gray-800 mt-4">Total Price:
-                    ₹<%= order.totalPrice.toLocaleString() %>
-                </p>
+        <div class="flex min-h-screen bg-stone-100">
+            <!-- Sidebar -->
+            <div class="fixed bg-stone-100">
+                <%- include("partials/userProfileSideBar") %>
             </div>
 
-            <!-- Section 2: Shipping Address -->
-            <div
-                class="mb-6 border border-gray-300 rounded-lg bg-white p-6 shadow-md">
-                <h2 class="text-xl font-semibold text-gray-800 mb-4">Shipping
-                    Address</h2>
-                <p class="text-sm text-gray-600">
-                    <%= order.shippingAddress.name %>
-                </p>
-                <p class="text-sm text-gray-500">
-                    <%= order.shippingAddress.street %>, <%=
-                    order.shippingAddress.city %>, <%=
-                    order.shippingAddress.state %> - <%=
-                    order.shippingAddress.zipCode %>
-                </p>
-                <p class="text-sm text-gray-500">Phone: <%=
-                    order.shippingAddress.phone %>
-                </p>
-            </div>
+            <!-- Main Content -->
+            <div class="flex-1 ml-64 bg-white p-6 shadow-md">
+                <h1 class="text-2xl font-semibold text-gray-800 mb-6">Order Details</h1>
+                <!-- Section 1: Order Information -->
+                <div class="mb-6 border border-gray-300 rounded-lg bg-white p-6 shadow-md">
+                    <h2 class="text-xl font-semibold text-gray-800 mb-4">Order ID</h2>
+                    <p class="text-sm font-semibold text-gray-600">Order ID: <span class="text-gray-800">
+                            <%= order._id %>
+                        </span></p>
+                    <p class="text-sm text-gray-500">Order Date: <%= order.orderDate %>
+                    </p>
+                    <p class="text-sm text-gray-500">Payment Method: <%= order.paymentMethod %>
+                    </p>
 
-            <!-- Section 3: Items -->
-            <div>
-                <h2 class="text-xl font-semibold text-gray-800 mb-4">Items</h2>
-
-                <% order.items.forEach(item=> { %>
-                <div
-                    class="mb-6 border border-gray-300 rounded-lg bg-white p-4 shadow-md">
-                    <div class="flex items-center">
-
-                        <!-- 1st Section: Product Image -->
-                        <div class="w-40 h-40">
-                            <img src="<%= item.imageUrl %>"
-                                alt="<%= item.productName %>"
-                                class="w-full h-full object-cover rounded-md border border-gray-200">
-                        </div>
-
-                        <!-- 2nd Section: Product Brand & Name -->
-                        <div class="ml-16     flex-1">
-                            <p class="text-lg font-semibold text-gray-800">
-                                <%= item.brand + " "+ item.productName %> <span
-                                    class="text-gray-500 font-medium">
-
-                                </span>
-                            </p>
-                        </div>
-
-                        <!-- 3rd Section: Quantity -->
-                        <div class="ml-4 flex-1 ">
-                            <p class="text-lg font-medium text-gray-600">Qty:
-                                <span class="text-gray-800">
-                                    <%= item.quantity %>
-                                </span></p>
-                        </div>
-
-                        <!-- 4th Section: Price -->
-                        <div class="ml-4 flex-1 ">
-                            <p class="text-lg font-medium text-gray-600">₹<%=
-                                item.discountPrice.toLocaleString() %>
-                            </p>
-                        </div>
-
-                        <!-- 5th Section: Status -->
-                        <div class="ml-4 flex-1 ">
-                            <div>
-                                <% if (item.orderStatus==='Cancelled' ) { %>
-                                <span
-                                    class="bg-red-100 text-red-600 text-sm px-2 py-1 rounded-md">
-                                    Order <%= item.orderStatus %>
-                                </span>
-                                <% } else { %>
-                                <span
-                                    class="bg-green-100 text-green-600 text-sm px-2 py-1 rounded-md">
-                                    Order Status: <%= item.orderStatus %>
-                                </span>
-                                <% } %>
-                            </div>
-                            <div>
-
-                            </div>
-                            <!-- 6th Section: Cancel Button -->
-                            <% if (item.orderStatus==='Processing'  ) { %>
-                            <div class="mt-6 ml-10">
-                                <button
-                                    class="cancel-btn text-sm px-4 py-2 bg-red-500 hover:bg-red-600 text-white rounded-md"
-                                    data-id="<%= item.orderItemId %>">
-                                    Cancel
-                                </button>
-                            </div>
-                            <% } %>
-                        </div>
-
+                    <!-- Total Offer Redemption -->
+                    <div class="mt-4">
+                        <h3 class="text-lg font-semibold text-gray-800">Price Breakdown</h3>
+                        <p class="text-sm text-gray-500">Subtotal: ₹<%= order.items.reduce((acc, item)=> acc +
+                                item.priceWithoutOffer * item.quantity, 0).toLocaleString() %></p>
+                        <p class="text-sm text-gray-500">Total Offer Redemption: -₹<%= order.items.reduce((acc, item)=>
+                                acc + item.offerAmount * item.quantity, 0).toLocaleString() %></p>
+                        <p class="text-lg font-semibold text-gray-800 mt-2">Total Price: ₹<%=
+                                order.totalPrice.toLocaleString() %>
+                        </p>
                     </div>
                 </div>
-                <% }) %>
+
+
+                <!-- Section 2: Shipping Address -->
+                <div class="mb-6 border border-gray-300 rounded-lg bg-white p-6 shadow-md">
+                    <h2 class="text-xl font-semibold text-gray-800 mb-4">Shipping Address</h2>
+                    <p class="text-sm text-gray-600">
+                        <%= order.shippingAddress.name %>
+                    </p>
+                    <p class="text-sm text-gray-500">
+                        <%= order.shippingAddress.street %>, <%= order.shippingAddress.city %>, <%=
+                                    order.shippingAddress.state %> - <%= order.shippingAddress.zipCode %>
+                    </p>
+                    <p class="text-sm text-gray-500">Phone: <%= order.shippingAddress.phone %>
+                    </p>
+                </div>
+
+                <!-- Section 3: Items -->
+                <div>
+                    <h2 class="text-xl font-semibold text-gray-800 mb-4">Items</h2>
+
+                    <% order.items.forEach(item=> { %>
+                        <div class="mb-6 border border-gray-300 rounded-lg bg-white p-4 shadow-md">
+                            <div class="flex items-center">
+
+                                <!-- 1st Section: Product Image -->
+                                <div class="w-40 h-40">
+                                    <img src="<%= item.imageUrl %>" alt="<%= item.productName %>"
+                                        class="w-full h-full object-cover rounded-md border border-gray-200">
+                                </div>
+
+                                <!-- 2nd Section: Product Brand & Name -->
+                                <div class="ml-16 flex-1">
+                                    <p class="text-lg font-semibold text-gray-800">
+                                        <%= item.brand + " " + item.productName %> <span
+                                                class="text-gray-500 font-medium"></span>
+                                    </p>
+                                </div>
+
+                                <!-- 3rd Section: Quantity -->
+                                <div class="ml-4 flex-1">
+                                    <p class="text-lg font-medium text-gray-600">Qty: <span class="text-gray-800">
+                                            <%= item.quantity %>
+                                        </span></p>
+                                </div>
+
+                                <!-- 4th Section: Price -->
+                                <div class="ml-4 flex-1">
+                                    <p class="text-lg font-medium text-gray-600">₹<%=
+                                            item.itemTotalPrice.toLocaleString() %>
+                                    </p>
+                                    <% if (item.offerPercentage) { %>
+                                        <p class="text-sm text-green-600">Offer: <%= item.offerPercentage %>% Off</p>
+                                        <p class="text-sm text-green-600">Discount: ₹<%= (item.offerAmount *
+                                                item.quantity).toLocaleString() %>
+                                        </p>
+
+                                        <% } %>
+                                </div>
+
+                                <!-- 5th Section: Status -->
+                                <div class="ml-4 flex-1">
+                                    <div>
+                                        <% if (item.orderStatus==='Cancelled' ) { %>
+                                            <span class="bg-red-100 text-red-600 text-sm px-2 py-1 rounded-md">Order <%=
+                                                    item.orderStatus %></span>
+                                            <% } else { %>
+                                                <span
+                                                    class="bg-green-100 text-green-600 text-sm px-2 py-1 rounded-md">Order
+                                                    Status: <%= item.orderStatus %></span>
+                                                <% } %>
+                                    </div>
+                                    <div></div>
+                                    <!-- 6th Section: Cancel Button -->
+                                    <% if (item.orderStatus==='Processing' ) { %>
+                                        <div class="mt-6 ml-10">
+                                            <button
+                                                class="cancel-btn text-sm px-4 py-2 bg-red-500 hover:bg-red-600 text-white rounded-md"
+                                                data-id="<%= item.orderItemId %>">
+                                                Cancel
+                                            </button>
+                                        </div>
+                                        <% } %>
+                                </div>
+
+                            </div>
+                        </div>
+                        <% }) %>
+                </div>
+
             </div>
 
-        </div>
-
-        <!-- Return Reason Modal -->
-        <div id="returnModal"
-            class="hidden fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center">
-            <div class="bg-white p-6 rounded-md shadow-md w-96">
-                <h2 class="text-lg font-semibold text-gray-800 mb-4">Return
-                    Order</h2>
-                <textarea id="returnReason"
-                    class="w-full border border-gray-300 rounded-md p-2 text-sm"
-                    rows="4"
-                    placeholder="Enter your return reason"></textarea>
-                <div class="flex justify-end gap-4 mt-4">
-                    <button id="cancelReturn"
-                        class="px-4 py-2 bg-gray-200 rounded-md text-gray-600 hover:bg-gray-300">Cancel</button>
-                    <button id="submitReturn"
-                        class="px-4 py-2 bg-blue-500 text-white rounded-md hover:bg-blue-600">Submit</button>
+            <!-- ----------------------------------------- -->
+            <!-- Return Reason Modal -->
+            <div id="returnModal" class="hidden fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center">
+                <div class="bg-white p-6 rounded-md shadow-md w-96">
+                    <h2 class="text-lg font-semibold text-gray-800 mb-4">Return
+                        Order</h2>
+                    <textarea id="returnReason" class="w-full border border-gray-300 rounded-md p-2 text-sm" rows="4"
+                        placeholder="Enter your return reason"></textarea>
+                    <div class="flex justify-end gap-4 mt-4">
+                        <button id="cancelReturn"
+                            class="px-4 py-2 bg-gray-200 rounded-md text-gray-600 hover:bg-gray-300">Cancel</button>
+                        <button id="submitReturn"
+                            class="px-4 py-2 bg-blue-500 text-white rounded-md hover:bg-blue-600">Submit</button>
+                    </div>
                 </div>
             </div>
-        </div>
 
-        <script>
+            <script>
 
                 const notyf = new Notyf({
                     duration: 3000, // Notification duration in milliseconds
@@ -194,51 +178,51 @@
                     },
                 });
 
-// Cancel Order Item
-document.querySelectorAll('.cancel-btn').forEach((button) => {
-    button.addEventListener('click', async () => {
-        const orderItemId = button.dataset.id;
+                // Cancel Order Item
+                document.querySelectorAll('.cancel-btn').forEach((button) => {
+                    button.addEventListener('click', async () => {
+                        const orderItemId = button.dataset.id;
 
-        // Show SweetAlert confirmation dialog
-        const result = await Swal.fire({
-            title: 'Are you sure?',
-            text: "You won't be able to revert this!",
-            icon: 'warning',
-            showCancelButton: true,
-            confirmButtonColor: '#3085d6',
-            cancelButtonColor: '#d33',
-            confirmButtonText: 'Yes, cancel it!'
-        });
+                        // Show SweetAlert confirmation dialog
+                        const result = await Swal.fire({
+                            title: 'Are you sure?',
+                            text: "You won't be able to revert this!",
+                            icon: 'warning',
+                            showCancelButton: true,
+                            confirmButtonColor: '#3085d6',
+                            cancelButtonColor: '#d33',
+                            confirmButtonText: 'Yes, cancel it!'
+                        });
 
-        if (result.isConfirmed) {
-            try {
-                // Make the API call to cancel the order
-                const response = await axios.post('/order/cancel', { orderItemId });
+                        if (result.isConfirmed) {
+                            try {
+                                // Make the API call to cancel the order
+                                const response = await axios.post('/order/cancel', { orderItemId });
 
-                // Use SweetAlert to show a success popup
-                Swal.fire({
-                    icon: 'success',
-                    title: 'Cancelled',
-                    text: response.data.message || 'Order cancelled successfully!',
-                    confirmButtonText: 'OK',
-                }).then((result) => {
-                    if (result.isConfirmed) {
-                        // Reload the page when the user clicks OK
-                        location.reload();
-                    }
+                                // Use SweetAlert to show a success popup
+                                Swal.fire({
+                                    icon: 'success',
+                                    title: 'Cancelled',
+                                    text: response.data.message || 'Order cancelled successfully!',
+                                    confirmButtonText: 'OK',
+                                }).then((result) => {
+                                    if (result.isConfirmed) {
+                                        // Reload the page when the user clicks OK
+                                        location.reload();
+                                    }
+                                });
+                            } catch (error) {
+                                // Use SweetAlert to show an error popup
+                                Swal.fire({
+                                    icon: 'error',
+                                    title: 'Error',
+                                    text: error.response?.data?.message || 'Failed to cancel order.',
+                                    confirmButtonText: 'OK',
+                                });
+                            }
+                        }
+                    });
                 });
-            } catch (error) {
-                // Use SweetAlert to show an error popup
-                Swal.fire({
-                    icon: 'error',
-                    title: 'Error',
-                    text: error.response?.data?.message || 'Failed to cancel order.',
-                    confirmButtonText: 'OK',
-                });
-            }
-        }
-    });
-});
 
 
                 // Return Order Item
@@ -275,6 +259,6 @@ document.querySelectorAll('.cancel-btn').forEach((button) => {
                 });
             </script>
 
-    </body>
+</body>
 
 </html>
