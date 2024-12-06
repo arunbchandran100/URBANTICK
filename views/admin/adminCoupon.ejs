@@ -65,6 +65,8 @@
                                     '<%= coupon.couponType %>',
                                     '<%= coupon.couponValue %>',
                                     '<%= coupon.minimumPurchaseAmount %>',
+                                    '<%= coupon.startDate.toISOString().split('T')[0] %>',
+'<%= coupon.endDate.toISOString().split('T')[0] %>',
                                     '<%= coupon.perUserUsageLimit %>',
                                     '<%= coupon.isActive %>'
                                 )">
@@ -223,13 +225,13 @@
         </main>
 
         <script>
-            function openEditCouponModal(id, code, type, value, minPurchase, startDate, endDate,perUserUsage, isActive) {
+            function openEditCouponModal(id, code, type, value, minPurchase, startDate, endDate, perUserUsage, isActive) {
                 document.getElementById('editCouponId').value = id;
                 document.getElementById('editCouponCode').value = code;
                 document.getElementById('editCouponType').value = type;
                 document.getElementById('editCouponValue').value = value;
                 document.getElementById('editMinimumPurchase').value = minPurchase;
-                                document.getElementById('editStartDate').value = startDate;
+                document.getElementById('editStartDate').value = startDate;
                 document.getElementById('editEndDate').value = endDate;
                 document.getElementById('editPerUserUsageLimit').value = perUserUsage;
                 document.getElementById('editIsActive').checked = isActive === 'true';
