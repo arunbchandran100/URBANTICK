@@ -8,25 +8,20 @@ const Offer = require("../../models/offerModel");
 
 exports.getAdminOffers = async (req, res) => {
     try {
-
+        // For Setting the expired offer to FALSE
         let offers = await Offer.find();
 
-        // Get the current date
         let today = new Date();
-        today.setHours(0, 0, 0, 0); // Set time to midnight for accurate date comparison
+        today.setHours(0, 0, 0, 0);
 
-        // Loop through each offer and check if the end date is in the past
         offers.forEach(async (offer) => {
             const offerEndDate = new Date(offer.endDate);
             if (offerEndDate < today) {
-                // Set isActive to false if the end date is in the past
                 offer.isActive = false;
 
-                // Save the updated offer
                 await offer.save();
             }
         });
-
 
         const ITEMS_PER_PAGE = 5; // Define how many offers to display per page
         const page = parseInt(req.query.page, 10) || 1;
@@ -166,9 +161,9 @@ exports.addOffer = async (req, res) => {
 // POST: Update Offer
 exports.updateOffer = async (req, res) => {
     try {
+        // For Setting the expired offer to FALSE
         const offers = await Offer.find();
 
-        // Get the current date
         let today = new Date();
         today.setHours(0, 0, 0, 0);
 
@@ -242,7 +237,7 @@ exports.updateOffer = async (req, res) => {
                 { applicableProduct: applicableTo },
                 { applicableCategory: applicableTo },
             ],
-            _id: { $ne: offerId },  
+            _id: { $ne: offerId },
         });
 
         if (existingOffer) {

@@ -50,33 +50,27 @@ exports.addToCart = async (req, res) => {
   }
 };
 
-// exports.getCart = async (req, res) => {
-//   try {
-//     const userId = req.session.user._id;
-
-//     const cartItems = await Cart.find({ userId })
-//       .populate("productId")
-//       .populate("variantId");
-
-//     const formattedCartItems = cartItems.map((item) => ({
-//       _id: item._id,
-//       product: item.productId,
-//       variant: item.variantId,
-//       quantity: item.variantId && item.variantId.stock > 0 ? item.quantity : 0,
-//     }));
-
-//     res.render("user/cart", { cartItems: formattedCartItems });
-//   } catch (error) {
-//     console.error("Error fetching cart items:", error);
-//     res.status(500).send("Server Error");
-//   }
-// };
 
 exports.getCart = async (req, res) => {
   try {
+    // For Setting the expired offer to FALSE
+    let offers = await Offer.find();
+
+    let today = new Date();
+    today.setHours(0, 0, 0, 0);
+
+    offers.forEach(async (offer) => {
+      const offerEndDate = new Date(offer.endDate);
+      if (offerEndDate < today) {
+        offer.isActive = false;
+
+        await offer.save();
+      }
+    });
+
     const userId = req.session.user._id;
 
-    const offers = await Offer.find({ isActive: true });
+    offers = await Offer.find({ isActive: true });
     const cartItems = await Cart.find({ userId })
       .populate("productId")
       .populate("variantId");

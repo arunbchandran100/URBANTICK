@@ -156,45 +156,50 @@
                   <% } %>
                     </p>
             </div>
+            <% if (offer) { %>
+              <p>Applicable Offer: <%= offer.title %>
+              </p>
+              <p><%= offer.discountPercentage %>% off!</p>
+              <% } %>
 
-            <!-- Product Details -->
-            <div class="mt-6">
-              <h2 class="text-lg font-bold text-gray-800">Product Details</h2>
-              <ul class="text-gray-600 mt-4 space-y-2">
-                <li>
-                  Gender:
-                  <span class="font-semibold text-gray-800">
-                    <%= product.gender %>
-                  </span>
-                </li>
-                <li>
-                  Brand:
-                  <span class="font-semibold text-gray-800">
-                    <%= product.brand %>
-                  </span>
-                </li>
-              </ul>
-            </div>
+                <!-- Product Details -->
+                <div class="mt-6">
+                  <h2 class="text-lg font-bold text-gray-800">Product Details</h2>
+                  <ul class="text-gray-600 mt-4 space-y-2">
+                    <li>
+                      Gender:
+                      <span class="font-semibold text-gray-800">
+                        <%= product.gender %>
+                      </span>
+                    </li>
+                    <li>
+                      Brand:
+                      <span class="font-semibold text-gray-800">
+                        <%= product.brand %>
+                      </span>
+                    </li>
+                  </ul>
+                </div>
 
-            <!-- Select Color -->
-            <div class="mt-6">
-              <label for="color" class="block font-medium text-gray-700">Select
-                Color</label>
-              <select id="color" class="mt-2 px-4 py-2 border rounded-lg shadow-sm">
-                <% product.variants.forEach(variant=> { %>
-                  <option value="<%= variant.color %>">
-                    <%= variant.color || 'N/A' %>
-                  </option>
-                  <% }) %>
-              </select>
-            </div>
+                <!-- Select Color -->
+                <div class="mt-6">
+                  <label for="color" class="block font-medium text-gray-700">Select
+                    Color</label>
+                  <select id="color" class="mt-2 px-4 py-2 border rounded-lg shadow-sm">
+                    <% product.variants.forEach(variant=> { %>
+                      <option value="<%= variant.color %>">
+                        <%= variant.color || 'N/A' %>
+                      </option>
+                      <% }) %>
+                  </select>
+                </div>
 
-            <div id="cartMessage" class="alert" style="display: none"></div>
-            <!-- Add a data attribute to an element (hidden or visible) -->
-            <div id="product-details" data-product-id="<%= product._id %>"></div>
+                <div id="cartMessage" class="alert" style="display: none"></div>
+                <!-- Add a data attribute to an element (hidden or visible) -->
+                <div id="product-details" data-product-id="<%= product._id %>"></div>
 
-            <!-- Action Buttons -->
-            <!-- <div class="mt-8 flex space-x-4">
+                <!-- Action Buttons -->
+                <!-- <div class="mt-8 flex space-x-4">
               <button class="px-6 py-3 bg-black text-white rounded-lg font-bold shadow-md hover:bg-gray-800">
                 Buy Now
               </button>
@@ -202,34 +207,34 @@
                 class="px-6 py-3 bg-gray-200 rounded-lg font-bold shadow-md hover:bg-gray-300">
                 Add To Cart
               </button> -->
-            <!-- ********************************* -->
+                <!-- ********************************* -->
 
-            <% if (product.variants[0].stock==0) { %>
-              <div class="mt-8 flex space-x-4" id="div-for-addToCart">
+                <% if (product.variants[0].stock==0) { %>
+                  <div class="mt-8 flex space-x-4" id="div-for-addToCart">
 
-              </div>
+                  </div>
 
-              <% } else { %>
-                <!-- Action Buttons  -->
-                <div class="mt-8 flex space-x-4" id="div-for-addToCart">
-                  <!-- <button id="buyNowButton"
+                  <% } else { %>
+                    <!-- Action Buttons  -->
+                    <div class="mt-8 flex space-x-4" id="div-for-addToCart">
+                      <!-- <button id="buyNowButton"
                     class="px-6 py-3 bg-black text-white rounded-lg font-bold shadow-md hover:bg-gray-800">
                     Buy Now
                   </button> -->
-                  <!-- <button id="addToCartButton"
+                      <!-- <button id="addToCartButton"
                     class="px-6 py-3 bg-gray-200 rounded-lg font-bold shadow-md hover:bg-gray-300">
                     Add To Cart
                   </button> -->
-                  <button id="addToCartButton"
-                    class="px-6 py-3 bg-black text-white rounded-lg font-bold shadow-md hover:bg-gray-800">
-                    Add To Cart
-                  </button>
+                      <button id="addToCartButton"
+                        class="px-6 py-3 bg-black text-white rounded-lg font-bold shadow-md hover:bg-gray-800">
+                        Add To Cart
+                      </button>
 
 
-                  <% } %>
+                      <% } %>
 
-                    <!-- ***************************** -->
-                </div>
+                        <!-- ***************************** -->
+                    </div>
           </div>
         </div>
       </div>

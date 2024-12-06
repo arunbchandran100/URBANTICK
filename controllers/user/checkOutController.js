@@ -8,12 +8,26 @@ const { ObjectId } = require("mongoose").Types;
 
 exports.getCheckout = async (req, res) => {
   try {
+    // For Setting the expired offer to FALSE
+    let offers = await Offer.find();
+
+    let today = new Date();
+    today.setHours(0, 0, 0, 0);
+
+    offers.forEach(async (offer) => {
+      const offerEndDate = new Date(offer.endDate);
+      if (offerEndDate < today) {
+        offer.isActive = false;
+
+        await offer.save();
+      }
+    });
+
     const userId = req.session.user._id;
     const userAddresses = await Address.find({ userId });
     // console.log(userAddresses);
 
-
-    const offers = await Offer.find({ isActive: true });
+    offers = await Offer.find({ isActive: true });
     const cartItems = await Cart.find({ userId })
       .populate("productId")
       .populate("variantId");
@@ -76,8 +90,6 @@ exports.getCheckout = async (req, res) => {
     console.log(formattedCartItems);
     const totalAfterDiscount = subtotal - totalDiscount;
 
-
-
     res.render("user/checkOutpage", {
       userAddresses,
       cartItems: formattedCartItems,
@@ -93,93 +105,23 @@ exports.getCheckout = async (req, res) => {
 
 
 
-// exports.placeOrder = async (req, res) => {
-//   try {
-//     const userId = req.session.user._id;
-//     const { selectedAddress, paymentMethod } = req.body;
-
-//     if (!selectedAddress || !paymentMethod) {
-//       return res.status(400).json({ error: "All fields are required" });
-//     }
-
-//     const shippingAddress = await Address.findById(selectedAddress);
-//     if (!shippingAddress) {
-//       return res.status(404).json({ error: "Invalid address selected" });
-//     }
-
-//     const cartItems = await Cart.find({ userId })
-//       .populate("productId")
-//       .populate("variantId");
-
-//     if (!cartItems.length) {
-//       return res.status(400).json({ error: "Your cart is empty" });
-//     }
-
-//     const orderItems = cartItems.map((item) => ({
-//       orderId: new ObjectId(),
-//       product: {
-//         productId: item.productId._id,
-//         brand: item.productId.brand,
-//         productName: item.productId.productName,
-//         imageUrl: item.productId.imageUrl[0],
-//       },
-//       variant: {
-//         variantId: item.variantId._id,
-//         color: item.variantId.color,
-//         discountPrice: item.variantId.discountPrice,
-//       },
-//       orderStatus: "Processing",
-//       quantity: item.quantity,
-//     }));
-
-//     const totalPrice = orderItems.reduce(
-//       (acc, item) => acc + item.variant.discountPrice * item.quantity,
-//       0
-//     );
-
-//     const newOrder = new Order({
-//       userId,
-//       userName: req.session.user.fullName,
-//       orderItems,
-//       shippingAddress,
-//       paymentMethod,
-//       totalPrice,
-//     });
-
-//     await newOrder.save();
-
-//     for (const item of cartItems) {
-//       const variant = await ProductVariant.findById(item.variantId._id);
-//       if (variant.stock < item.quantity) {
-//         return res
-//           .status(400)
-//           .json({ error: "Insufficient stock for some items" });
-//       }
-//       variant.stock -= item.quantity;
-//       await variant.save();
-//     }
-
-
-//     await Cart.deleteMany({ userId });
-
-//     res.status(200).json({
-//       success: true,
-//       message: "Order placed successfully!",
-//     });
-//   } catch (error) {
-//     console.error("Error placing order:", error);
-//     res
-//       .status(500)
-//       .json({ error: "An error occurred while placing the order" });
-//   }
-// };
-
-
-
-
-
 exports.placeOrder = async (req, res) => {
   try {
+    // For Setting the expired offer to FALSE
+    let offers = await Offer.find();
+
+    let today = new Date();
+    today.setHours(0, 0, 0, 0);
+
+    offers.forEach(async (offer) => {
+      const offerEndDate = new Date(offer.endDate);
+      if (offerEndDate < today) {
+        offer.isActive = false;
+
+        await offer.save();
+      }
+    });
+
     const userId = req.session.user._id;
     const { selectedAddress, paymentMethod } = req.body;
 
@@ -200,7 +142,7 @@ exports.placeOrder = async (req, res) => {
       return res.status(400).json({ error: "Your cart is empty" });
     }
 
-    const offers = await Offer.find({ isActive: true });
+    offers = await Offer.find({ isActive: true });
 
     let totalPrice = 0;
 
