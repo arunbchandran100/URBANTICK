@@ -156,11 +156,14 @@
                   <% } %>
                     </p>
             </div>
-            <% if (offer) { %>
-              <p>Applicable Offer: <%= offer.title %>
-              </p>
-              <p><%= offer.discountPercentage %>% off!</p>
-              <% } %>
+<% if (offer) { %>
+  <div class="bg-white border border-gray-800 text-gray-800 p-4 rounded-lg my-4 shadow-md">
+    <p class="font-bold">Additional Offer: <%= offer.title %></p>
+    <p><%= offer.discountPercentage %>% off!</p>
+  </div>
+<% } %>
+
+
 
                 <!-- Product Details -->
                 <div class="mt-6">
