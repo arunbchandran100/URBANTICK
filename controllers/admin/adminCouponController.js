@@ -31,8 +31,6 @@ exports.getAdminCoupon = async (req, res) => {
     }
 };
 
-
-
 exports.addCoupon = async (req, res) => {
     try {
         // Extract form data
@@ -76,5 +74,53 @@ exports.addCoupon = async (req, res) => {
             return res.status(400).send("Coupon code must be unique.");
         }
         res.status(500).send("An error occurred while adding the coupon.");
+    }
+};
+
+exports.updateCoupon = async (req, res) => {
+    try {
+        // Extract form data
+        const {
+            couponId,
+            couponCode,
+            couponType,
+            couponValue,
+            minimumPurchaseAmount,
+            startDate,
+            endDate,
+            perUserUsageLimit,
+            isActive,
+        } = req.body;
+
+        // Find the coupon by ID
+        const coupon = await Coupon.findById(couponId);
+
+        if (!coupon) {
+            return res.status(404).send("Coupon not found.");
+        }
+
+        // Validate start and end dates
+        if (new Date(startDate) > new Date(endDate)) {
+            return res.status(400).send("Start date cannot be after end date.");
+        }
+
+        // Update coupon data
+        coupon.couponCode = couponCode;
+        coupon.couponType = couponType;
+        coupon.couponValue = couponValue;
+        coupon.minimumPurchaseAmount = minimumPurchaseAmount;
+        coupon.startDate = startDate;
+        coupon.endDate = endDate;
+        coupon.perUserUsageLimit = perUserUsageLimit;
+        coupon.isActive = isActive === "on"; // Convert checkbox value to boolean
+
+        // Save the updated coupon
+        await coupon.save();
+
+        // Redirect to the coupon management page with a success message
+        res.redirect("/admin/coupon");
+    } catch (error) {
+        console.error("Error updating coupon:", error);
+        res.status(500).send("An error occurred while updating the coupon.");
     }
 };

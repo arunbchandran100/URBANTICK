@@ -78,6 +78,8 @@ const adminCoupon = require("../controllers/admin/adminCouponController");
 
 router.get("/coupon", adminCoupon.getAdminCoupon);
 router.post("/coupon/add", adminCoupon.addCoupon);
+router.post("/coupon/update", adminCoupon.updateCoupon);
+
 
 
 
