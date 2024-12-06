@@ -73,6 +73,15 @@ router.post("/offer/add", adminOffer.addOffer);
 router.post("/offer/update", adminOffer.updateOffer);
 router.delete("/offer/delete/:offerId", adminOffer.deleteOffer);
 
+// Admin Coupon
+const adminCoupon = require("../controllers/admin/adminCouponController");
+
+router.get("/coupon", adminCoupon.getAdminCoupon);
+router.post("/coupon/add", adminCoupon.addCoupon);
+
+
+
+
 
 
 module.exports = router;

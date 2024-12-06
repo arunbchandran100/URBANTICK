@@ -1,0 +1,248 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Admin Coupon</title>
+    <%- include("partials/headerHTML.ejs") %>
+
+</head>
+
+<body class="bg-black text-white min-h-screen">
+    <!-- Sidebar -->
+    <%- include("partials/sidebar") %>
+        <main class="ml-64 p-8">
+            <!-- Coupon Table -->
+            <div class="bg-zinc-800 rounded-lg p-6">
+                <header class="flex items-center justify-between mb-4">
+                    <h1 class="text-2xl font-semibold text-gray-200">Manage Coupons</h1>
+                </header>
+
+                <table class="min-w-full text-left text-gray-400">
+                    <thead>
+                        <tr class="border-b border-gray-700">
+                            <th class="py-3 px-4">S.No</th>
+                            <th class="py-3 px-4">Coupon Code</th>
+                            <th class="py-3 px-4">Type</th>
+                            <th class="py-3 px-4">Value</th>
+                            <th class="py-3 px-4">Min Purchase</th>
+                            <th class="py-3 px-4">Usage User</th>
+                            <th class="py-3 px-4">Active</th>
+                            <th class="py-3 px-4">Action</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <% coupons.forEach((coupon, index)=> { %>
+                            <tr class="border-b border-gray-700">
+                                <td class="py-3 px-4 text-white">
+                                    <%= (currentPage - 1) * 5 + index + 1 %>
+                                </td>
+                                <td class="py-3 px-4 text-white">
+                                    <%= coupon.couponCode %>
+                                </td>
+                                <td class="py-3 px-4 text-white">
+                                    <%= coupon.couponType==='percentage' ? 'Percentage' : 'Flat' %>
+                                </td>
+                                <td class="py-3 px-4 text-white">
+                                    <%= coupon.couponType==='percentage' ? coupon.couponValue + '%' : '₹' +
+                                        coupon.couponValue %>
+                                </td>
+                                <td class="py-3 px-4 text-white">
+                                    ₹<%= coupon.minimumPurchaseAmount %>
+                                </td>
+                                <td class="py-3 px-4 text-white">
+                                    <%= coupon.perUserUsageLimit %>
+                                </td>
+                                <td class="py-3 px-4 text-white">
+                                    <%= coupon.isActive ? 'Yes' : 'No' %>
+                                </td>
+                                <td class="px-4 py-2">
+                                    <button class="bg-green-500 text-white px-3 py-1 rounded-lg hover:bg-green-600"
+                                        onclick="openEditCouponModal(
+                                    '<%= coupon._id %>',
+                                    '<%= coupon.couponCode %>',
+                                    '<%= coupon.couponType %>',
+                                    '<%= coupon.couponValue %>',
+                                    '<%= coupon.minimumPurchaseAmount %>',
+                                    '<%= coupon.perUserUsageLimit %>',
+                                    '<%= coupon.isActive %>'
+                                )">
+                                        Edit
+                                    </button>
+                                    <button class="bg-red-500 text-white px-3 py-1 rounded-lg hover:bg-red-600"
+                                        onclick="deleteCoupon('<%= coupon._id %>')">
+                                        Delete
+                                    </button>
+                                </td>
+                            </tr>
+                            <% }); %>
+                    </tbody>
+                </table>
+
+                <!-- Add Coupon Button -->
+                <div class="flex items-center justify-between mt-6">
+                    <button onclick="openAddCouponModal()"
+                        class="bg-transparent border border-white text-white px-4 py-2 rounded-lg hover:bg-gray-700">
+                        Add Coupon
+                    </button>
+                </div>
+
+                <!-- Edit Coupon Modal -->
+                <div id="editCouponModal" class="fixed inset-0 flex items-center justify-center z-50 hidden">
+                    <div class="bg-zinc-500 bg-opacity-50 absolute inset-0"></div>
+                    <div class="bg-black text-white rounded-lg shadow-xl relative z-10 p-6 w-1/3">
+                        <h2 class="text-xl font-semibold mb-4">Edit Coupon</h2>
+                        <form id="editCouponForm" method="POST" action="/admin/coupon/update">
+                            <input type="hidden" id="editCouponId" name="couponId" />
+                            <div class="mb-4">
+                                <label for="editCouponCode" class="block text-gray-300">Coupon Code</label>
+                                <input type="text" id="editCouponCode" name="couponCode"
+                                    class="bg-zinc-900 w-full px-4 py-2 border rounded-lg" required />
+                            </div>
+                            <div class="mb-4">
+                                <label for="editCouponType" class="block text-gray-300">Type</label>
+                                <select id="editCouponType" name="couponType"
+                                    class="bg-zinc-900 w-full px-4 py-2 border rounded-lg" required>
+                                    <option value="percentage">Percentage</option>
+                                    <option value="flat">Flat</option>
+                                </select>
+                            </div>
+                            <div class="mb-4">
+                                <label for="editCouponValue" class="block text-gray-300">Value</label>
+                                <input type="number" id="editCouponValue" name="couponValue"
+                                    class="bg-zinc-900 w-full px-4 py-2 border rounded-lg" required />
+                            </div>
+                            <div class="mb-4">
+                                <label for="editMinimumPurchase" class="block text-gray-300">Minimum Purchase
+                                    Amount</label>
+                                <input type="number" id="editMinimumPurchase" name="minimumPurchaseAmount"
+                                    class="bg-zinc-900 w-full px-4 py-2 border rounded-lg" required />
+                            </div>
+
+                            <div class="mb-4">
+                                <label for="editPerUserUsageLimit" class="block text-gray-300">Per User Usage
+                                    Limit</label>
+                                <input type="number" id="editPerUserUsageLimit" name="perUserUsageLimit"
+                                    class="bg-zinc-900 w-full px-4 py-2 border rounded-lg" required />
+                            </div>
+                            <div class="mb-4 flex items-center">
+                                <label for="editIsActive" class="block text-gray-300 mr-2">Active</label>
+                                <input type="checkbox" id="editIsActive" name="isActive"
+                                    class="bg-zinc-900 rounded-lg w-6 h-6" />
+                            </div>
+                            <div class="flex justify-end space-x-4">
+                                <button type="button" onclick="closeEditCouponModal()"
+                                    class="px-4 py-2 bg-gray-700 text-white rounded-lg">Cancel</button>
+                                <button type="submit"
+                                    class="px-4 py-2 bg-green-500 text-white rounded-lg">Update</button>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+
+                <!-- Add Coupon Modal -->
+                <div id="addCouponModal" class="fixed inset-0 flex items-center justify-center z-50 hidden">
+                    <div class="bg-zinc-500 bg-opacity-50 absolute inset-0"></div>
+                    <div class="bg-black text-white rounded-lg shadow-xl relative z-10 p-6 w-1/3">
+                        <h2 class="text-xl font-semibold mb-4">Add New Coupon</h2>
+                        <form id="addCouponForm" method="POST" action="/admin/coupon/add">
+                            <div class="mb-4">
+                                <label for="addCouponCode" class="block text-gray-300">Coupon Code</label>
+                                <input type="text" id="addCouponCode" name="couponCode"
+                                    class="bg-zinc-900 w-full px-4 py-2 border rounded-lg" required />
+                            </div>
+                            <div class="mb-4">
+                                <label for="addCouponType" class="block text-gray-300">Type</label>
+                                <select id="addCouponType" name="couponType"
+                                    class="bg-zinc-900 w-full px-4 py-2 border rounded-lg" required>
+                                    <option value="percentage">Percentage</option>
+                                    <option value="flat">Flat</option>
+                                </select>
+                            </div>
+                            <div class="mb-4">
+                                <label for="addCouponValue" class="block text-gray-300">Value</label>
+                                <input type="number" id="addCouponValue" name="couponValue"
+                                    class="bg-zinc-900 w-full px-4 py-2 border rounded-lg" required />
+                            </div>
+                            <div class="mb-4">
+                                <label for="addMinimumPurchase" class="block text-gray-300">
+                                    Minimum Purchase Amount
+                                </label>
+                                <input type="number" id="addMinimumPurchase" name="minimumPurchaseAmount"
+                                    class="bg-zinc-900 w-full px-4 py-2 border rounded-lg" required />
+                            </div>
+                            <div class="mb-4">
+                                <label for="addStartDate" class="block text-gray-300">Start Date</label>
+                                <input type="date" id="addStartDate" name="startDate"
+                                    class="bg-zinc-900 w-full px-4 py-2 border rounded-lg" required />
+                            </div>
+                            <div class="mb-4">
+                                <label for="addEndDate" class="block text-gray-300">End Date</label>
+                                <input type="date" id="addEndDate" name="endDate"
+                                    class="bg-zinc-900 w-full px-4 py-2 border rounded-lg" required />
+                            </div>
+                            <div class="mb-4">
+                                <label for="addPerUserUsageLimit" class="block text-gray-300">
+                                    Per User Usage Limit
+                                </label>
+                                <input type="number" id="addPerUserUsageLimit" name="perUserUsageLimit"
+                                    class="bg-zinc-900 w-full px-4 py-2 border rounded-lg" required min="1" />
+                            </div>
+                            <div class="mb-4 flex items-center">
+                                <label for="addIsActive" class="block text-gray-300 mr-2">Active</label>
+                                <input type="checkbox" id="addIsActive" name="isActive"
+                                    class="bg-zinc-900 rounded-lg w-6 h-6" />
+                            </div>
+                            <div class="flex justify-end space-x-4">
+                                <button type="button" onclick="closeAddCouponModal()"
+                                    class="px-4 py-2 bg-gray-700 text-white rounded-lg">
+                                    Cancel
+                                </button>
+                                <button type="submit" class="px-4 py-2 bg-green-500 text-white rounded-lg">
+                                    Add Coupon
+                                </button>
+                            </div>
+                        </form>
+
+                    </div>
+                </div>
+            </div>
+        </main>
+
+        <script>
+            function openEditCouponModal(id, code, type, value, minPurchase, perUserUsage, isActive) {
+                document.getElementById('editCouponId').value = id;
+                document.getElementById('editCouponCode').value = code;
+                document.getElementById('editCouponType').value = type;
+                document.getElementById('editCouponValue').value = value;
+                document.getElementById('editMinimumPurchase').value = minPurchase;
+                document.getElementById('editPerUserUsageLimit').value = perUserUsage;
+                document.getElementById('editIsActive').checked = isActive === 'true';
+                document.getElementById('editCouponModal').classList.remove('hidden');
+            }
+
+            function closeEditCouponModal() {
+                document.getElementById('editCouponModal').classList.add('hidden');
+            }
+
+            function openAddCouponModal() {
+                document.getElementById('addCouponModal').classList.remove('hidden');
+            }
+
+            function closeAddCouponModal() {
+                document.getElementById('addCouponModal').classList.add('hidden');
+            }
+
+            function deleteCoupon(couponId) {
+                if (confirm("Are you sure you want to delete this coupon?")) {
+                    window.location.href = `/admin/coupon/delete/${couponId}`;
+                }
+            }
+        </script>
+
+
+
+</body>
+
+</html>
