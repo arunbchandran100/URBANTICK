@@ -224,7 +224,94 @@
             </div>
         </main>
 
-        <script>
+        <script> 
+             document.getElementById("addCouponForm").addEventListener("submit", async function (event) {
+                event.preventDefault(); // Prevent default form submission
+
+                const form = event.target;
+                const formData = new FormData(form);
+
+                try {
+                    const response = await fetch(form.action, {
+                        method: form.method,
+                        body: new URLSearchParams(formData), // Convert FormData to URL-encoded format
+                        headers: {
+                            "Content-Type": "application/x-www-form-urlencoded",
+                        },
+                    });
+
+                    if (!response.ok) {
+                        const errorData = await response.json();
+                        // Show SweetAlert for validation errors
+                        Swal.fire({
+                            icon: "error",
+                            title: "Validation Error",
+                            text: errorData.message, // Use the message from the server
+                        });
+                    } else {
+                        // Success alert
+                        Swal.fire({
+                            icon: "success",
+                            title: "Offer Added",
+                            text: "The offer has been successfully added.",
+                        }).then(() => {
+                            window.location.reload(); // Reload the page or redirect to another page
+                        });
+                    }
+                } catch (error) {
+                    console.error("Error submitting form:", error);
+                    Swal.fire({
+                        icon: "error",
+                        title: "Submission Error",
+                        text: "An error occurred while submitting the form. Please try again later.",
+                    });
+                }
+            });
+
+
+
+
+            document.getElementById("editCouponForm").addEventListener("submit", async function (event) {
+                event.preventDefault(); // Prevent default form submission
+
+                const form = event.target;
+                const formData = new FormData(form);
+
+                try {
+                    const response = await fetch(form.action, {
+                        method: form.method,
+                        body: new URLSearchParams(formData),
+                        headers: {
+                            "Content-Type": "application/x-www-form-urlencoded",
+                        },
+                    });
+
+                    if (!response.ok) {
+                        const errorData = await response.json();
+                        Swal.fire({
+                            icon: "error",
+                            title: "Validation Error",
+                            text: errorData.message,
+                        });
+                    } else {
+                        Swal.fire({
+                            icon: "success",
+                            title: "Offer Updated",
+                            text: "The offer has been successfully updated.",
+                        }).then(() => {
+                            window.location.reload(); // Reload the page or redirect
+                        });
+                    }
+                } catch (error) {
+                    console.error("Error updating offer:", error);
+                    Swal.fire({
+                        icon: "error",
+                        title: "Update Error",
+                        text: "An error occurred while updating the offer. Please try again later.",
+                    });
+                }
+            });
+
             function openEditCouponModal(id, code, type, value, minPurchase, startDate, endDate, perUserUsage, isActive) {
                 document.getElementById('editCouponId').value = id;
                 document.getElementById('editCouponCode').value = code;
