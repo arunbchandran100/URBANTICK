@@ -20,79 +20,80 @@
                     <h1 class="text-2xl font-semibold text-gray-200">Manage Offers</h1>
                 </header>
 
-                <table class="min-w-full text-left text-gray-400">
-                    <thead>
-                        <tr class="border-b border-gray-700">
-                            <th class="py-3 px-4">S.No</th>
-                            <th class="py-3 px-4">Title</th>
-                            <th class="py-3 px-4">Discount (%)</th>
-                            <th class="py-3 px-4">Type</th>
-                            <th class="py-3 px-4">Applicable To</th>
-                            <th class="py-3 px-4">Active</th>
-                            <th class="py-3 px-4">Action</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        <% offers.forEach((offer, index)=> { %>
-                            <tr class="border-b border-gray-700">
-                                <td class="py-3 px-4 text-white">
-                                    <%= (currentPage - 1) * 5 + index + 1 %>
-                                </td>
-                                <td class="py-3 px-4 text-white">
-                                    <%= offer.title %>
-                                </td>
-                                <td class="py-3 px-4 text-white">
-                                    <%= offer.discountPercentage %>%
-                                </td>
-                                <td class="py-3 px-4 text-white">
-                                    <%= offer.offerType %>
-                                </td>
-                                <td class="py-3 px-4 text-white">
-                                    <% if (offer.offerType==='Product' ) { %>
-                                        <%= offer.applicableProduct.productName %>
-                                            <% } else { %>
-                                                <%= offer.applicableCategory.categoriesName %>
-                                                    <% } %>
-                                </td>
-                                <td class="py-3 px-4 text-white">
-                                    <% const today=new Date(); const startDate=new Date(offer.startDate); const
-                                        endDate=new Date(offer.endDate); // Check if the end date is in the past if
-                                        (endDate < today) { %>
-                                        Expired on <%= endDate.toLocaleDateString() %>
-                                            <% } // Check if the start date is in the future else if (startDate> today)
-                                                {
-                                                %>
-                                                Will start in <%= startDate.toLocaleDateString() %>
-                                                    <% } // Otherwise, check if the offer is active else { %>
-                                                        <%= offer.isActive ? 'Yes' : 'No' %>
-                                                            <% } %>
-                                </td>
+<table class="min-w-full text-left text-gray-400">
+    <thead>
+        <tr class="border-b border-gray-700">
+            <th class="py-3 px-4">S.No</th>
+            <th class="py-3 px-4">Title</th>
+            <th class="py-3 px-4">Discount (%)</th>
+            <th class="py-3 px-4">Type</th>
+            <th class="py-3 px-4">Applicable To</th>
+            <th class="py-3 px-4">Active</th>
+            <th class="py-3 px-4">Action</th>
+        </tr>
+    </thead>
+    <tbody>
+        <% offers.forEach((offer, index) => { %>
+            <tr class="border-b border-gray-700">
+                <td class="py-3 px-4 text-white">
+                    <%= (currentPage - 1) * 5 + index + 1 %>
+                </td>
+                <td class="py-3 px-4 text-white">
+                    <%= offer.title %>
+                </td>
+                <td class="py-3 px-4 text-white">
+                    <%= offer.discountPercentage %>%
+                </td>
+                <td class="py-3 px-4 text-white">
+                    <%= offer.offerType %>
+                </td>
+                <td class="py-3 px-4 text-white">
+                    <% if (offer.offerType === 'Product') { %>
+                        <%= offer.applicableProduct.productName %>
+                    <% } else { %>
+                        <%= offer.applicableCategory.categoriesName %>
+                    <% } %>
+                </td>
+                <td class="py-3 px-4 text-white">
+                    <% 
+                        const today = new Date();
+                        const startDate = new Date(offer.startDate);
+                        const endDate = new Date(offer.endDate);
 
-                                <td class="px-4 py-2">
-                                    <button class="bg-green-500 text-white px-3 py-1 rounded-lg hover:bg-green-600"
-                                        onclick="openEditOfferModal(
-        '<%= offer._id %>',
-        '<%= offer.title %>',
-        '<%= offer.discountPercentage %>',
-        '<%= offer.offerType %>',
-        '<%= offer.offerType === 'Product' ? offer.applicableProduct._id : offer.applicableCategory._id %>',
-        '<%= offer.startDate.toISOString().split('T')[0] %>',
-        '<%= offer.endDate.toISOString().split('T')[0] %>',
-        '<%= offer.isActive %>'
-    )">
-                                        Edit
-                                    </button>
+                        // Check if the end date is in the past
+                        if (endDate < today) { 
+                    %>
+                        Expired on <%= endDate.toLocaleDateString() %>
+                    <% } else if (startDate > today) { // Check if the start date is in the future %>
+                        Will start on <%= startDate.toLocaleDateString() %>
+                    <% } else { // Otherwise, check if the offer is active %>
+                        <%= offer.isActive ? 'Yes' : 'No' %>
+                    <% } %>
+                </td>
+                <td class="px-4 py-2">
+                    <button class="bg-green-500 text-white px-3 py-1 rounded-lg hover:bg-green-600"
+                        onclick="openEditOfferModal(
+                            '<%= offer._id %>',
+                            '<%= offer.title %>',
+                            '<%= offer.discountPercentage %>',
+                            '<%= offer.offerType %>',
+                            '<%= offer.offerType === 'Product' ? offer.applicableProduct._id : offer.applicableCategory._id %>',
+                            '<%= offer.startDate.toISOString().split('T')[0] %>',
+                            '<%= offer.endDate.toISOString().split('T')[0] %>',
+                            '<%= offer.isActive %>'
+                        )">
+                        Edit
+                    </button>
+                    <button class="bg-red-500 text-white px-3 py-1 rounded-lg hover:bg-red-600"
+                        onclick="deleteOffer('<%= offer._id %>')">
+                        Delete
+                    </button>
+                </td>
+            </tr>
+        <% }); %>
+    </tbody>
+</table>
 
-
-                                    <button class="bg-red-500 text-white px-3 py-1 rounded-lg hover:bg-red-600"
-                                        onclick="deleteOffer('<%= offer._id %>')">
-                                        Delete
-                                    </button>
-                                </td>
-                            </tr>
-                            <% }); %>
-                    </tbody>
-                </table>
 
                 <!-- Add Offer Button -->
                 <div class="flex items-center justify-between mt-6">

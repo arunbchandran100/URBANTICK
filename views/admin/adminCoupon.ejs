@@ -119,7 +119,19 @@
                                 <input type="number" id="editMinimumPurchase" name="minimumPurchaseAmount"
                                     class="bg-zinc-900 w-full px-4 py-2 border rounded-lg" required />
                             </div>
+                            <!-- Start Date -->
+                            <div class="mb-4">
+                                <label for="editStartDate" class="block text-gray-300">Start Date</label>
+                                <input type="date" id="editStartDate" name="startDate"
+                                    class="bg-zinc-900 w-full px-4 py-2 border rounded-lg" required />
+                            </div>
 
+                            <!-- End Date -->
+                            <div class="mb-4">
+                                <label for="editEndDate" class="block text-gray-300">End Date</label>
+                                <input type="date" id="editEndDate" name="endDate"
+                                    class="bg-zinc-900 w-full px-4 py-2 border rounded-lg" required />
+                            </div>
                             <div class="mb-4">
                                 <label for="editPerUserUsageLimit" class="block text-gray-300">Per User Usage
                                     Limit</label>
@@ -211,12 +223,14 @@
         </main>
 
         <script>
-            function openEditCouponModal(id, code, type, value, minPurchase, perUserUsage, isActive) {
+            function openEditCouponModal(id, code, type, value, minPurchase, startDate, endDate,perUserUsage, isActive) {
                 document.getElementById('editCouponId').value = id;
                 document.getElementById('editCouponCode').value = code;
                 document.getElementById('editCouponType').value = type;
                 document.getElementById('editCouponValue').value = value;
                 document.getElementById('editMinimumPurchase').value = minPurchase;
+                                document.getElementById('editStartDate').value = startDate;
+                document.getElementById('editEndDate').value = endDate;
                 document.getElementById('editPerUserUsageLimit').value = perUserUsage;
                 document.getElementById('editIsActive').checked = isActive === 'true';
                 document.getElementById('editCouponModal').classList.remove('hidden');
