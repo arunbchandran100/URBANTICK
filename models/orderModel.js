@@ -49,7 +49,17 @@ const orderSchema = new mongoose.Schema(
         priceWithoutOffer: {
           type: Number,
         },
-        itemTotalPrice: { //total amount of that item  with or without offer
+        CouponAmountOfItem: {
+          type: Number,
+        },
+        priceAfterCoupon: {
+          type: Number,
+        },
+        priceWithoutCoupon: {
+          type: Number,
+        },
+        itemTotalPrice: {
+          //total amount of that item  with or without offer and coupon 
           type: Number,
         },
       },

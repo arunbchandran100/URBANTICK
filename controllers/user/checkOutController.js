@@ -128,8 +128,6 @@ exports.getCheckout = async (req, res) => {
 };
 
 
-
-
 exports.placeOrder = async (req, res) => {
   try {
     // Update expired offers
@@ -170,6 +168,7 @@ exports.placeOrder = async (req, res) => {
     let subtotal = 0;
     let totalPrice = 0;
 
+    // Calculate items with offer prices
     const orderItems = cartItems.map((item) => {
       const product = item.productId;
       const discountPrice = item.variantId.discountPrice;
@@ -228,15 +227,17 @@ exports.placeOrder = async (req, res) => {
         priceAfterOffer,
         priceWithoutOffer: item.variantId.discountPrice,
         itemTotalPrice, // Total price of the item after applying offers
+        priceWithoutCoupon: itemTotalPrice,
+        CouponAmountOfItem: 0, // Will be calculated below
+        priceAfterCoupon: itemTotalPrice, // Will be updated below
       };
     });
 
     // Check and apply the coupon
-    let couponDetails = {};
     let couponDiscount = 0;
-
+    let coupon;
     if (appliedCouponCode) {
-      const coupon = await Coupon.findOne({
+      coupon = await Coupon.findOne({
         couponCode: appliedCouponCode,
         isActive: true,
       });
@@ -278,27 +279,41 @@ exports.placeOrder = async (req, res) => {
       }
 
       await coupon.save();
-
-      couponDetails = {
-        couponCode: coupon.couponCode,
-        couponType: coupon.couponType,
-        couponValue: coupon.couponValue,
-      };
     }
 
-    totalPrice = subtotal - couponDiscount;
+    // Distribute coupon discount among items based on their weightage
+    const totalItemPrice = orderItems.reduce(
+      (sum, item) => sum + item.itemTotalPrice,
+      0
+    );
 
+    orderItems.forEach((item) => {
+      const itemWeightage = item.itemTotalPrice / totalItemPrice;
+      const couponAmountOfItem = couponDiscount * itemWeightage;
+      item.CouponAmountOfItem = couponAmountOfItem;
+      item.priceAfterCoupon = item.itemTotalPrice - couponAmountOfItem;
+    });
+
+    totalPrice = subtotal - couponDiscount;
+    orderItems.forEach((item) => {
+      item.itemTotalPrice = item.priceAfterCoupon;
+    });
+    
     const newOrder = new Order({
       userId,
       userName: req.session.user.fullName,
       orderItems,
       shippingAddress,
       paymentMethod,
-      couponCode: couponDetails.couponCode || null,
-      couponType: couponDetails.couponType || null,
-      couponValue: couponDetails.couponValue || null,
+      couponCode: appliedCouponCode || null,
+      couponType: couponDiscount ? coupon.couponType : null,
+      couponValue: couponDiscount || null,
       totalPrice,
     });
+
+    // Update itemTotalPrice to match priceAfterCoupon for all items
+
+
 
     await newOrder.save();
 
