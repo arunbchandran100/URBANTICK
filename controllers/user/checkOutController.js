@@ -5,6 +5,7 @@ const ProductVariant = require("../../models/variantSchema");
 const Offer = require("../../models/offerModel");
 const { ObjectId } = require("mongoose").Types;
 const Coupon = require("../../models/couponModel");
+const mongoose = require("mongoose"); // Import mongoose
 
 
 
@@ -131,23 +132,21 @@ exports.getCheckout = async (req, res) => {
 
 exports.placeOrder = async (req, res) => {
   try {
-    // For Setting the expired offer to FALSE
+    // Update expired offers
     let offers = await Offer.find();
-
-    let today = new Date();
+    const today = new Date();
     today.setHours(0, 0, 0, 0);
 
     offers.forEach(async (offer) => {
       const offerEndDate = new Date(offer.endDate);
       if (offerEndDate < today) {
         offer.isActive = false;
-
         await offer.save();
       }
     });
 
     const userId = req.session.user._id;
-    const { selectedAddress, paymentMethod } = req.body;
+    const { selectedAddress, paymentMethod, appliedCouponCode } = req.body;
 
     if (!selectedAddress || !paymentMethod) {
       return res.status(400).json({ error: "All fields are required" });
@@ -168,6 +167,7 @@ exports.placeOrder = async (req, res) => {
 
     offers = await Offer.find({ isActive: true });
 
+    let subtotal = 0;
     let totalPrice = 0;
 
     const orderItems = cartItems.map((item) => {
@@ -204,10 +204,10 @@ exports.placeOrder = async (req, res) => {
       const priceAfterOffer = discountPrice - offerAmount;
       const itemTotalPrice = priceAfterOffer * item.quantity;
 
-      totalPrice += itemTotalPrice;
+      subtotal += itemTotalPrice;
 
       return {
-        orderId: new ObjectId(),
+        orderId: new mongoose.Types.ObjectId(),
         product: {
           productId: item.productId._id,
           brand: item.productId.brand,
@@ -231,17 +231,78 @@ exports.placeOrder = async (req, res) => {
       };
     });
 
+    // Check and apply the coupon
+    let couponDetails = {};
+    let couponDiscount = 0;
+
+    if (appliedCouponCode) {
+      const coupon = await Coupon.findOne({
+        couponCode: appliedCouponCode,
+        isActive: true,
+      });
+
+      if (!coupon) {
+        return res.status(400).json({ error: "Invalid or expired coupon" });
+      }
+
+      if (subtotal < coupon.minimumPurchaseAmount) {
+        return res.status(400).json({
+          error: `Minimum purchase amount for this coupon is ${coupon.minimumPurchaseAmount}`,
+        });
+      }
+
+      const userUsage = coupon.usageByUser.find(
+        (usage) => String(usage.userId) === String(userId)
+      );
+      const userUsageCount = userUsage ? userUsage.count : 0;
+
+      if (userUsageCount >= coupon.perUserUsageLimit) {
+        return res
+          .status(400)
+          .json({ error: "Coupon usage limit reached for this user" });
+      }
+
+      if (coupon.couponType === "percentage") {
+        couponDiscount = (subtotal * coupon.couponValue) / 100;
+      } else if (coupon.couponType === "flat") {
+        couponDiscount = coupon.couponValue;
+      }
+
+      couponDiscount = Math.min(couponDiscount, subtotal); // Ensure the discount doesn't exceed the subtotal
+
+      // Update the coupon usage
+      if (userUsage) {
+        userUsage.count += 1;
+      } else {
+        coupon.usageByUser.push({ userId, count: 1 });
+      }
+
+      await coupon.save();
+
+      couponDetails = {
+        couponCode: coupon.couponCode,
+        couponType: coupon.couponType,
+        couponValue: coupon.couponValue,
+      };
+    }
+
+    totalPrice = subtotal - couponDiscount;
+
     const newOrder = new Order({
       userId,
       userName: req.session.user.fullName,
       orderItems,
       shippingAddress,
       paymentMethod,
-      totalPrice, // Total price after applying all offers and discounts
+      couponCode: couponDetails.couponCode || null,
+      couponType: couponDetails.couponType || null,
+      couponValue: couponDetails.couponValue || null,
+      totalPrice,
     });
 
     await newOrder.save();
 
+    // Update stock for each item
     for (const item of cartItems) {
       const variant = await ProductVariant.findById(item.variantId._id);
       if (variant.stock < item.quantity) {
@@ -253,6 +314,7 @@ exports.placeOrder = async (req, res) => {
       await variant.save();
     }
 
+    // Clear the user's cart
     await Cart.deleteMany({ userId });
 
     res.status(200).json({
@@ -266,4 +328,3 @@ exports.placeOrder = async (req, res) => {
       .json({ error: "An error occurred while placing the order" });
   }
 };
-

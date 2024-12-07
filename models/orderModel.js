@@ -60,8 +60,18 @@ const orderSchema = new mongoose.Schema(
     paymentMethod: {
       type: String,
     },
+    couponCode: {
+      type: String,
+    },
+    couponType: {
+      type: String,
+    },
+
+    couponValue: {
+      type: Number,
+    },
     totalPrice: {
-      type: Number, // Updated field for total price after discount
+      type: Number, // Updated field for total price after discount and coupon
     },
     returnReason: {
       type: String,

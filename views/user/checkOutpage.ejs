@@ -122,6 +122,44 @@
                 <button onclick="placeOrder()" class="mt-6 w-full bg-gray-800 hover:bg-gray-900 text-white text-sm py-2 rounded-md">
                     Place Order
                 </button>
+  <div class="bg-white p-4 shadow-md rounded-md mt-6">
+    <h3 class="text-lg font-bold text-gray-800 border-b border-gray-200 pb-2">
+        Apply Coupon
+    </h3>
+    <div class="mt-4 space-y-4">
+        <div id="couponList" class="space-y-2">
+            <% if (availableCoupons.length > 0) { %>
+                <% availableCoupons.forEach(coupon => { %>
+                    <label class="flex items-center gap-3 p-3 border border-gray-300 rounded-md">
+                        <input type="radio" name="coupon" value="<%= coupon.couponCode %>" onclick="selectCoupon('<%= coupon.couponCode %>')">
+                        <div>
+                            <p class="text-gray-800 font-semibold"><%= coupon.couponCode %> - 
+                                <%= coupon.couponType === 'percentage' ? coupon.couponValue + '%' : '₹' + coupon.couponValue %> Off</p>
+                            <p class="text-sm text-gray-600">Min Purchase: ₹<%= coupon.minimumPurchaseAmount %></p>
+                            <p class="text-sm text-gray-600">Usage Limit: <%= coupon.perUserUsageLimit %> times per user</p>
+                        </div>
+                    </label>
+                <% }); %>
+            <% } else { %>
+                <p class="text-gray-600">No coupons available for your cart.</p>
+            <% } %>
+        </div>
+        <div id="appliedCoupon" class="hidden bg-green-100 p-2 rounded-md flex justify-between items-center">
+            <span class="text-green-800 font-semibold" id="appliedCouponText"></span>
+            <button
+                class="text-red-600 hover:text-red-800"
+                onclick="removeCoupon()"
+            >
+                Remove
+            </button>
+        </div>
+        <button id="applyCouponBtn" class="w-full bg-gray-800 hover:bg-gray-900 text-white text-sm py-2 rounded-md" disabled onclick="applyCoupon()">
+            Apply Coupon
+        </button>
+    </div>
+</div>
+
+
             </div>
         </div>
     </div>
@@ -133,6 +171,39 @@
 
 </body>
 <script>
+
+    let selectedCouponCode = null;
+
+    // Handle coupon selection
+    function selectCoupon(couponCode) {
+        selectedCouponCode = couponCode;
+        document.getElementById("applyCouponBtn").disabled = false;
+    }
+
+    // Apply the selected coupon
+    function applyCoupon() {
+        if (selectedCouponCode) {
+            document.getElementById("appliedCouponText").innerText = `Applied Coupon: ${selectedCouponCode}`;
+            document.getElementById("appliedCoupon").classList.remove("hidden");
+            document.getElementById("applyCouponBtn").classList.add("hidden");
+            document.getElementById("couponList").classList.add("hidden");
+        }
+    }
+
+    // Remove the applied coupon
+    function removeCoupon() {
+        selectedCouponCode = null;
+        document.getElementById("appliedCouponText").innerText = "";
+        document.getElementById("appliedCoupon").classList.add("hidden");
+        document.getElementById("applyCouponBtn").classList.remove("hidden");
+        document.getElementById("couponList").classList.remove("hidden");
+        const selectedCoupon = document.querySelector("input[name='coupon']:checked");
+        if (selectedCoupon) {
+            selectedCoupon.checked = false;
+        }
+    }
+
+    // Modify the placeOrder function to include the selected coupon
     async function placeOrder() {
         const selectedAddress = document.querySelector("input[name='selectedAddress']:checked")?.value;
         const paymentMethod = document.querySelector("input[name='paymentMethod']:checked")?.value;
@@ -143,34 +214,38 @@
         }
 
         try {
-            const response = await fetch("/user/checkout", {
-                method: "POST",
-                headers: { "Content-Type": "application/json" },
-                body: JSON.stringify({ selectedAddress, paymentMethod }),
+            const response = await axios.post("/user/checkout", {
+                selectedAddress,
+                paymentMethod,
+                appliedCouponCode: selectedCouponCode,
             });
 
-            const data = await response.json();
-
-            if (response.ok) {
+            if (response.status === 200) {
                 Swal.fire({
                     icon: "success",
                     title: "Order Placed!",
-                    text: data.message,
+                    text: response.data.message,
                     showConfirmButton: true,
                     confirmButtonText: "OK",
                 }).then((result) => {
                     if (result.isConfirmed) {
-                        window.location.href = "/user/orders"; // Ensure the correct path is used
+                        window.location.href = "/user/orders";
                     }
                 });
-            }
-            else {
-                Swal.fire("Error", data.error, "error");
+            } else {
+                Swal.fire("Error", response.data.error, "error");
             }
         } catch (error) {
             Swal.fire("Error", "An error occurred while placing the order.", "error");
         }
     }
+
+    // Modified placeOrder function to include the coupon code
+
+    // Initialize the page by fetching available coupons
+    fetchCoupons();
+
+   
 </script>
 
 </html>
