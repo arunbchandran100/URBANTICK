@@ -27,143 +27,160 @@
     <%- include("partials/navBar") %>
         <div class="mt-16"></div>
 
-<div class="font-sans max-w-5xl mx-auto bg-gray-50 py-8">
-    <h1 class="text-3xl font-bold text-gray-800 text-center">Checkout</h1>
+        <div class="font-sans max-w-5xl mx-auto bg-gray-50 py-8">
+            <h1 class="text-3xl font-bold text-gray-800 text-center">Checkout</h1>
 
-    <div class="grid md:grid-cols-3 gap-8 mt-8">
-        <!-- Left Section: Address and Payment -->
-        <div class="md:col-span-2 space-y-6">
-            <!-- Address Section -->
-            <div class="bg-white p-4 shadow-md rounded-md">
-                <h3 class="text-lg font-bold text-gray-800 border-b border-gray-200 pb-2">
-                    Shipping Address
-                </h3>
-                <div class="mt-4 space-y-4">
-                    <% userAddresses.forEach(address => { %>
-                        <label class="flex items-start gap-4 p-3 border border-gray-300 rounded-md">
-                            <input type="radio" name="selectedAddress" value="<%= address._id %>" class="mt-1">
-                            <div>
-                                <p class="text-gray-800 font-semibold"><%= address.Name %></p>
-                                <p class="text-sm text-gray-600">
-                                    <%= address.HouseName %>, <%= address.LocalityStreet %>, <%= address.TownCity %>, <%= address.state %>, <%= address.country %>, <%= address.pincode %>
-                                </p>
-                                <p class="text-sm text-gray-600">Mobile: <%= address.MobileNumber %></p>
-                            </div>
-                        </label>
-                    <% }) %>
-                </div>
-                <button onclick="window.location.href='/user/address'" class="mt-4 w-full bg-gray-800 hover:bg-gray-900 text-white text-sm py-2 rounded-md">Add New Address</button>
-            </div>
+            <div class="grid md:grid-cols-3 gap-8 mt-8">
+                <!-- Left Section: Address and Payment -->
+                <div class="md:col-span-2 space-y-6">
+                    <!-- Address Section -->
+                    <div class="bg-white p-4 shadow-md rounded-md">
+                        <h3 class="text-lg font-bold text-gray-800 border-b border-gray-200 pb-2">
+                            Shipping Address
+                        </h3>
+                        <div class="mt-4 space-y-4">
+                            <% userAddresses.forEach(address=> { %>
+                                <label class="flex items-start gap-4 p-3 border border-gray-300 rounded-md">
+                                    <input type="radio" name="selectedAddress" value="<%= address._id %>" class="mt-1">
+                                    <div>
+                                        <p class="text-gray-800 font-semibold">
+                                            <%= address.Name %>
+                                        </p>
+                                        <p class="text-sm text-gray-600">
+                                            <%= address.HouseName %>, <%= address.LocalityStreet %>, <%=
+                                                        address.TownCity %>, <%= address.state %>, <%= address.country
+                                                                %>, <%= address.pincode %>
+                                        </p>
+                                        <p class="text-sm text-gray-600">Mobile: <%= address.MobileNumber %>
+                                        </p>
+                                    </div>
+                                </label>
+                                <% }) %>
+                        </div>
+                        <button onclick="window.location.href='/user/address'"
+                            class="mt-4 w-full bg-gray-800 hover:bg-gray-900 text-white text-sm py-2 rounded-md">Add New
+                            Address</button>
+                    </div>
 
-            <!-- Payment Method Section -->
-            <div class="bg-white p-4 shadow-md rounded-md">
-                <h3 class="text-lg font-bold text-gray-800 border-b border-gray-200 pb-2">
-                    Payment Method
-                </h3>
-                <div class="mt-4 space-y-3">
-                    <label class="flex items-center gap-3">
-                        <input type="radio" name="paymentMethod" value="COD" class="mt-1">
-                        <span class="text-gray-800 font-semibold">Cash on Delivery</span>
-                    </label>
-                    <label class="flex items-center gap-3">
-                        <input type="radio" name="paymentMethod" value="Online" class="mt-1">
-                        <span class="text-gray-800 font-semibold">Online Payment</span>
-                    </label>
-                    <label class="flex items-center gap-3">
-                        <input type="radio" name="paymentMethod" value="Wallet" class="mt-1">
-                        <span class="text-gray-800 font-semibold">Wallet</span>
-                    </label>
+                    <!-- Payment Method Section -->
+                    <div class="bg-white p-4 shadow-md rounded-md">
+                        <h3 class="text-lg font-bold text-gray-800 border-b border-gray-200 pb-2">
+                            Payment Method
+                        </h3>
+                        <div class="mt-4 space-y-3">
+                            <label class="flex items-center gap-3">
+                                <input type="radio" name="paymentMethod" value="COD" class="mt-1">
+                                <span class="text-gray-800 font-semibold">Cash on Delivery</span>
+                            </label>
+                            <label class="flex items-center gap-3">
+                                <input type="radio" name="paymentMethod" value="Online" class="mt-1">
+                                <span class="text-gray-800 font-semibold">Online Payment</span>
+                            </label>
+                            <label class="flex items-center gap-3">
+                                <input type="radio" name="paymentMethod" value="Wallet" class="mt-1">
+                                <span class="text-gray-800 font-semibold">Wallet</span>
+                            </label>
+                        </div>
+                    </div>
                 </div>
-            </div>
+
+                <!-- Right Section: Cart Summary -->
+                <div class="bg-white p-4 shadow-md rounded-md">
+                    <h3 class="text-lg font-bold text-gray-800 border-b border-gray-200 pb-2">
+                        Order Summary
+                    </h3>
+                    <ul class="mt-4 space-y-4">
+                        <% cartItems.forEach(item=> { %>
+                            <li class="flex items-start gap-4">
+                                <div class="w-16 h-16 bg-gray-100 p-2 rounded-md">
+                                    <img src="<%= item.product.imageUrl[0] %>" alt="Product Image"
+                                        class="w-full h-full object-contain">
+                                </div>
+                                <div>
+                                    <p class="text-gray-800 font-semibold">
+                                        <%= item.product.productName %>
+                                    </p>
+                                    <p class="text-sm text-gray-600">Color: <%= item.variant.color %>
+                                    </p>
+                                    <p class="text-sm text-gray-600">Quantity: <%= item.quantity %>
+                                    </p>
+                                    <p class="text-sm text-gray-600">Price: ₹<%=
+                                            item.variant.discountPrice.toLocaleString() %>
+                                    </p>
+                                    <% if (item.couponIsApplied) { %>
+                                        <!-- <p class="text-sm text-green-600">Offer: <%= item.offerTitle %> (<%= item.offerType %>)</p> -->
+                                        <!-- <p class="text-sm text-green-600">Discount: ₹<%= item.offerAmount.toLocaleString()%></p> -->
+                                        <span class="text-sm text-green-600 ">Price After Discount: ₹<%=
+                                                (item.afterOfferPrice*item.quantity).toLocaleString() %></span>
+                                        <% } %>
+                                </div>
+                            </li>
+                            <% }) %>
+                    </ul>
+                   <div class="mt-6 border-t border-gray-200 pt-4">
+        <div class="flex justify-between text-gray-800">
+            <span class="font-semibold">Subtotal:</span>
+            <span class="ml-auto font-semibold">₹<%= subtotal %></span>
+        </div>
+        <div class="flex justify-between text-gray-800">
+            <span class="font-semibold">Discount:</span>
+            <span class="ml-auto text-green-600 font-semibold">-₹<%= totalDiscount %></span>
+        </div>
+        <div class="flex justify-between text-gray-800" id="couponDiscountSection" style="display: none;">
+            <span class="font-semibold">Coupon Discount:</span>
+            <span id="couponDiscountAmount" class="ml-auto text-green-600 font-semibold"></span>
         </div>
 
-        <!-- Right Section: Cart Summary -->
-        <div class="bg-white p-4 shadow-md rounded-md">
-            <h3 class="text-lg font-bold text-gray-800 border-b border-gray-200 pb-2">
-                Order Summary
-            </h3>
-            <ul class="mt-4 space-y-4">
-                <% cartItems.forEach(item => { %>
-                    <li class="flex items-start gap-4">
-                        <div class="w-16 h-16 bg-gray-100 p-2 rounded-md">
-                            <img src="<%= item.product.imageUrl[0] %>" alt="Product Image" class="w-full h-full object-contain">
-                        </div>
-                        <div>
-                            <p class="text-gray-800 font-semibold"><%= item.product.productName %></p>
-                            <p class="text-sm text-gray-600">Color: <%= item.variant.color %></p>
-                            <p class="text-sm text-gray-600">Quantity: <%= item.quantity %></p>
-                            <p class="text-sm text-gray-600">Price: ₹<%= item.variant.discountPrice.toLocaleString() %></p>
-                            <% if (item.couponIsApplied) { %>
-                                <!-- <p class="text-sm text-green-600">Offer: <%= item.offerTitle %> (<%= item.offerType %>)</p> -->
-                                <!-- <p class="text-sm text-green-600">Discount: ₹<%= item.offerAmount.toLocaleString()%></p> -->
-                                <span class="text-sm text-green-600 ">Price After Discount: ₹<%= (item.afterOfferPrice*item.quantity).toLocaleString() %></span>
-                            <% } %>
-                        </div>
-                    </li>
-                <% }) %>
-            </ul>
-            <div class="mt-6 border-t border-gray-200 pt-4">
-                <div class="flex justify-between text-gray-800">
-                    <span class="font-semibold">Subtotal:</span>
-                    <span class="ml-auto font-semibold">₹<%= subtotal %></span>
-                </div>
-                <div class="flex justify-between text-gray-800">
-                    <span class="font-semibold">Discount:</span>
-                    <span class="ml-auto text-green-600 font-semibold">-₹<%= totalDiscount %></span>
-                </div>
-                <div class="flex justify-between text-gray-800">
-                    <span class="font-semibold">Shipping:</span>
-                    <span>Free</span>
-                </div>
-                <div class="flex justify-between text-gray-800 font-bold text-lg mt-2">
-                    <span>Total:</span>
-                    <span>₹<%= totalAfterDiscount %></span>
-                </div>
-                <button onclick="placeOrder()" class="mt-6 w-full bg-gray-800 hover:bg-gray-900 text-white text-sm py-2 rounded-md">
-                    Place Order
-                </button>
-  <div class="bg-white p-4 shadow-md rounded-md mt-6">
-    <h3 class="text-lg font-bold text-gray-800 border-b border-gray-200 pb-2">
-        Apply Coupon
-    </h3>
-    <div class="mt-4 space-y-4">
-        <div id="couponList" class="space-y-2">
-            <% if (availableCoupons.length > 0) { %>
-                <% availableCoupons.forEach(coupon => { %>
-                    <label class="flex items-center gap-3 p-3 border border-gray-300 rounded-md">
-                        <input type="radio" name="coupon" value="<%= coupon.couponCode %>" onclick="selectCoupon('<%= coupon.couponCode %>')">
-                        <div>
-                            <p class="text-gray-800 font-semibold"><%= coupon.couponCode %> - 
-                                <%= coupon.couponType === 'percentage' ? coupon.couponValue + '%' : '₹' + coupon.couponValue %> Off</p>
-                            <p class="text-sm text-gray-600">Min Purchase: ₹<%= coupon.minimumPurchaseAmount %></p>
-                            <p class="text-sm text-gray-600">Usage Limit: <%= coupon.perUserUsageLimit %> times per user</p>
-                        </div>
-                    </label>
-                <% }); %>
-            <% } else { %>
-                <p class="text-gray-600">No coupons available for your cart.</p>
-            <% } %>
+        <div class="flex justify-between text-gray-800">
+            <span class="font-semibold">Shipping:</span>
+            <span>Free</span>
         </div>
-        <div id="appliedCoupon" class="hidden bg-green-100 p-2 rounded-md flex justify-between items-center">
-            <span class="text-green-800 font-semibold" id="appliedCouponText"></span>
-            <button
-                class="text-red-600 hover:text-red-800"
-                onclick="removeCoupon()"
-            >
-                Remove
-            </button>
+        <div class="flex justify-between text-gray-800 font-bold text-lg mt-2">
+            <span>Total:</span>
+            <span id="finalTotal">₹<%= totalAfterDiscount %></span>
         </div>
-        <button id="applyCouponBtn" class="w-full bg-gray-800 hover:bg-gray-900 text-white text-sm py-2 rounded-md" disabled onclick="applyCoupon()">
-            Apply Coupon
+
+        <button onclick="placeOrder()" class="mt-6 w-full bg-gray-800 hover:bg-gray-900 text-white text-sm py-2 rounded-md">
+            Place Order
         </button>
-    </div>
-</div>
-
-
+        <div class="bg-white p-4 shadow-md rounded-md mt-6">
+            <h3 class="text-lg font-bold text-gray-800 border-b border-gray-200 pb-2">Apply Coupon</h3>
+            <div class="mt-4 space-y-4">
+                <div id="couponList" class="space-y-2">
+                    <% if (availableCoupons.length > 0) { %>
+                        <% availableCoupons.forEach(coupon => { %>
+                            <label class="flex items-center gap-3 p-3 border border-gray-300 rounded-md">
+                                <input type="radio" name="coupon" value="<%= coupon.couponCode %>"
+                                    onclick="selectCoupon('<%= coupon.couponCode %>', <%= coupon.couponValue %>, '<%= coupon.couponType %>')">
+                                <div>
+                                    <p class="text-gray-800 font-semibold">
+                                        <%= coupon.couponCode %> -
+                                        <%= coupon.couponType === 'percentage' ? coupon.couponValue + '%' : '₹' + coupon.couponValue %> Off
+                                    </p>
+                                    <p class="text-sm text-gray-600">Min Purchase: ₹<%= coupon.minimumPurchaseAmount %></p>
+                                    <p class="text-sm text-gray-600">Usage Limit: <%= coupon.perUserUsageLimit %> times per user</p>
+                                </div>
+                            </label>
+                        <% }); %>
+                    <% } else { %>
+                        <p class="text-gray-600">No coupons available for your cart.</p>
+                    <% } %>
+                </div>
+                <div id="appliedCoupon" class="hidden bg-green-100 p-2 rounded-md flex justify-between items-center">
+                    <span class="text-green-800 font-semibold" id="appliedCouponText"></span>
+                    <button class="text-red-600 hover:text-red-800" onclick="removeCoupon()">
+                        Remove
+                    </button>
+                </div>
+                <button id="applyCouponBtn" class="w-full bg-gray-800 hover:bg-gray-900 text-white text-sm py-2 rounded-md" disabled onclick="applyCoupon()">
+                    Apply Coupon
+                </button>
             </div>
         </div>
     </div>
-</div>
+                </div>
+            </div>
+        </div>
 
 
         <!------------- Footer ------------>
@@ -171,39 +188,65 @@
 
 </body>
 <script>
-
+    let subtotal = <%= totalAfterDiscount %>; // Initial subtotal after discount from the server
+    let totalDiscount = <%= totalDiscount %>; // Initial discount
+    let shippingCost = 0; // Assuming free shipping
+    let couponValue = 0; // Initial coupon value
     let selectedCouponCode = null;
+    let selectedCouponType = null;
+
+    function calculateTotal() {
+        const total = subtotal - couponValue + shippingCost;
+        document.getElementById("finalTotal").innerText = `₹${total.toLocaleString()}`;
+    }
 
     // Handle coupon selection
-    function selectCoupon(couponCode) {
+    function selectCoupon(couponCode, value, type) {
         selectedCouponCode = couponCode;
+        couponValue = type === 'percentage' ? (subtotal * value) / 100 : value;
         document.getElementById("applyCouponBtn").disabled = false;
     }
 
     // Apply the selected coupon
     function applyCoupon() {
         if (selectedCouponCode) {
+            // Show the coupon discount section
+            document.getElementById("couponDiscountSection").style.display = "flex";
+            document.getElementById("couponDiscountAmount").innerText = `-₹${couponValue.toLocaleString()}`;
+
+            // Update applied coupon UI
             document.getElementById("appliedCouponText").innerText = `Applied Coupon: ${selectedCouponCode}`;
             document.getElementById("appliedCoupon").classList.remove("hidden");
             document.getElementById("applyCouponBtn").classList.add("hidden");
             document.getElementById("couponList").classList.add("hidden");
+
+            calculateTotal(); // Recalculate total after applying the coupon
         }
     }
 
     // Remove the applied coupon
     function removeCoupon() {
         selectedCouponCode = null;
+        couponValue = 0;
+
+        // Hide the coupon discount section
+        document.getElementById("couponDiscountSection").style.display = "none";
+        document.getElementById("couponDiscountAmount").innerText = "";
+
+        // Reset the applied coupon UI
         document.getElementById("appliedCouponText").innerText = "";
         document.getElementById("appliedCoupon").classList.add("hidden");
         document.getElementById("applyCouponBtn").classList.remove("hidden");
         document.getElementById("couponList").classList.remove("hidden");
+
         const selectedCoupon = document.querySelector("input[name='coupon']:checked");
         if (selectedCoupon) {
             selectedCoupon.checked = false;
         }
+
+        calculateTotal(); // Recalculate total after removing the coupon
     }
 
-    // Modify the placeOrder function to include the selected coupon
     async function placeOrder() {
         const selectedAddress = document.querySelector("input[name='selectedAddress']:checked")?.value;
         const paymentMethod = document.querySelector("input[name='paymentMethod']:checked")?.value;
@@ -220,11 +263,13 @@
                 appliedCouponCode: selectedCouponCode,
             });
 
-            if (response.status === 200) {
+            const data = await response.json();
+
+            if (response.ok) {
                 Swal.fire({
                     icon: "success",
                     title: "Order Placed!",
-                    text: response.data.message,
+                    text: data.message,
                     showConfirmButton: true,
                     confirmButtonText: "OK",
                 }).then((result) => {
@@ -233,19 +278,16 @@
                     }
                 });
             } else {
-                Swal.fire("Error", response.data.error, "error");
+                Swal.fire("Error", data.error, "error");
             }
         } catch (error) {
             Swal.fire("Error", "An error occurred while placing the order.", "error");
         }
     }
 
-    // Modified placeOrder function to include the coupon code
-
-    // Initialize the page by fetching available coupons
     fetchCoupons();
 
-   
+
 </script>
 
 </html>

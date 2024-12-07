@@ -112,6 +112,7 @@ exports.getCheckout = async (req, res) => {
       }
     }
 
+    console.log(totalAfterDiscount + " " + subtotal + " " + totalDiscount);
     // Render the checkout page
     res.render("user/checkOutpage", {
       userAddresses,
