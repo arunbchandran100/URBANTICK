@@ -4,28 +4,28 @@ const Order = require("../../models/orderModel");
 const ProductVariant = require("../../models/variantSchema");
 const Offer = require("../../models/offerModel");
 const { ObjectId } = require("mongoose").Types;
+const Coupon = require("../../models/couponModel");
+
+
 
 
 exports.getCheckout = async (req, res) => {
   try {
-    // For Setting the expired offer to FALSE
+    // Update expired offers
     let offers = await Offer.find();
-
-    let today = new Date();
+    const today = new Date();
     today.setHours(0, 0, 0, 0);
 
     offers.forEach(async (offer) => {
       const offerEndDate = new Date(offer.endDate);
       if (offerEndDate < today) {
         offer.isActive = false;
-
         await offer.save();
       }
     });
 
     const userId = req.session.user._id;
     const userAddresses = await Address.find({ userId });
-    // console.log(userAddresses);
 
     offers = await Offer.find({ isActive: true });
     const cartItems = await Cart.find({ userId })
@@ -71,8 +71,6 @@ exports.getCheckout = async (req, res) => {
       subtotal += discountPrice * item.quantity;
       totalDiscount += offerAmount * item.quantity;
 
-      // console.log(14141414 );
-      // console.log(bestOffer.title );
       return {
         _id: item._id,
         product,
@@ -87,21 +85,47 @@ exports.getCheckout = async (req, res) => {
       };
     });
 
-    console.log(formattedCartItems);
     const totalAfterDiscount = subtotal - totalDiscount;
 
+    // Fetch available coupons
+    const availableCoupons = await Coupon.find({
+      isActive: true,
+      startDate: { $lte: today },
+      endDate: { $gte: today },
+    });
+
+    const validCoupons = [];
+    for (const coupon of availableCoupons) {
+      // Check if the user has already used this coupon
+      const userUsage = coupon.usageByUser.find(
+        (usage) => String(usage.userId) === String(userId)
+      );
+
+      const userUsageCount = userUsage ? userUsage.count : 0;
+
+      if (
+        subtotal >= coupon.minimumPurchaseAmount &&
+        userUsageCount < coupon.perUserUsageLimit
+      ) {
+        validCoupons.push(coupon);
+      }
+    }
+
+    // Render the checkout page
     res.render("user/checkOutpage", {
       userAddresses,
       cartItems: formattedCartItems,
       subtotal,
       totalDiscount,
       totalAfterDiscount,
+      availableCoupons: validCoupons,
     });
   } catch (error) {
     console.error(error);
     res.status(500).send("An error occurred while loading the checkout page.");
   }
 };
+
 
 
 
