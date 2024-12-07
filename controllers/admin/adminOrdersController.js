@@ -63,10 +63,11 @@ exports.getAdminOrdersDetails = [
         _id: order._id,
         userName: order.userName,
         orderDate: order.createdAt,
+        couponValue: order.couponValue,
         totalPrice: order.totalPrice,
         paymentMethod: order.paymentMethod,
         shippingAddress: order.shippingAddress,
-        items: order.orderItems, 
+        items: order.orderItems,
       };
 
       res.render("admin/adminOrdersDetails", { order: mappedOrder });

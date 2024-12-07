@@ -29,10 +29,26 @@
                 </h1>
                 <p class="text-gray-400 mb-2">Order Date: <%= new Date(order.orderDate).toLocaleDateString() %>
                 </p>
-                <p class="text-gray-400 mb-2">Total Amount: ₹<%= order.totalPrice.toLocaleString() %>
-                </p>
                 <p class="text-gray-400">Payment Mode: <%= order.paymentMethod %>
                 </p>
+
+                <div class="mt-4">
+                    <h3 class="text-lg font-semibold text-gray-300">Price Breakdown</h3>
+                    <p class="text-gray-400 ">Subtotal: ₹<%= order.items.reduce((acc, item)=> acc +
+                            item.priceWithoutOffer * item.quantity, 0).toLocaleString() %> </p>
+                    <p class="text-gray-400 ">Total Offer Redemption: -₹<%= order.items.reduce((acc, item)=>
+                            acc + item.offerAmount * item.quantity, 0).toLocaleString() %> </p>
+                    <% if(order.couponValue) {%>
+                        <p class="font-semibold text-gray-400  ">Total Coupon Redemption: -₹<%=
+                                order.couponValue.toLocaleString() %>
+                        </p>
+                        <% } %>
+
+                            <p class="font-semibold text-gray-300  ">Total Amount: ₹<%=
+                                    order.totalPrice.toLocaleString() %>
+                            </p>
+                </div>
+
             </section>
 
             <!-- Section 2: Shipping Address -->
@@ -89,7 +105,7 @@
                             <!-- 4th Section: Price -->
                             <div class="ml-4 flex-1">
                                 <p class="text-lg font-medium text-gray-400">
-                                    ₹<%= item.variant.discountPrice.toLocaleString() %>
+                                    ₹<%= item.itemTotalPrice.toLocaleString() %>
                                 </p>
                             </div>
 
