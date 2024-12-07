@@ -112,7 +112,7 @@ exports.getCheckout = async (req, res) => {
       }
     }
 
-    console.log(totalAfterDiscount + " " + subtotal + " " + totalDiscount);
+    //console.log(totalAfterDiscount + " " + subtotal + " " + totalDiscount);
     // Render the checkout page
     res.render("user/checkOutpage", {
       userAddresses,
@@ -316,8 +316,7 @@ exports.placeOrder = async (req, res) => {
 
 
 
-    await newOrder.save();
-
+    
     // Update stock for each item
     for (const item of cartItems) {
       const variant = await ProductVariant.findById(item.variantId._id);
@@ -329,10 +328,11 @@ exports.placeOrder = async (req, res) => {
       variant.stock -= item.quantity;
       await variant.save();
     }
-
+    console.log(44444444);
+    await newOrder.save();
     // Clear the user's cart
     await Cart.deleteMany({ userId });
-
+    console.log(555555555555555);
     res.status(200).json({
       success: true,
       message: "Order placed successfully!",

@@ -81,6 +81,7 @@ exports.getOrderDetails = async (req, res) => {
         minute: "2-digit",
         hour12: true,
       }),
+      couponValue : order.couponValue,
       totalPrice: order.totalPrice,
       paymentMethod: order.paymentMethod,
       items: order.orderItems.map((item) => ({
