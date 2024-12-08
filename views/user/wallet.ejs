@@ -1,0 +1,69 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Wallet</title>
+    <%- include("partials/headerHTML") %>
+
+</head>
+
+<body class="bg-gray-50">
+    <%- include("partials/navBar") %>
+    <div class="mt-16"></div>
+
+    <div class="flex min-h-screen bg-stone-100">
+        <!-- Sidebar -->
+        <div class="fixed bg-stone-100">
+            <%- include("partials/userProfileSideBar") %>
+        </div>
+
+        <!-- Main Content -->
+        <div class="flex-1 ml-64 w-3/4 bg-white p-6 shadow-md">
+            <h1 class="text-2xl font-semibold text-gray-800 mb-6">Wallet</h1>
+
+            <!-- Wallet Balance Section -->
+            <div class="mb-8 p-6 bg-white rounded-lg shadow-md border border-gray-300">
+                <div class="flex justify-between items-center">
+                    <p class="text-lg font-semibold text-gray-600">Wallet Balance:</p>
+                    <p class="text-2xl font-bold text-green-600">₹<%= balance.toLocaleString() %></p>
+                </div>
+            </div>
+
+            <!-- Transactions Section -->
+            <h2 class="text-xl font-bold text-gray-800 mb-4">Transaction History</h2>
+            <% if (transactions.length > 0) { %>
+                <% transactions.forEach(transaction => { %>
+                    <div class="mb-4 p-4 bg-white rounded-lg shadow-md border border-gray-300">
+                        <div class="flex justify-between items-center">
+                            <div>
+                                <p class="text-sm font-semibold text-gray-600">
+                                    Transaction Type:
+                                    <span class="<%= transaction.transactionType === 'CREDIT' ? 'text-green-600' : 'text-red-600' %>">
+                                        <%= transaction.transactionType %>
+                                    </span>
+                                </p>
+                                <p class="text-sm text-gray-500">
+                                    Date: <%= new Date(transaction.transactionDate).toLocaleDateString() %>
+                                </p>
+                            </div>
+                            <div>
+                                <p class="text-lg font-bold <%= transaction.transactionType === 'CREDIT' ? 'text-green-600' : 'text-red-600' %>">
+                                    ₹<%= transaction.amount.toLocaleString() %>
+                                </p>
+                            </div>
+                        </div>
+                    </div>
+                <% }); %>
+            <% } else { %>
+                <p class="text-gray-600">No transactions found.</p>
+            <% } %>
+        </div>
+    </div>
+</body>
+
+
+
+
+</html>

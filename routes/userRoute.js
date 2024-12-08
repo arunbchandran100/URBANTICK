@@ -96,6 +96,12 @@ router.post("/order/cancel", myOrders.cancelOrderItem);
 
 
 
+//-------------------- Wallet Dashboard --------------------
+const userWallet = require("../controllers/user/walletController");
+
+router.get("/user/wallet", userAuthenticated,userWallet.getWallet);
+
+
 //-------------------- Change password Dashboard --------------------
 const changePassword = require("../controllers/user/changePasswordController");
 
