@@ -33,37 +33,35 @@
                 </div>
 
                 <!-- Transactions Section -->
-                <h2 class="text-xl font-bold text-gray-800 mb-4">Transaction History</h2>
-                <% if (transactions.length> 0) { %>
-                    <% transactions.forEach(transaction=> { %>
-                        <div class="mb-4 p-4 bg-white rounded-lg shadow-md border border-gray-300">
-                            <div class="flex justify-between items-center">
-                                <div>
-                                    <p class="text-sm font-semibold text-gray-600">
-                                        Transaction Type:
-                                        <span
-                                            class="<%= transaction.transactionType === 'CREDIT' ? 'text-green-600' : 'text-red-600' %>">
-                                            <%= transaction.transactionType %>
-                                        </span>
-                                    </p>
-                                    <p class="text-sm text-gray-500">
-                                        Date: <%= new Date(transaction.transactionDate).toLocaleString() %>
-                                    </p>
-
-                                </div>
-                                <div>
-                                    <p
-                                        class="text-lg font-bold <%= transaction.transactionType === 'CREDIT' ? 'text-green-600' : 'text-red-600' %>">
-                                        ₹<%= transaction.amount.toLocaleString() %>
-                                    </p>
-                                </div>
-                            </div>
-                        </div>
-                        <% }); %>
-                            <% } else { %>
-                                <p class="text-gray-600">No transactions found.</p>
-                                <% } %>
+<h2 class="text-xl font-bold text-gray-800 mb-4">Transaction History</h2>
+<% if (transactions.length > 0) { %>
+    <% transactions.sort((a, b) => new Date(b.transactionDate) - new Date(a.transactionDate)); %> <!-- Sort transactions in descending order -->
+    <% transactions.forEach(transaction => { %>
+        <div class="mb-4 p-4 bg-white rounded-lg shadow-md border border-gray-300">
+            <div class="flex justify-between items-center">
+                <div>
+                    <p class="text-sm font-semibold text-gray-600">
+                        Transaction Type:
+                        <span class="<%= transaction.transactionType === 'CREDIT' ? 'text-green-600' : 'text-red-600' %>">
+                            <%= transaction.transactionType %>
+                        </span>
+                    </p>
+                    <p class="text-sm text-gray-500">
+                        Date: <%= new Date(transaction.transactionDate).toLocaleString() %>
+                    </p>
+                </div>
+                <div>
+                    <p class="text-lg font-bold <%= transaction.transactionType === 'CREDIT' ? 'text-green-600' : 'text-red-600' %>">
+                        ₹<%= transaction.amount.toLocaleString() %>
+                    </p>
+                </div>
             </div>
+        </div>
+    <% }); %>
+<% } else { %>
+    <p class="text-gray-600">No transactions found.</p>
+<% } %>
+
         </div>
 </body>
 

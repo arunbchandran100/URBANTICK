@@ -173,22 +173,24 @@
 
             </div>
 
-            <!-- ----------------------------------------- -->
-            <!-- Return Reason Modal -->
-            <div id="returnModal" class="hidden fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center">
-                <div class="bg-white p-6 rounded-md shadow-md w-96">
-                    <h2 class="text-lg font-semibold text-gray-800 mb-4">Return
-                        Order</h2>
-                    <textarea id="returnReason" class="w-full border border-gray-300 rounded-md p-2 text-sm" rows="4"
-                        placeholder="Enter your return reason"></textarea>
-                    <div class="flex justify-end gap-4 mt-4">
-                        <button id="cancelReturn"
-                            class="px-4 py-2 bg-gray-200 rounded-md text-gray-600 hover:bg-gray-300">Cancel</button>
-                        <button id="submitReturn"
-                            class="px-4 py-2 bg-blue-500 text-white rounded-md hover:bg-blue-600">Submit</button>
-                    </div>
-                </div>
-            </div>
+<!-- ----------------------------------------- -->
+<!-- Return Reason Modal -->
+<div id="returnModal" class="hidden fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center">
+    <div class="bg-white p-6 rounded-md shadow-md w-96">
+        <h2 class="text-lg font-semibold text-gray-800 mb-4">Return Order</h2>
+        <textarea id="returnReason" class="w-full border border-gray-300 rounded-md p-2 text-sm" rows="4"
+                  placeholder="Enter your return reason"></textarea>
+        <div class="flex justify-end gap-4 mt-4">
+            <button id="cancelReturn"
+                    class="px-4 py-2 bg-gray-200 rounded-md text-gray-600 hover:bg-gray-300">Cancel</button>
+            <button id="submitReturn"
+                    class="px-4 py-2 bg-blue-500 text-white rounded-md hover:bg-blue-600">Submit</button>
+        </div>
+    </div>
+</div>
+
+
+
 
             <script>
 
@@ -257,23 +259,37 @@
                 });
 
                 // Submit Return Reason
-                document.getElementById('submitReturn').addEventListener('click', async () => {
-                    const orderItemId = document.getElementById('submitReturn').dataset.id;
-                    const reason = document.getElementById('returnReason').value;
+document.getElementById('submitReturn').addEventListener('click', async () => {
+    const orderItemId = document.getElementById('submitReturn').dataset.id;
+    const reason = document.getElementById('returnReason').value;
 
-                    if (!reason.trim()) {
-                        notyf.error('Please provide a return reason.');
-                        return;
-                    }
+    if (!reason.trim()) {
+        Swal.fire('Error', 'Please provide a return reason.', 'error');
+        return;
+    }
 
-                    try {
-                        const response = await axios.post('/order/return', { orderItemId, reason });
-                        notyf.success(response.data.message || 'Return request submitted!');
-                        location.reload();
-                    } catch (error) {
-                        notyf.error(error.response?.data?.message || 'Failed to submit return request.');
-                    }
-                });
+    try {
+        const response = await axios.post('/order/return', { orderItemId, reason });
+        
+        if (response.status === 200) {
+            Swal.fire({
+                title: 'Success!',
+                text: response.data.message || 'Return request submitted!',
+                icon: 'success',
+                confirmButtonText: 'OK'
+            }).then((result) => {
+                if (result.isConfirmed) {
+                    location.reload(); // Reload the page after successful submission
+                }
+            });
+        } else {
+            Swal.fire('Error', response.data.message || 'Failed to submit return request.', 'error');
+        }
+    } catch (error) {
+        Swal.fire('Error', error.response?.data?.message || 'Failed to submit return request.', 'error');
+    }
+});
+
 
 
                 document.querySelectorAll('.cancel-return-btn').forEach((button) => {
@@ -326,8 +342,12 @@
                 document.getElementById('cancelReturn').addEventListener('click', () => {
                     document.getElementById('returnModal').classList.add('hidden');
                 });
-            </script>
 
+
+
+
+    
+</script>
 </body>
 
 </html>
