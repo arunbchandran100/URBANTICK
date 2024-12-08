@@ -119,3 +119,42 @@ exports.updateOrderStatus = [
     }
   },
 ];
+
+
+exports.handleReturnRequest = async (req, res) => {
+  try {
+    const { orderId, itemId } = req.body;
+    const action = req.url.includes("approve") ? "approve" : "reject";
+
+    const order = await Order.findById(orderId);
+
+    if (!order) {
+      return res.status(404).send("Order not found.");
+    }
+
+    const orderItem = order.orderItems.find(
+      (item) => item._id.toString() === itemId
+    );
+
+    if (!orderItem) {
+      return res.status(404).send("Order item not found.");
+    }
+
+    if (orderItem.orderStatus !== "Return-Requested") {
+      return res.status(400).send("Invalid return request state.");
+    }
+
+    if (action === "approve") {
+      orderItem.orderStatus = "Returned";
+    } else {
+      orderItem.orderStatus = "Return Cancelled"; // Revert to previous status
+      orderItem.returnReason = null; // Clear the return reason
+    }
+
+    await order.save();
+    res.redirect(`/admin/order/details/${orderId}`);
+  } catch (error) {
+    console.error("Error handling return request:", error);
+    res.status(500).send("Failed to process return request.");
+  }
+};

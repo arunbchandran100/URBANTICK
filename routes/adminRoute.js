@@ -62,6 +62,8 @@ const adminOrders = require("../controllers/admin/adminOrdersController");
 router.get("/orders", adminOrders.getAdminOrders);
 router.get("/orders/details/:id", adminOrders.getAdminOrdersDetails);
 router.post("/orders/update-status", adminOrders.updateOrderStatus);
+router.post("/order/approve-return", adminOrders.handleReturnRequest);
+router.post("/order/reject-return", adminOrders.handleReturnRequest);
 
 
 
