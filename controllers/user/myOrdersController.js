@@ -173,3 +173,98 @@ exports.cancelOrderItem = async (req, res) => {
     res.status(500).json({ message: "Internal Server Error." });
   }
 };
+
+
+exports.submitReturnRequest = async (req, res) => {
+  try {
+    const { orderItemId, reason } = req.body;
+
+    if (!reason.trim()) {
+      return res.status(400).json({ message: "Return reason is required." });
+    }
+
+    // Find the order containing the order item
+    const order = await Order.findOne({
+      "orderItems._id": orderItemId,
+    });
+
+    if (!order) {
+      return res.status(404).json({ message: "Order item not found." });
+    }
+
+    // Locate the specific order item
+    const orderItem = order.orderItems.find(
+      (item) => item._id.toString() === orderItemId
+    );
+
+    if (!orderItem) {
+      return res.status(404).json({ message: "Order item not found." });
+    }
+
+    // Check if the order status already indicates a return request
+    if (
+      orderItem.orderStatus === "return-requested" ||
+      orderItem.orderStatus === "return-approved"
+    ) {
+      return res.status(400).json({
+        message: "Return request has already been submitted or processed.",
+      });
+    }
+
+    // Update the order status to "return-requested" and set the reason
+    orderItem.orderStatus = "Return-Requested";
+    orderItem.returnReason = reason;
+
+    // Save the updated order
+    await order.save();
+
+    res.status(200).json({ message: "Return request submitted successfully." });
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({ message: "Failed to submit return request." });
+  }
+};
+
+
+exports.cancelReturnRequest = async (req, res) => {
+  try {
+    const { orderItemId } = req.body;
+
+    // Find the order containing the order item
+    const order = await Order.findOne({
+      "orderItems._id": orderItemId,
+    });
+
+    if (!order) {
+      return res.status(404).json({ message: "Order item not found." });
+    }
+
+    // Locate the specific order item
+    const orderItem = order.orderItems.find(
+      (item) => item._id.toString() === orderItemId
+    );
+
+    if (!orderItem) {
+      return res.status(404).json({ message: "Order item not found." });
+    }
+
+    // Check if the order status is eligible for cancellation
+    if (orderItem.orderStatus !== "Return-Requested") {
+      return res.status(400).json({
+        message: "Return request cannot be canceled at this stage.",
+      });
+    }
+
+    // Update the order status to "Processing" or the appropriate default status
+    orderItem.orderStatus = "Return-Cancelled"; // Or "Delivered" depending on your workflow
+    orderItem.returnReason = null; // Clear the return reason if needed
+
+    // Save the updated order
+    await order.save();
+
+    res.status(200).json({ message: "Return request canceled successfully." });
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({ message: "Failed to cancel return request." });
+  }
+};

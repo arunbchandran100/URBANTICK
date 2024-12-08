@@ -30,6 +30,9 @@ const orderSchema = new mongoose.Schema(
           type: String,
           default: "Processing",
         },
+        returnReason: {
+          type: String,
+        },
         // New fields for offer details
         offerType: {
           type: String,

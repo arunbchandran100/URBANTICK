@@ -146,6 +146,24 @@
                                             </button>
                                         </div>
                                         <% } %>
+                                    <% if (item.orderStatus==='Delivered' ) { %>
+                                        <div class="mt-6 ml-10">
+                                            <button
+                                                class="return-btn text-sm px-4 py-2 bg-red-500 hover:bg-red-600 text-white rounded-md"
+                                                data-id="<%= item.orderItemId %>">
+                                                Return
+                                            </button>
+                                        </div>
+                                        <% } %>
+                                    <% if (item.orderStatus==='Return-Requested' ) { %>
+                                        <div class="mt-6 ml-10">
+                                            <button
+                                                class="cancel-return-btn text-sm px-4 py-2 bg-red-500 hover:bg-red-600 text-white rounded-md"
+                                                data-id="<%= item.orderItemId %>">
+                                                Cancel Return
+                                            </button>
+                                        </div>
+                                        <% } %>
                                 </div>
 
                             </div>
@@ -256,6 +274,53 @@
                         notyf.error(error.response?.data?.message || 'Failed to submit return request.');
                     }
                 });
+
+
+                document.querySelectorAll('.cancel-return-btn').forEach((button) => {
+    button.addEventListener('click', async () => {
+        const orderItemId = button.dataset.id;
+
+        // Show SweetAlert confirmation dialog
+        const result = await Swal.fire({
+            title: 'Are you sure?',
+            text: "This action will cancel the return request!",
+            icon: 'warning',
+            showCancelButton: true,
+            confirmButtonColor: '#3085d6',
+            cancelButtonColor: '#d33',
+            confirmButtonText: 'Yes, cancel it!'
+        });
+
+        if (result.isConfirmed) {
+            try {
+                // Make the API call to cancel the return request
+                const response = await axios.post('/order/cancel-return', { orderItemId });
+
+                // Show success popup using SweetAlert
+                Swal.fire({
+                    icon: 'success',
+                    title: 'Return Cancelled',
+                    text: response.data.message || 'Return request cancelled successfully!',
+                    confirmButtonText: 'OK',
+                }).then((result) => {
+                    if (result.isConfirmed) {
+                        // Reload the page
+                        location.reload();
+                    }
+                });
+            } catch (error) {
+                // Show error popup using SweetAlert
+                Swal.fire({
+                    icon: 'error',
+                    title: 'Error',
+                    text: error.response?.data?.message || 'Failed to cancel return request.',
+                    confirmButtonText: 'OK',
+                });
+            }
+        }
+    });
+});
+
 
                 // Cancel Modal
                 document.getElementById('cancelReturn').addEventListener('click', () => {
