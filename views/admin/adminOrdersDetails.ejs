@@ -135,40 +135,32 @@
                     <% } %>
 
                     <!-- Status Dropdown -->
-                    <form method="POST" action="/admin/order/update-status">
-                        <input type="hidden" name="orderId" value="<%= order._id %>">
-                        <input type="hidden" name="itemId" value="<%= item._id %>">
+                  <form method="POST" action="/admin/order/update-status">
+    <input type="hidden" name="orderId" value="<%= order._id %>">
+    <input type="hidden" name="itemId" value="<%= item._id %>">
 
-                        <%   if (item.orderStatus === "Delivered" ) { %>
-                            <span class="bg-green-500 text-white px-3 py-1 rounded">
-                                <%= item.orderStatus %>
-                            </span>
-                        <%}else if (item.orderStatus === "Cancelled" || "Return Cancelled" || "Returned") { %>
-                            <span class="bg-red-500 text-white px-3 py-1 rounded">
-                                <%= item.orderStatus %>
-                            </span>
-                        <% } else { %>
-                            <select name="orderStatus"
-                                class="bg-gray-700 text-white rounded p-2 focus:outline-none">
-                                <option value="Processing" <%= item.orderStatus === "Processing" ? "selected" : "" %>>
-                                    Processing
-                                </option>
-                                <option value="Shipped" <%= item.orderStatus === "Shipped" ? "selected" : "" %>>
-                                    Shipped
-                                </option>
-                                <option value="Delivered" <%= item.orderStatus === "Delivered" ? "selected" : "" %>>
-                                    Delivered
-                                </option>
-                                <option value="Cancelled" <%= item.orderStatus === "Cancelled" ? "selected" : "" %>>
-                                    Cancelled
-                                </option>
-                            </select>
-                            <button type="submit"
-                                class="ml-2 text-sm px-3 py-1 bg-blue-500 hover:bg-blue-600 text-white rounded-md">
-                                Update
-                            </button>
-                        <% } %>
-                    </form>
+    <% if (item.orderStatus === "Cancelled" || item.orderStatus === "Return Cancelled" || item.orderStatus === "Returned") { %>
+        <span class="bg-red-500 text-white px-3 py-1 rounded">
+            <%= item.orderStatus %>
+        </span>
+    <% } else if (item.orderStatus === "Delivered") { %>
+        <span class="bg-green-500 text-white px-3 py-1 rounded">
+            <%= item.orderStatus %>
+        </span>
+    <% } else { %>
+        <!-- Show dropdown for other statuses -->
+        <select name="orderStatus" class="bg-gray-700 text-white rounded p-2 focus:outline-none">
+            <option value="Processing" <%= item.orderStatus === "Processing" ? "selected" : "" %> 
+                <%= item.orderStatus !== "Processing" ? "disabled" : "" %>>Processing</option>
+            <option value="Shipped" <%= item.orderStatus === "Shipped" ? "selected" : "" %> 
+                <%= ["Processing"].includes(item.orderStatus) ? "" : "disabled" %>>Shipped</option>
+            <option value="Delivered" <%= item.orderStatus === "Delivered" ? "selected" : "" %> 
+                <%= ["Processing", "Shipped"].includes(item.orderStatus) ? "" : "disabled" %>>Delivered</option>
+            <option value="Cancelled" <%= item.orderStatus === "Cancelled" ? "selected" : "" %>>Cancelled</option>
+        </select>
+    <% } %>
+</form>
+
                 </div>
             </div>
         </div>

@@ -3,6 +3,7 @@ const adminAuthenticated = require("../../middleware/adminauthmildware");
 const Order = require("../../models/orderModel");
 const User = require("../../models/userModel");
 const Variant = require("../../models/variantSchema");
+const Wallet = require("../../models/walletModel");
 
 
 exports.getAdminOrders = [
@@ -121,6 +122,7 @@ exports.updateOrderStatus = [
 ];
 
 
+
 exports.handleReturnRequest = async (req, res) => {
   try {
     const { orderId, itemId } = req.body;
@@ -146,8 +148,32 @@ exports.handleReturnRequest = async (req, res) => {
 
     if (action === "approve") {
       orderItem.orderStatus = "Returned";
+
+      // Check if wallet exists, create if not
+      let wallet = await Wallet.findOne({ userId: order.userId });
+
+      if (!wallet) {
+        wallet = new Wallet({
+          userId: order.userId,
+          balance_amount: 0,
+          transactions: [],
+        });
+      }
+
+      // Refund amount
+      const refundAmount = orderItem.itemTotalPrice;
+
+      // Update wallet balance and add a transaction
+      wallet.balance_amount += refundAmount;
+      wallet.transactions.push({
+        transactionType: "CREDIT",
+        amount: refundAmount,
+        transactionDate: new Date(),
+      });
+
+      await wallet.save();
     } else {
-      orderItem.orderStatus = "Return Cancelled"; // Revert to previous status
+      orderItem.orderStatus = "Return-Cancelled"; // Revert to previous status
       orderItem.returnReason = null; // Clear the return reason
     }
 
