@@ -52,6 +52,7 @@ exports.getAdminOrdersDetails = [
   async (req, res) => {
     try {
       const { id } = req.params;
+
       const order = await Order.findById(id);
 
       if (!order) {
@@ -123,15 +124,16 @@ exports.handleReturnRequest = async (req, res) => {
     const action = req.url.includes("approve") ? "approve" : "reject";
 
     const order = await Order.findById(orderId);
-    if (!order) return res.status(404).send("Order not found.");
+    if (!order) return res.status(404).json({ message: "Order not found." });
 
     const orderItem = order.orderItems.find(
       (item) => item._id.toString() === itemId
     );
-    if (!orderItem) return res.status(404).send("Order item not found.");
+    if (!orderItem)
+      return res.status(404).json({ message: "Order item not found." });
 
     if (orderItem.orderStatus !== "Return-Requested") {
-      return res.status(400).send("Invalid return request state.");
+      return res.status(400).json({ message: "Invalid return request state." });
     }
 
     if (action === "approve") {
@@ -167,15 +169,28 @@ exports.handleReturnRequest = async (req, res) => {
       }
       variant.stock += orderItem.quantity;
       await variant.save();
+
+      // Success response for approval
+      await order.save();
+      return res.status(200).json({
+        message: "Return request approved and refund processed successfully.",
+        orderStatus: orderItem.orderStatus,
+        refundAmount,
+      });
     } else {
       orderItem.orderStatus = "Return-Cancelled"; // Revert to previous status
       orderItem.returnReason = null; // Clear the return reason
-    }
 
-    await order.save();
-    res.redirect(`/admin/order/details/${orderId}`);
+      // Success response for rejection
+      await order.save();
+      return res.status(200).json({
+        message: "Return request rejected successfully.",
+        orderStatus: orderItem.orderStatus,
+      });
+    }
   } catch (error) {
     console.error("Error handling return request:", error);
-    res.status(500).send("Failed to process return request.");
+    res.status(500).json({ message: "Failed to process return request." });
   }
 };
+

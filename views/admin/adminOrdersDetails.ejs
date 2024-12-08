@@ -111,30 +111,98 @@
 
                             <!-- 5th Section: Status and Return Actions -->
                             <div class="ml-4 flex-1">
-                                <% if (item.orderStatus==="Return-Requested" ) { %>
-                                    <!-- Show Return Reason -->
-                                    <p class="text-sm text-yellow-400 mb-2">Return Reason: <%= item.returnReason %>
-                                    </p>
-                                    <!-- Return Approval Buttons -->
-                                    <div class="flex mt-2">
-                                        <form method="POST" action="/admin/order/approve-return">
-                                            <input type="hidden" name="orderId" value="<%= order._id %>">
-                                            <input type="hidden" name="itemId" value="<%= item._id %>">
-                                            <button type="submit"
-                                                class="text-sm px-4 py-2 bg-green-500 hover:bg-green-600 text-white rounded-md">
-                                                Approve Return
-                                            </button>
-                                        </form>
-                                        <form method="POST" action="/admin/order/reject-return" class="ml-2">
-                                            <input type="hidden" name="orderId" value="<%= order._id %>">
-                                            <input type="hidden" name="itemId" value="<%= item._id %>">
-                                            <button type="submit"
-                                                class="text-sm px-4 py-2 bg-red-500 hover:bg-red-600 text-white rounded-md">
-                                                Reject Return
-                                            </button>
-                                        </form>
-                                    </div>
-                                    <% } %>
+   <% if (item.orderStatus === "Return-Requested") { %>
+  <!-- Show Return Reason -->
+  <p class="text-sm text-yellow-400 mb-2">Return Reason: <%= item.returnReason %></p>
+
+  <!-- Return Approval Buttons -->
+  <div class="flex mt-2">
+      <!-- Approve Return Form -->
+      <form method="POST" action="/admin/order/approve-return" class="return-action-form">
+          <input type="hidden" name="orderId" value="<%= order._id %>">
+          <input type="hidden" name="itemId" value="<%= item._id %>">
+          <button type="submit" class="text-sm px-4 py-2 bg-green-500 hover:bg-green-600 text-white rounded-md">
+              Approve Return
+          </button>
+      </form>
+
+      <!-- Reject Return Form -->
+      <form method="POST" action="/admin/order/reject-return" class="return-action-form ml-2">
+          <input type="hidden" name="orderId" value="<%= order._id %>">
+          <input type="hidden" name="itemId" value="<%= item._id %>">
+          <button type="submit" class="text-sm px-4 py-2 bg-red-500 hover:bg-red-600 text-white rounded-md">
+              Reject Return
+          </button>
+      </form>
+  </div>
+<% } %>
+
+
+<script>
+  // Attach event listeners to return action forms
+  document.querySelectorAll('.return-action-form').forEach(form => {
+    form.addEventListener('submit', async (event) => {
+      event.preventDefault(); // Prevent default form submission
+
+      const actionUrl = form.getAttribute('action');
+      const formData = new FormData(form);
+      const orderId = formData.get('orderId');
+      const itemId = formData.get('itemId');
+      
+      const action = actionUrl.includes('approve') ? 'approve' : 'reject';
+
+      try {
+        // Send AJAX request to handle return action
+        const response = await fetch(actionUrl, {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify({
+            orderId,
+            itemId,
+            action,  // either 'approve' or 'reject'
+          }),
+        });
+
+        if (response.ok) {
+          // Success feedback
+          const result = await Swal.fire({
+            title: 'Success!',
+            text: 'Return request has been processed successfully.',
+            icon: 'success',
+            confirmButtonText: 'OK'
+          });
+
+          // Reload the page if the user clicks OK
+          if (result.isConfirmed) {
+            location.reload();
+          }
+        } else {
+          // Error handling if something goes wrong
+          const errorMessage = await response.json();
+          Swal.fire({
+            title: 'Error!',
+            text: errorMessage.message || 'Failed to process the return request.',
+            icon: 'error',
+            confirmButtonText: 'OK'
+          });
+        }
+      } catch (error) {
+        // Error handling for unexpected errors
+        console.error('Error processing return request:', error);
+        Swal.fire({
+          title: 'Error!',
+          text: 'An error occurred while processing the return request.',
+          icon: 'error',
+          confirmButtonText: 'OK'
+        });
+      }
+    });
+  });
+</script>
+
+
 
                                         <!-- Status Dropdown -->
                                         <form method="POST" action="/admin/order/update-status">
