@@ -73,99 +73,115 @@
             </section>
 
             <!-- Section 3: Items -->
-<section class="bg-zinc-800 p-6 rounded-lg">
-    <h2 class="text-xl font-semibold text-gray-200 mb-4">Items</h2>
-    <% order.items.forEach((item)=> { %>
-        <div class="mb-6 border border-gray-700 rounded-lg bg-zinc-800 p-4 shadow-md">
-            <div class="flex items-center">
-                <!-- 1st Section: Product Image -->
-                <div class="w-40 h-40">
-                    <img src="<%= item.product.imageUrl %>" alt="<%= item.product.productName %>"
-                        class="w-full h-full object-cover rounded-md border border-gray-700" />
-                </div>
+            <section class="bg-zinc-800 p-6 rounded-lg">
+                <h2 class="text-xl font-semibold text-gray-200 mb-4">Items</h2>
+                <% order.items.forEach((item)=> { %>
+                    <div class="mb-6 border border-gray-700 rounded-lg bg-zinc-800 p-4 shadow-md">
+                        <div class="flex items-center">
+                            <!-- 1st Section: Product Image -->
+                            <div class="w-40 h-40">
+                                <img src="<%= item.product.imageUrl %>" alt="<%= item.product.productName %>"
+                                    class="w-full h-full object-cover rounded-md border border-gray-700" />
+                            </div>
 
-                <!-- 2nd Section: Product Brand & Name -->
-                <div class="ml-16 flex-1">
-                    <p class="text-lg font-semibold text-gray-200">
-                        <%= item.product.productName %>
-                    </p>
-                    <p class="text-sm text-gray-400">Color: <%= item.variant.color %></p>
-                </div>
+                            <!-- 2nd Section: Product Brand & Name -->
+                            <div class="ml-16 flex-1">
+                                <p class="text-lg font-semibold text-gray-200">
+                                    <%= item.product.productName %>
+                                </p>
+                                <p class="text-sm text-gray-400">Color: <%= item.variant.color %>
+                                </p>
+                            </div>
 
-                <!-- 3rd Section: Quantity -->
-                <div class="ml-4 flex-1">
-                    <p class="text-lg font-medium text-gray-400">
-                        Qty: <span class="text-gray-200">
-                            <%= item.quantity %>
-                        </span>
-                    </p>
-                </div>
+                            <!-- 3rd Section: Quantity -->
+                            <div class="ml-4 flex-1">
+                                <p class="text-lg font-medium text-gray-400">
+                                    Qty: <span class="text-gray-200">
+                                        <%= item.quantity %>
+                                    </span>
+                                </p>
+                            </div>
 
-                <!-- 4th Section: Price -->
-                <div class="ml-4 flex-1">
-                    <p class="text-lg font-medium text-gray-400">
-                        ₹<%= item.itemTotalPrice.toLocaleString() %>
-                    </p>
-                </div>
+                            <!-- 4th Section: Price -->
+                            <div class="ml-4 flex-1">
+                                <p class="text-lg font-medium text-gray-400">
+                                    ₹<%= item.itemTotalPrice.toLocaleString() %>
+                                </p>
+                            </div>
 
-                <!-- 5th Section: Status and Return Actions -->
-                <div class="ml-4 flex-1">
-                    <% if (item.orderStatus === "Return-Requested") { %>
-                        <!-- Show Return Reason -->
-                        <p class="text-sm text-yellow-400 mb-2">Return Reason: <%= item.returnReason %></p>
-                        <!-- Return Approval Buttons -->
-                        <div class="flex mt-2">
-                            <form method="POST" action="/admin/order/approve-return">
-                                <input type="hidden" name="orderId" value="<%= order._id %>">
-                                <input type="hidden" name="itemId" value="<%= item._id %>">
-                                <button type="submit"
-                                    class="text-sm px-4 py-2 bg-green-500 hover:bg-green-600 text-white rounded-md">
-                                    Approve Return
-                                </button>
-                            </form>
-                            <form method="POST" action="/admin/order/reject-return" class="ml-2">
-                                <input type="hidden" name="orderId" value="<%= order._id %>">
-                                <input type="hidden" name="itemId" value="<%= item._id %>">
-                                <button type="submit"
-                                    class="text-sm px-4 py-2 bg-red-500 hover:bg-red-600 text-white rounded-md">
-                                    Reject Return
-                                </button>
-                            </form>
+                            <!-- 5th Section: Status and Return Actions -->
+                            <div class="ml-4 flex-1">
+                                <% if (item.orderStatus==="Return-Requested" ) { %>
+                                    <!-- Show Return Reason -->
+                                    <p class="text-sm text-yellow-400 mb-2">Return Reason: <%= item.returnReason %>
+                                    </p>
+                                    <!-- Return Approval Buttons -->
+                                    <div class="flex mt-2">
+                                        <form method="POST" action="/admin/order/approve-return">
+                                            <input type="hidden" name="orderId" value="<%= order._id %>">
+                                            <input type="hidden" name="itemId" value="<%= item._id %>">
+                                            <button type="submit"
+                                                class="text-sm px-4 py-2 bg-green-500 hover:bg-green-600 text-white rounded-md">
+                                                Approve Return
+                                            </button>
+                                        </form>
+                                        <form method="POST" action="/admin/order/reject-return" class="ml-2">
+                                            <input type="hidden" name="orderId" value="<%= order._id %>">
+                                            <input type="hidden" name="itemId" value="<%= item._id %>">
+                                            <button type="submit"
+                                                class="text-sm px-4 py-2 bg-red-500 hover:bg-red-600 text-white rounded-md">
+                                                Reject Return
+                                            </button>
+                                        </form>
+                                    </div>
+                                    <% } %>
+
+                                        <!-- Status Dropdown -->
+                                        <form method="POST" action="/admin/order/update-status">
+                                            <input type="hidden" name="orderId" value="<%= order._id %>">
+                                            <input type="hidden" name="itemId" value="<%= item._id %>">
+
+                                            <% if (item.orderStatus==="Cancelled" ||
+                                                item.orderStatus==="Return Cancelled" || item.orderStatus==="Returned" )
+                                                { %>
+                                                <span class="bg-red-500 text-white px-3 py-1 rounded">
+                                                    <%= item.orderStatus %>
+                                                </span>
+                                                <% } else if (item.orderStatus==="Delivered" || item.orderStatus==="Return-Cancelled") { %>
+                                                    <span class="bg-green-500 text-white px-3 py-1 rounded">
+                                                        <%= item.orderStatus %>
+                                                    </span>
+                                                    <% } else { %>
+                                                        <!-- Show dropdown for other statuses -->
+                                                        <select name="orderStatus"
+                                                            class="bg-gray-700 text-white rounded p-2 focus:outline-none">
+                                                            <option value="Processing"
+                                                                <%=item.orderStatus==="Processing" ? "selected" : "" %>
+                                                                <%= item.orderStatus !=="Processing" ? "disabled" : ""
+                                                                    %>>Processing
+                                                            </option>
+                                                            <option value="Shipped" <%=item.orderStatus==="Shipped"
+                                                                ? "selected" : "" %>
+                                                                <%= ["Processing"].includes(item.orderStatus) ? ""
+                                                                    : "disabled" %>>Shipped
+                                                            </option>
+                                                            <option value="Delivered" <%=item.orderStatus==="Delivered"
+                                                                ? "selected" : "" %>
+                                                                <%= ["Processing", "Shipped"
+                                                                    ].includes(item.orderStatus) ? "" : "disabled" %>
+                                                                    >Delivered
+                                                            </option>
+                                                            <option value="Cancelled" <%=item.orderStatus==="Cancelled"
+                                                                ? "selected" : "" %>>Cancelled</option>
+                                                        </select>
+                                                        <% } %>
+                                        </form>
+
+                            </div>
                         </div>
-                    <% } %>
-
-                    <!-- Status Dropdown -->
-                  <form method="POST" action="/admin/order/update-status">
-    <input type="hidden" name="orderId" value="<%= order._id %>">
-    <input type="hidden" name="itemId" value="<%= item._id %>">
-
-    <% if (item.orderStatus === "Cancelled" || item.orderStatus === "Return Cancelled" || item.orderStatus === "Returned") { %>
-        <span class="bg-red-500 text-white px-3 py-1 rounded">
-            <%= item.orderStatus %>
-        </span>
-    <% } else if (item.orderStatus === "Delivered") { %>
-        <span class="bg-green-500 text-white px-3 py-1 rounded">
-            <%= item.orderStatus %>
-        </span>
-    <% } else { %>
-        <!-- Show dropdown for other statuses -->
-        <select name="orderStatus" class="bg-gray-700 text-white rounded p-2 focus:outline-none">
-            <option value="Processing" <%= item.orderStatus === "Processing" ? "selected" : "" %> 
-                <%= item.orderStatus !== "Processing" ? "disabled" : "" %>>Processing</option>
-            <option value="Shipped" <%= item.orderStatus === "Shipped" ? "selected" : "" %> 
-                <%= ["Processing"].includes(item.orderStatus) ? "" : "disabled" %>>Shipped</option>
-            <option value="Delivered" <%= item.orderStatus === "Delivered" ? "selected" : "" %> 
-                <%= ["Processing", "Shipped"].includes(item.orderStatus) ? "" : "disabled" %>>Delivered</option>
-            <option value="Cancelled" <%= item.orderStatus === "Cancelled" ? "selected" : "" %>>Cancelled</option>
-        </select>
-    <% } %>
-</form>
-
-                </div>
-            </div>
-        </div>
-    <% }) %>
-</section>
+                    </div>
+                    <% }) %>
+            </section>
 
         </main>
 </body>

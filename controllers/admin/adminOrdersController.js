@@ -85,7 +85,6 @@ exports.updateOrderStatus = [
   adminAuthenticated,
   async (req, res) => {
     try {
-      console.log(222222222);
       const { itemId, orderId, orderStatus } = req.body;
 
       const order = await Order.findById(orderId);
@@ -94,18 +93,14 @@ exports.updateOrderStatus = [
       const item = order.orderItems.id(itemId);
       if (!item) return res.status(404).json({ error: "Item not found" });
 
-      item.orderStatus = orderStatus;
-      await order.save();
-
-      
-      if (orderStatus === "Cancelled") {
+      // Increase stock if order is Cancelled or Returned
+      if (orderStatus === "Cancelled" || orderStatus === "Returned") {
         const variant = await Variant.findById(item.variant.variantId);
         if (!variant) {
           return res
             .status(404)
             .json({ error: "Associated variant not found" });
         }
-
         variant.stock += item.quantity;
         await variant.save();
       }
@@ -122,25 +117,18 @@ exports.updateOrderStatus = [
 ];
 
 
-
 exports.handleReturnRequest = async (req, res) => {
   try {
     const { orderId, itemId } = req.body;
     const action = req.url.includes("approve") ? "approve" : "reject";
 
     const order = await Order.findById(orderId);
-
-    if (!order) {
-      return res.status(404).send("Order not found.");
-    }
+    if (!order) return res.status(404).send("Order not found.");
 
     const orderItem = order.orderItems.find(
       (item) => item._id.toString() === itemId
     );
-
-    if (!orderItem) {
-      return res.status(404).send("Order item not found.");
-    }
+    if (!orderItem) return res.status(404).send("Order item not found.");
 
     if (orderItem.orderStatus !== "Return-Requested") {
       return res.status(400).send("Invalid return request state.");
@@ -151,7 +139,6 @@ exports.handleReturnRequest = async (req, res) => {
 
       // Check if wallet exists, create if not
       let wallet = await Wallet.findOne({ userId: order.userId });
-
       if (!wallet) {
         wallet = new Wallet({
           userId: order.userId,
@@ -172,6 +159,14 @@ exports.handleReturnRequest = async (req, res) => {
       });
 
       await wallet.save();
+
+      // Increase product variant quantity
+      const variant = await Variant.findById(orderItem.variant.variantId);
+      if (!variant) {
+        return res.status(404).json({ error: "Associated variant not found" });
+      }
+      variant.stock += orderItem.quantity;
+      await variant.save();
     } else {
       orderItem.orderStatus = "Return-Cancelled"; // Revert to previous status
       orderItem.returnReason = null; // Clear the return reason
