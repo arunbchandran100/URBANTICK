@@ -505,7 +505,7 @@ exports.getVariantDetails = async (req, res) => {
       return res.status(404).json({ message: "Variant not found." });
     }
 
-    console.log(variant);
+    //console.log(variant);
     res.json(variant);
   } catch (error) {
     console.error("Error fetching variant details:", error);

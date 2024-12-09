@@ -41,7 +41,7 @@ exports.getProducts = [
       const totalProducts = await Product.countDocuments();
       const totalPages = Math.ceil(totalProducts / limit);
 
-      console.log(products)
+      //console.log(products)
       res.render("admin/adminProduct", {
         message: req.query.message || undefined,
         products,
@@ -166,7 +166,7 @@ exports.getEditProductImage = [
     }
 
 
-    console.log(product);
+    //console.log(product);
     res.render("admin/adminEditImage",product)
   } catch (error) {
     console.error("Error fetching product details:", error);
@@ -181,8 +181,8 @@ exports.getEditProductImage = [
 
 exports.postEditProductImage = async (req, res) => {
   try {
-    console.log("Request Body:", req.body);
-    console.log("Request Files:", req.files);
+    //console.log("Request Body:", req.body);
+   // console.log("Request Files:", req.files);
 
     const productId = req.params.id;
     const { imageIndex } = req.body;
@@ -219,7 +219,7 @@ exports.postEditProductImage = async (req, res) => {
     }
 
     const newImageUrl = req.body.imageUrls[0];
-    console.log("New Image URL:", newImageUrl);
+    //console.log("New Image URL:", newImageUrl);
 
     // Update image URL logic remains the same
     product.imageUrl[imageIndex] = newImageUrl;
