@@ -62,7 +62,7 @@ const orderSchema = new mongoose.Schema(
           type: Number,
         },
         itemTotalPrice: {
-          //total amount of that item  with or without offer and coupon 
+          //total amount of that item  with or without offer and coupon
           type: Number,
         },
       },
@@ -70,8 +70,27 @@ const orderSchema = new mongoose.Schema(
     shippingAddress: {
       type: Object,
     },
-    paymentMethod: {
-      type: String,
+    payment: {
+      paymentMethod: {
+        type: String,
+      },
+      paymentStatus: {
+        type: String,
+        enum: [
+          "Pending",
+          "Completed",
+          "Failed",
+          "Refunded",
+          "Partially Refunded",
+        ],
+        default: "Pending",
+      },
+      razorpayOrderId: {
+        type: String,
+      },
+      razorpayPaymentId: {
+        type: String,
+      },
     },
     couponCode: {
       type: String,
