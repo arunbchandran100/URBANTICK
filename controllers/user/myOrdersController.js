@@ -83,7 +83,7 @@ exports.getOrderDetails = async (req, res) => {
       }),
       couponValue : order.couponValue,
       totalPrice: order.totalPrice,
-      paymentMethod: order.paymentMethod,
+      paymentMethod: order.payment.paymentMethod,
       items: order.orderItems.map((item) => ({
         orderItemId: item._id,
         orderId: item.order_id,

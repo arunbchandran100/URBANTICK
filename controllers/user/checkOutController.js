@@ -68,9 +68,10 @@ exports.getCheckout = async (req, res) => {
       const offerPercentage = bestOffer.discountPercentage || 0;
       const offerAmount = (discountPrice * offerPercentage) / 100;
       const afterOfferPrice = discountPrice - offerAmount;
-
+      
       subtotal += discountPrice * item.quantity;
       totalDiscount += offerAmount * item.quantity;
+      
 
       return {
         _id: item._id,
@@ -87,7 +88,7 @@ exports.getCheckout = async (req, res) => {
     });
 
     const totalAfterDiscount = subtotal - totalDiscount;
-
+    console.log(totalAfterDiscount);
     // Fetch available coupons
     const availableCoupons = await Coupon.find({
       isActive: true,
@@ -105,7 +106,7 @@ exports.getCheckout = async (req, res) => {
       const userUsageCount = userUsage ? userUsage.count : 0;
 
       if (
-        subtotal >= coupon.minimumPurchaseAmount &&
+        totalAfterDiscount >= coupon.minimumPurchaseAmount &&
         userUsageCount < coupon.perUserUsageLimit
       ) {
         validCoupons.push(coupon);
@@ -132,7 +133,7 @@ exports.getCheckout = async (req, res) => {
 exports.placeOrder = async (req, res) => {
   try {
     // Update expired offers
-    let offers = await Offer.find();
+    const offers = await Offer.find();
     const today = new Date();
     today.setHours(0, 0, 0, 0);
 
@@ -164,28 +165,28 @@ exports.placeOrder = async (req, res) => {
       return res.status(400).json({ error: "Your cart is empty" });
     }
 
-    offers = await Offer.find({ isActive: true });
+    const activeOffers = await Offer.find({ isActive: true });
 
     let subtotal = 0;
     let totalPrice = 0;
 
-    // Calculate items with offer prices
+    // Calculate order items with offer prices
     const orderItems = cartItems.map((item) => {
       const product = item.productId;
-      const discountPrice = item.variantId.discountPrice;
       const variant = item.variantId;
+      const discountPrice = variant.discountPrice;
 
       let applicableOffers = [];
       let bestOffer = { discountPercentage: 0 };
 
-      applicableOffers = offers.filter(
+      applicableOffers = activeOffers.filter(
         (offer) =>
           offer.offerType === "Product" &&
           String(offer.applicableProduct) === String(product._id)
       );
 
       if (product.categoriesId) {
-        const categoryOffers = offers.filter(
+        const categoryOffers = activeOffers.filter(
           (offer) =>
             offer.offerType === "Category" &&
             String(offer.applicableCategory) === String(product.categoriesId)
@@ -207,17 +208,17 @@ exports.placeOrder = async (req, res) => {
       subtotal += itemTotalPrice;
 
       return {
-        orderId: new mongoose.Types.ObjectId(),
+        order_id: new mongoose.Types.ObjectId(),
         product: {
-          productId: item.productId._id,
-          brand: item.productId.brand,
-          productName: item.productId.productName,
-          imageUrl: item.productId.imageUrl[0],
+          productId: product._id,
+          brand: product.brand,
+          productName: product.productName,
+          imageUrl: product.imageUrl[0],
         },
         variant: {
-          variantId: item.variantId._id,
-          color: item.variantId.color,
-          discountPrice: item.variantId.discountPrice,
+          variantId: variant._id,
+          color: variant.color,
+          discountPrice: variant.discountPrice,
         },
         quantity: item.quantity,
         orderStatus: "Processing",
@@ -226,11 +227,11 @@ exports.placeOrder = async (req, res) => {
         offerPercentage,
         offerAmount,
         priceAfterOffer,
-        priceWithoutOffer: item.variantId.discountPrice,
-        itemTotalPrice, // Total price of the item after applying offers
+        priceWithoutOffer: discountPrice,
+        itemTotalPrice,
         priceWithoutCoupon: itemTotalPrice,
-        CouponAmountOfItem: 0, // Will be calculated below
-        priceAfterCoupon: itemTotalPrice, // Will be updated below
+        CouponAmountOfItem: 0,
+        priceAfterCoupon: itemTotalPrice,
       };
     });
 
@@ -270,9 +271,8 @@ exports.placeOrder = async (req, res) => {
         couponDiscount = coupon.couponValue;
       }
 
-      couponDiscount = Math.min(couponDiscount, subtotal); // Ensure the discount doesn't exceed the subtotal
+      couponDiscount = Math.min(couponDiscount, subtotal);
 
-      // Update the coupon usage
       if (userUsage) {
         userUsage.count += 1;
       } else {
@@ -282,7 +282,7 @@ exports.placeOrder = async (req, res) => {
       await coupon.save();
     }
 
-    // Distribute coupon discount among items based on their weightage
+    // Distribute coupon discount among items
     const totalItemPrice = orderItems.reduce(
       (sum, item) => sum + item.itemTotalPrice,
       0
@@ -299,24 +299,21 @@ exports.placeOrder = async (req, res) => {
     orderItems.forEach((item) => {
       item.itemTotalPrice = item.priceAfterCoupon;
     });
-    
     const newOrder = new Order({
       userId,
       userName: req.session.user.fullName,
       orderItems,
       shippingAddress,
-      paymentMethod,
+      payment: {
+        paymentMethod,
+        paymentStatus: paymentMethod === "COD" ? "Pending" : "Completed",
+      },
       couponCode: appliedCouponCode || null,
-      couponType: couponDiscount ? coupon.couponType : null,
+      couponType: coupon ? coupon.couponType : null,
       couponValue: couponDiscount || null,
       totalPrice,
     });
 
-    // Update itemTotalPrice to match priceAfterCoupon for all items
-
-
-
-    
     // Update stock for each item
     for (const item of cartItems) {
       const variant = await ProductVariant.findById(item.variantId._id);
@@ -328,14 +325,16 @@ exports.placeOrder = async (req, res) => {
       variant.stock -= item.quantity;
       await variant.save();
     }
-    console.log(44444444);
+
     await newOrder.save();
+
     // Clear the user's cart
     await Cart.deleteMany({ userId });
-    console.log(555555555555555);
+
     res.status(200).json({
       success: true,
       message: "Order placed successfully!",
+      orderId: newOrder._id,
     });
   } catch (error) {
     console.error("Error placing order:", error);
