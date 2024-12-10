@@ -32,7 +32,7 @@ exports.getMyOrders = async (req, res) => {
         hour12: true,
       }),
       totalPrice: order.totalPrice,
-      paymentMethod: order.paymentMethod,
+      paymentMethod: order.payment.paymentMethod,
       items: order.orderItems.map((item) => ({
         brand: item.product.brand,
         productName: item.product.productName,
@@ -84,6 +84,7 @@ exports.getOrderDetails = async (req, res) => {
       couponValue : order.couponValue,
       totalPrice: order.totalPrice,
       paymentMethod: order.payment.paymentMethod,
+      paymentStatus: order.payment.paymentStatus,
       items: order.orderItems.map((item) => ({
         orderItemId: item._id,
         orderId: item.order_id,

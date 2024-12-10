@@ -5,10 +5,15 @@ const ProductVariant = require("../../models/variantSchema");
 const Offer = require("../../models/offerModel");
 const { ObjectId } = require("mongoose").Types;
 const Coupon = require("../../models/couponModel");
-const mongoose = require("mongoose"); // Import mongoose
+const mongoose = require("mongoose");
+require("dotenv").config();
+const Razorpay = require("razorpay");
+const crypto = require("crypto");
 
-
-
+const razorpay = new Razorpay({
+  key_id: process.env.RAZORPAY_KEY_ID,
+  key_secret: process.env.RAZORPAY_KEY_SECRET,
+});
 
 exports.getCheckout = async (req, res) => {
   try {
@@ -68,10 +73,9 @@ exports.getCheckout = async (req, res) => {
       const offerPercentage = bestOffer.discountPercentage || 0;
       const offerAmount = (discountPrice * offerPercentage) / 100;
       const afterOfferPrice = discountPrice - offerAmount;
-      
+
       subtotal += discountPrice * item.quantity;
       totalDiscount += offerAmount * item.quantity;
-      
 
       return {
         _id: item._id,
@@ -88,7 +92,7 @@ exports.getCheckout = async (req, res) => {
     });
 
     const totalAfterDiscount = subtotal - totalDiscount;
-    console.log(totalAfterDiscount);
+
     // Fetch available coupons
     const availableCoupons = await Coupon.find({
       isActive: true,
@@ -98,7 +102,6 @@ exports.getCheckout = async (req, res) => {
 
     const validCoupons = [];
     for (const coupon of availableCoupons) {
-      // Check if the user has already used this coupon
       const userUsage = coupon.usageByUser.find(
         (usage) => String(usage.userId) === String(userId)
       );
@@ -113,8 +116,6 @@ exports.getCheckout = async (req, res) => {
       }
     }
 
-    //console.log(totalAfterDiscount + " " + subtotal + " " + totalDiscount);
-    // Render the checkout page
     res.render("user/checkOutpage", {
       userAddresses,
       cartItems: formattedCartItems,
@@ -129,11 +130,10 @@ exports.getCheckout = async (req, res) => {
   }
 };
 
-
 exports.placeOrder = async (req, res) => {
   try {
     // Update expired offers
-    const offers = await Offer.find();
+    let offers = await Offer.find();
     const today = new Date();
     today.setHours(0, 0, 0, 0);
 
@@ -170,11 +170,10 @@ exports.placeOrder = async (req, res) => {
     let subtotal = 0;
     let totalPrice = 0;
 
-    // Calculate order items with offer prices
     const orderItems = cartItems.map((item) => {
       const product = item.productId;
       const variant = item.variantId;
-      const discountPrice = variant.discountPrice;
+      const discountPrice = item.variantId.discountPrice;
 
       let applicableOffers = [];
       let bestOffer = { discountPercentage: 0 };
@@ -186,7 +185,7 @@ exports.placeOrder = async (req, res) => {
       );
 
       if (product.categoriesId) {
-        const categoryOffers = activeOffers.filter(
+        const categoryOffers = offers.filter(
           (offer) =>
             offer.offerType === "Category" &&
             String(offer.applicableCategory) === String(product.categoriesId)
@@ -234,7 +233,6 @@ exports.placeOrder = async (req, res) => {
         priceAfterCoupon: itemTotalPrice,
       };
     });
-
     // Check and apply the coupon
     let couponDiscount = 0;
     let coupon;
@@ -271,8 +269,9 @@ exports.placeOrder = async (req, res) => {
         couponDiscount = coupon.couponValue;
       }
 
-      couponDiscount = Math.min(couponDiscount, subtotal);
+      couponDiscount = Math.min(couponDiscount, subtotal); // Ensure the discount doesn't exceed the subtotal
 
+      // Update the coupon usage
       if (userUsage) {
         userUsage.count += 1;
       } else {
@@ -282,7 +281,7 @@ exports.placeOrder = async (req, res) => {
       await coupon.save();
     }
 
-    // Distribute coupon discount among items
+    // Distribute coupon discount among items based on their weightage
     const totalItemPrice = orderItems.reduce(
       (sum, item) => sum + item.itemTotalPrice,
       0
@@ -299,6 +298,7 @@ exports.placeOrder = async (req, res) => {
     orderItems.forEach((item) => {
       item.itemTotalPrice = item.priceAfterCoupon;
     });
+
     const newOrder = new Order({
       userId,
       userName: req.session.user.fullName,
@@ -314,7 +314,6 @@ exports.placeOrder = async (req, res) => {
       totalPrice,
     });
 
-    // Update stock for each item
     for (const item of cartItems) {
       const variant = await ProductVariant.findById(item.variantId._id);
       if (variant.stock < item.quantity) {
@@ -327,15 +326,27 @@ exports.placeOrder = async (req, res) => {
     }
 
     await newOrder.save();
-
-    // Clear the user's cart
     await Cart.deleteMany({ userId });
 
-    res.status(200).json({
-      success: true,
-      message: "Order placed successfully!",
-      orderId: newOrder._id,
-    });
+    if (paymentMethod === "Online Payment") {
+      const razorpayOrder = await razorpay.orders.create({
+        amount: totalPrice * 100,
+        currency: "INR",
+        receipt: newOrder._id.toString(),
+      });
+
+      return res.status(200).json({
+        success: true,
+        message: "Order created successfully",
+        order: razorpayOrder,
+      });
+    } else {
+      return res.status(200).json({
+        success: true,
+        message: "Order placed successfully!",
+        orderId: newOrder._id,
+      });
+    }
   } catch (error) {
     console.error("Error placing order:", error);
     res
@@ -343,3 +354,47 @@ exports.placeOrder = async (req, res) => {
       .json({ error: "An error occurred while placing the order" });
   }
 };
+
+exports.verifyPayment = async (req, res) => {
+  try {
+    const { paymentResponse, order } = req.body;
+    const shasum = crypto.createHmac("sha256", process.env.RAZORPAY_KEY_SECRET);
+    shasum.update(`${order.id}|${paymentResponse.razorpay_payment_id}`);
+    const digest = shasum.digest("hex");
+
+    if (digest === paymentResponse.razorpay_signature) {
+      const updatedOrder = await Order.findOneAndUpdate(
+        { _id: order.receipt },
+        {
+          $set: {
+            "payment.paymentStatus": "Completed",
+            "payment.razorpayOrderId": order.id,
+            "payment.razorpayPaymentId": paymentResponse.razorpay_payment_id,
+          },
+        },
+        { new: true }
+      );
+
+      if (!updatedOrder) {
+        console.error("Order not found for Razorpay order ID:", order.id);
+        return res
+          .status(404)
+          .json({ success: false, message: "Order not found" });
+      }
+
+      res.status(200).json({
+        success: true,
+        message: "Payment verified successfully",
+      });
+    } else {
+      res.status(400).json({ success: false, message: "Invalid signature" });
+    }
+  } catch (error) {
+    console.error("Payment verification error: ", error);
+    res
+      .status(500)
+      .json({ success: false, message: "Payment verification failed" });
+  }
+};
+
+module.exports = exports;

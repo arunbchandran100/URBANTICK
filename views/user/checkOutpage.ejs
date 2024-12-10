@@ -8,9 +8,8 @@
     <script src="https://cdn.tailwindcss.com"></script>
     <script src="https://cdn.jsdelivr.net/npm/axios/dist/axios.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
-    <!-- Material Icons -->
     <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet" />
-    <link rel="stylesheet" href="style.css" />
+    <link rel="stylesheet" href="/css/style.css" />
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.6.0/css/all.min.css"
         integrity="sha512-Kc323vGBEqzTmouAECnVceyQqyqdsSiqLQISBL29aUW4U/M7pSPA/gEUZQqv1cwx4OnYxTxve5UMg5GT6L4JJg=="
         crossorigin="anonymous" referrerpolicy="no-referrer" />
@@ -20,187 +19,279 @@
     <script src="https://cdnjs.cloudflare.com/ajax/libs/toastr.js/latest/toastr.min.js"></script>
     <link href="https://cdn.jsdelivr.net/npm/notyf@3/notyf.min.css" rel="stylesheet" />
     <script src="https://cdn.jsdelivr.net/npm/notyf@3/notyf.min.js"></script>
+    <script src="https://checkout.razorpay.com/v1/checkout.js"></script>
 </head>
 
 <body class="bg-gray-50">
-    <!------------ Navbar ---------->
     <%- include("partials/navBar") %>
-        <div class="mt-16"></div>
+    <div class="mt-16"></div>
 
-        <div class="font-sans max-w-5xl mx-auto bg-gray-50 py-8">
-            <h1 class="text-3xl font-bold text-gray-800 text-center">Checkout</h1>
+    <div class="font-sans max-w-5xl mx-auto bg-gray-50 py-8">
+        <h1 class="text-3xl font-bold text-gray-800 text-center">Checkout</h1>
 
-            <div class="grid md:grid-cols-3 gap-8 mt-8">
-                <!-- Left Section: Address and Payment -->
-                <div class="md:col-span-2 space-y-6">
-                    <!-- Address Section -->
-                    <div class="bg-white p-4 shadow-md rounded-md">
-                        <h3 class="text-lg font-bold text-gray-800 border-b border-gray-200 pb-2">
-                            Shipping Address
-                        </h3>
-                        <div class="mt-4 space-y-4">
-                            <% userAddresses.forEach(address=> { %>
-                                <label class="flex items-start gap-4 p-3 border border-gray-300 rounded-md">
-                                    <input type="radio" name="selectedAddress" value="<%= address._id %>" class="mt-1">
-                                    <div>
-                                        <p class="text-gray-800 font-semibold">
-                                            <%= address.Name %>
-                                        </p>
-                                        <p class="text-sm text-gray-600">
-                                            <%= address.HouseName %>, <%= address.LocalityStreet %>, <%=
-                                                        address.TownCity %>, <%= address.state %>, <%= address.country
-                                                                %>, <%= address.pincode %>
-                                        </p>
-                                        <p class="text-sm text-gray-600">Mobile: <%= address.MobileNumber %>
-                                        </p>
-                                    </div>
-                                </label>
-                                <% }) %>
-                        </div>
-                        <button onclick="window.location.href='/user/address'"
-                            class="mt-4 w-full bg-gray-800 hover:bg-gray-900 text-white text-sm py-2 rounded-md">Add New
-                            Address</button>
-                    </div>
-
-                    <!-- Payment Method Section -->
-                    <div class="bg-white p-4 shadow-md rounded-md">
-                        <h3 class="text-lg font-bold text-gray-800 border-b border-gray-200 pb-2">
-                            Payment Method
-                        </h3>
-                        <div class="mt-4 space-y-3">
-                            <label class="flex items-center gap-3">
-                                <input type="radio" name="paymentMethod" value="COD" class="mt-1">
-                                <span class="text-gray-800 font-semibold">Cash on Delivery</span>
-                            </label>
-                            <label class="flex items-center gap-3">
-                                <input type="radio" name="paymentMethod" value="Online" class="mt-1">
-                                <span class="text-gray-800 font-semibold">Online Payment</span>
-                            </label>
-                            <label class="flex items-center gap-3">
-                                <input type="radio" name="paymentMethod" value="Wallet" class="mt-1">
-                                <span class="text-gray-800 font-semibold">Wallet</span>
-                            </label>
-                        </div>
-                    </div>
-                </div>
-
-                <!-- Right Section: Cart Summary -->
+        <div class="grid md:grid-cols-3 gap-8 mt-8">
+            <!-- Left Section: Address and Payment -->
+            <div class="md:col-span-2 space-y-6">
+                <!-- Address Section -->
                 <div class="bg-white p-4 shadow-md rounded-md">
                     <h3 class="text-lg font-bold text-gray-800 border-b border-gray-200 pb-2">
-                        Order Summary
+                        Shipping Address
                     </h3>
-                    <ul class="mt-4 space-y-4">
-                        <% cartItems.forEach(item=> { %>
-                            <li class="flex items-start gap-4">
-                                <div class="w-16 h-16 bg-gray-100 p-2 rounded-md">
-                                    <img src="<%= item.product.imageUrl[0] %>" alt="Product Image"
-                                        class="w-full h-full object-contain">
-                                </div>
+                    <div class="mt-4 space-y-4">
+                        <% userAddresses.forEach(address => { %>
+                            <label class="flex items-start gap-4 p-3 border border-gray-300 rounded-md">
+                                <input type="radio" name="selectedAddress" value="<%= address._id %>" class="mt-1">
                                 <div>
-                                    <p class="text-gray-800 font-semibold">
-                                        <%= item.product.productName %>
+                                    <p class="text-gray-800 font-semibold"><%= address.Name %></p>
+                                    <p class="text-sm text-gray-600">
+                                        <%= address.HouseName %>, <%= address.LocalityStreet %>, <%= address.TownCity %>, <%= address.state %>, <%= address.country %>, <%= address.pincode %>
                                     </p>
-                                    <p class="text-sm text-gray-600">Color: <%= item.variant.color %>
-                                    </p>
-                                    <p class="text-sm text-gray-600">Quantity: <%= item.quantity %>
-                                    </p>
-                                    <p class="text-sm text-gray-600">Price: ₹<%=
-                                            item.variant.discountPrice.toLocaleString() %>
-                                    </p>
-                                    <% if (item.couponIsApplied) { %>
-                                        <!-- <p class="text-sm text-green-600">Offer: <%= item.offerTitle %> (<%= item.offerType %>)</p> -->
-                                        <!-- <p class="text-sm text-green-600">Discount: ₹<%= item.offerAmount.toLocaleString()%></p> -->
-                                        <span class="text-sm text-green-600 ">Price After Discount: ₹<%=
-                                                (item.afterOfferPrice*item.quantity).toLocaleString() %></span>
-                                        <% } %>
-                                </div>
-                            </li>
-                            <% }) %>
-                    </ul>
-                   <div class="mt-6 border-t border-gray-200 pt-4">
-        <div class="flex justify-between text-gray-800">
-            <span class="font-semibold">Subtotal:</span>
-            <span class="ml-auto font-semibold">₹<%= subtotal.toLocaleString() %></span>
-        </div>
-        <div class="flex justify-between text-gray-800">
-            <span class="font-semibold">Discount:</span>
-            <span class="ml-auto text-green-600 font-semibold">-₹<%= totalDiscount.toLocaleString() %></span>
-        </div>
-        <div class="flex justify-between text-gray-800" id="couponDiscountSection" style="display: none;">
-            <span class="font-semibold">Coupon Discount:</span>
-            <span id="couponDiscountAmount" class="ml-auto text-green-600 font-semibold"></span>
-        </div>
-
-        <div class="flex justify-between text-gray-800">
-            <span class="font-semibold">Shipping:</span>
-            <span>Free</span>
-        </div>
-        <div class="flex justify-between text-gray-800 font-bold text-lg mt-2">
-            <span>Total:</span>
-            <span id="finalTotal">₹<%= totalAfterDiscount.toLocaleString() %></span>
-        </div>
-
-        <button onclick="placeOrder()" class="mt-6 w-full bg-gray-800 hover:bg-gray-900 text-white text-sm py-2 rounded-md">
-            Place Order
-        </button>
-        <div class="bg-white p-4 shadow-md rounded-md mt-6">
-            <h3 class="text-lg font-bold text-gray-800 border-b border-gray-200 pb-2">Apply Coupon</h3>
-            <div class="mt-4 space-y-4">
-                <div id="couponList" class="space-y-2">
-                    <% if (availableCoupons.length > 0) { %>
-                        <% availableCoupons.forEach(coupon => { %>
-                            <label class="flex items-center gap-3 p-3 border border-gray-300 rounded-md">
-                                <input type="radio" name="coupon" value="<%= coupon.couponCode %>"
-                                    onclick="selectCoupon('<%= coupon.couponCode %>', <%= coupon.couponValue %>, '<%= coupon.couponType %>')">
-                                <div>
-                                    <p class="text-gray-800 font-semibold">
-                                        <%= coupon.couponCode %> -
-                                        <%= coupon.couponType === 'percentage' ? coupon.couponValue + '%' : '₹' + coupon.couponValue %> Off
-                                    </p>
-                                    <p class="text-sm text-gray-600">Min Purchase: ₹<%= coupon.minimumPurchaseAmount.toLocaleString() %></p>
-                                    <p class="text-sm text-gray-600">Usage Limit: <%= coupon.perUserUsageLimit %> times per user</p>
+                                    <p class="text-sm text-gray-600">Mobile: <%= address.MobileNumber %></p>
                                 </div>
                             </label>
-                        <% }); %>
-                    <% } else { %>
-                        <p class="text-gray-600">No coupons available for your cart.</p>
-                    <% } %>
-                </div>
-                <div id="appliedCoupon" class="hidden bg-green-100 p-2 rounded-md flex justify-between items-center">
-                    <span class="text-green-800 font-semibold" id="appliedCouponText"></span>
-                    <button class="text-red-600 hover:text-red-800" onclick="removeCoupon()">
-                        Remove
+                        <% }) %>
+                    </div>
+                    <button onclick="window.location.href='/user/address'" class="mt-4 w-full bg-gray-800 hover:bg-gray-900 text-white text-sm py-2 rounded-md">
+                        Add New Address
                     </button>
                 </div>
-                <button id="applyCouponBtn" class="w-full bg-gray-800 hover:bg-gray-900 text-white text-sm py-2 rounded-md" disabled onclick="applyCoupon()">
-                    Apply Coupon
-                </button>
+
+                <!-- Payment Method Section -->
+                <div class="bg-white p-4 shadow-md rounded-md">
+                    <h3 class="text-lg font-bold text-gray-800 border-b border-gray-200 pb-2">
+                        Payment Method
+                    </h3>
+                    <div class="mt-4 space-y-3">
+                        <label class="flex items-center gap-3">
+                            <input type="radio" name="paymentMethod" value="COD" class="mt-1">
+                            <span class="text-gray-800 font-semibold">Cash on Delivery</span>
+                        </label>
+                        <label class="flex items-center gap-3">
+                            <input type="radio" name="paymentMethod" value="Online Payment" class="mt-1">
+                            <span class="text-gray-800 font-semibold">Online Payment</span>
+                        </label>
+                        <label class="flex items-center gap-3">
+                            <input type="radio" name="paymentMethod" value="Wallet" class="mt-1">
+                            <span class="text-gray-800 font-semibold">Wallet</span>
+                        </label>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Right Section: Cart Summary -->
+            <div class="bg-white p-4 shadow-md rounded-md">
+                <h3 class="text-lg font-bold text-gray-800 border-b border-gray-200 pb-2">
+                    Order Summary
+                </h3>
+                <ul class="mt-4 space-y-4">
+                    <% cartItems.forEach(item => { %>
+                        <li class="flex items-start gap-4">
+                            <div class="w-16 h-16 bg-gray-100 p-2 rounded-md">
+                                <img src="<%= item.product.imageUrl[0] %>" alt="Product Image" class="w-full h-full object-contain">
+                            </div>
+                            <div>
+                                <p class="text-gray-800 font-semibold"><%= item.product.productName %></p>
+                                <p class="text-sm text-gray-600">Color: <%= item.variant.color %></p>
+                                <p class="text-sm text-gray-600">Quantity: <%= item.quantity %></p>
+                                <p class="text-sm text-gray-600">Price: ₹<%= item.variant.discountPrice.toLocaleString() %></p>
+                                <% if (item.couponIsApplied) { %>
+                                    <span class="text-sm text-green-600">Price After Discount: ₹<%= (item.afterOfferPrice*item.quantity).toLocaleString() %></span>
+                                <% } %>
+                            </div>
+                        </li>
+                    <% }) %>
+                </ul>
+                <div class="mt-6 border-t border-gray-200 pt-4">
+                    <div class="flex justify-between text-gray-800">
+                        <span class="font-semibold">Subtotal:</span>
+                        <span class="ml-auto font-semibold">₹<%= subtotal.toLocaleString() %></span>
+                    </div>
+                    <div class="flex justify-between text-gray-800">
+                        <span class="font-semibold">Discount:</span>
+                        <span class="ml-auto text-green-600 font-semibold">-₹<%= totalDiscount.toLocaleString() %></span>
+                    </div>
+                    <div class="flex justify-between text-gray-800" id="couponDiscountSection" style="display: none;">
+                        <span class="font-semibold">Coupon Discount:</span>
+                        <span id="couponDiscountAmount" class="ml-auto text-green-600 font-semibold"></span>
+                    </div>
+                    <div class="flex justify-between text-gray-800">
+                        <span class="font-semibold">Shipping:</span>
+                        <span>Free</span>
+                    </div>
+                    <div class="flex justify-between text-gray-800 font-bold text-lg mt-2">
+                        <span>Total:</span>
+                        <span id="finalTotal">₹<%= totalAfterDiscount.toLocaleString() %></span>
+                    </div>
+                    <button onclick="placeOrder()" class="mt-6 w-full bg-gray-800 hover:bg-gray-900 text-white text-sm py-2 rounded-md">
+                        Place Order
+                    </button>
+                                            <div class="bg-white p-4 shadow-md rounded-md mt-6">
+                            <h3 class="text-lg font-bold text-gray-800 border-b border-gray-200 pb-2">Apply Coupon</h3>
+                            <div class="mt-4 space-y-4">
+                                <div id="couponList" class="space-y-2">
+                                    <% if (availableCoupons.length> 0) { %>
+                                        <% availableCoupons.forEach(coupon=> { %>
+                                            <label
+                                                class="flex items-center gap-3 p-3 border border-gray-300 rounded-md">
+                                                <input type="radio" name="coupon" value="<%= coupon.couponCode %>"
+                                                    onclick="selectCoupon('<%= coupon.couponCode %>', <%= coupon.couponValue %>, '<%= coupon.couponType %>')">
+                                                <div>
+                                                    <p class="text-gray-800 font-semibold">
+                                                        <%= coupon.couponCode %> -
+                                                            <%= coupon.couponType==='percentage' ? coupon.couponValue
+                                                                + '%' : '₹' + coupon.couponValue %> Off
+                                                    </p>
+                                                    <p class="text-sm text-gray-600">Min Purchase: ₹<%=
+                                                            coupon.minimumPurchaseAmount.toLocaleString() %>
+                                                    </p>
+                                                    <p class="text-sm text-gray-600">Usage Limit: <%=
+                                                            coupon.perUserUsageLimit %> times per user</p>
+                                                </div>
+                                            </label>
+                                            <% }); %>
+                                                <% } else { %>
+                                                    <p class="text-gray-600">No coupons available for your cart.</p>
+                                                    <% } %>
+                                </div>
+                                <div id="appliedCoupon"
+                                    class="hidden bg-green-100 p-2 rounded-md flex justify-between items-center">
+                                    <span class="text-green-800 font-semibold" id="appliedCouponText"></span>
+                                    <button class="text-red-600 hover:text-red-800" onclick="removeCoupon()">
+                                        Remove
+                                    </button>
+                                </div>
+                                <button id="applyCouponBtn"
+                                    class="w-full bg-gray-800 hover:bg-gray-900 text-white text-sm py-2 rounded-md"
+                                    disabled onclick="applyCoupon()">
+                                    Apply Coupon
+                                </button>
+                            </div>
+                        </div>
+                </div>
             </div>
         </div>
     </div>
-                </div>
-            </div>
-        </div>
 
+    <%- include("partials/footer") %>
 
-        <!------------- Footer ------------>
-        <%- include("partials/footer") %>
+    <script>
+        let subtotal = <%= totalAfterDiscount %>;
+        let totalDiscount = <%= totalDiscount %>;
+        let shippingCost = 0;
+        let couponValue = 0;
+        let selectedCouponCode = null;
+        let selectedCouponType = null;
 
-</body>
-<script>
-    let subtotal = <%= totalAfterDiscount %>; // Initial subtotal after discount from the server
-    let totalDiscount = <%= totalDiscount %>; // Initial discount
-    let shippingCost = 0; // Assuming free shipping
-    let couponValue = 0; // Initial coupon value
-    let selectedCouponCode = null;
-    let selectedCouponType = null;
+        function calculateTotal() {
+            const total = subtotal - couponValue + shippingCost;
+            document.getElementById("finalTotal").innerText = `₹${total.toLocaleString()}`;
+        }
 
-    function calculateTotal() {
-        const total = subtotal - couponValue + shippingCost;
-        document.getElementById("finalTotal").innerText = `₹${total.toLocaleString()}`;
-    }
+        async function placeOrder() {
+            const selectedAddress = document.querySelector("input[name='selectedAddress']:checked")?.value;
+            const paymentMethod = document.querySelector("input[name='paymentMethod']:checked")?.value;
 
-    // Handle coupon selection
+            if (!selectedAddress || !paymentMethod) {
+                Swal.fire("Error", "Please select an address and payment method.", "error");
+                return;
+            }
+
+            try {
+                const response = await axios.post("/user/checkout", {
+                    selectedAddress,
+                    paymentMethod,
+                    appliedCouponCode: selectedCouponCode,
+                });
+
+                if (response.status === 200) {
+                    const data = response.data;
+
+                    if (paymentMethod === 'Online Payment') {
+                        handleRazorpayPayment(data.order);
+                    } else if (paymentMethod === 'COD' || paymentMethod === 'Wallet') {
+                        Swal.fire({
+                            icon: "success",
+                            title: "Order Placed!",
+                            text: data.message,
+                            showConfirmButton: true,
+                            confirmButtonText: "OK",
+                        }).then((result) => {
+                            if (result.isConfirmed) {
+                                window.location.href = "/user/orders";
+                            }
+                        });
+                    }
+                }
+            } catch (error) {
+                console.error("Error placing order:", error);
+                Swal.fire("Error", error.response?.data?.message || "An error occurred while placing the order.", "error");
+            }
+        }
+
+        function handleRazorpayPayment(order) {
+            const options = {
+                key: '<%= process.env.RAZORPAY_KEY_ID %>',
+                amount: order.amount,
+                currency: order.currency,
+                name: "Urbantick",
+                description: "Order Payment",
+                order_id: order.id,
+                handler: function (response) {
+                    verifyPayment(response, order);
+                },
+                prefill: {
+                    name: "<%= user.fullName %>",
+                    email: "<%= user.email %>",
+                    contact: "<%= user.phone %>"
+                },
+                theme: {
+                    color: "#3399cc"
+                }
+            };
+
+            const rzp = new Razorpay(options);
+            rzp.open();
+
+            rzp.on('payment.failed', function (response) {
+                Swal.fire({
+                    icon: "error",
+                    title: "Payment Failed",
+                    text: response.error.description || "Payment failed. Please try again."
+                });
+            });
+        }
+
+        async function verifyPayment(paymentResponse, order) {
+            try {
+                const response = await fetch('/user/order/verify-payment', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ paymentResponse, order })
+                });
+
+                const result = await response.json();
+
+                if (result.success) {
+                    Swal.fire({
+                        icon: "success",
+                        title: "Payment Successful",
+                        text: "Your order has been placed successfully!",
+                        showConfirmButton: true,
+                        confirmButtonText: "OK",
+                    }).then((result) => {
+                        if (result.isConfirmed) {
+                            window.location.href = "/user/orders";
+                        }
+                    });
+                } else {
+                    Swal.fire('Error', 'Payment verification failed. Please try again.', 'error');
+                }
+            } catch (error) {
+                console.error("Error verifying payment:", error);
+                Swal.fire('Error', 'An error occurred while verifying your payment. Please contact support.', 'error');
+            }
+        }
+        // Handle coupon selection
     function selectCoupon(couponCode, value, type) {
         selectedCouponCode = couponCode;
         couponValue = type === 'percentage' ? (subtotal * value) / 100 : value;
@@ -247,47 +338,8 @@
         calculateTotal(); // Recalculate total after removing the coupon
     }
 
-async function placeOrder() {
-    const selectedAddress = document.querySelector("input[name='selectedAddress']:checked")?.value;
-    const paymentMethod = document.querySelector("input[name='paymentMethod']:checked")?.value;
-
-    if (!selectedAddress || !paymentMethod) {
-        Swal.fire("Error", "Please select an address and payment method.", "error");
-        return;
-    }
-
-    try {
-        const response = await axios.post("/user/checkout", {
-            selectedAddress,
-            paymentMethod,
-            appliedCouponCode: selectedCouponCode,
-        });
-
-        const data = response.data; // Use response.data to get the JSON data
-        console.log(00000000000);
-        if (response.status === 200) { // Check for status code 200 for success
-            Swal.fire({
-                icon: "success",
-                title: "Order Placed!",
-                text: data.message,
-                showConfirmButton: true,
-                confirmButtonText: "OK",
-            }).then((result) => {
-                if (result.isConfirmed) {
-                    window.location.href = "/user/orders";
-                }
-            });
-        } else {
-            Swal.fire("Error", data.error, "error");
-        }
-    } catch (error) {
-        Swal.fire("Error", "An error occurred while placing the order.", "error");
-    }
-}
-
-    fetchCoupons();
-
-
-</script>
-
+        calculateTotal();
+    </script>
+</body>
 </html>
+

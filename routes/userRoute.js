@@ -137,9 +137,9 @@ router.get("/cart/checkout", userAuthenticated, checkoutController.getCheckout);
 
 //Place Order
 router.post("/user/checkout", checkoutController.placeOrder);
-
-
+router.post("/user/order/verify-payment", checkoutController.verifyPayment);
 
 module.exports = router;
 
 
+ 
