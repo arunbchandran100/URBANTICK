@@ -30,6 +30,7 @@
                 <p class="text-gray-400 mb-2">Order Date: <%= new Date(order.orderDate).toLocaleDateString() %>
                 </p>
                 <p class="text-gray-400">Payment Mode: <%= order.paymentMethod %>
+                <p class="text-gray-400">Payment Status: <%= order.paymentStatus %>
                 </p>
 
                 <div class="mt-4">
@@ -187,7 +188,7 @@
                                                         </select>
                                                         <% } %>
                                         </form>
-                                                                            <% } %>
+                                        <% } %>
 
 
                             </div>

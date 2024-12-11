@@ -63,7 +63,7 @@
                     </h3>
                     <div class="mt-4 space-y-3">
                         <label class="flex items-center gap-3">
-                            <input type="radio" name="paymentMethod" value="COD" class="mt-1">
+                            <input type="radio" name="paymentMethod" value="Cash on Delivery" class="mt-1">
                             <span class="text-gray-800 font-semibold">Cash on Delivery</span>
                         </label>
                         <label class="flex items-center gap-3">
@@ -208,7 +208,7 @@
 
                     if (paymentMethod === 'Online Payment') {
                         handleRazorpayPayment(data.order);
-                    } else if (paymentMethod === 'COD' || paymentMethod === 'Wallet') {
+                    } else if (paymentMethod === 'Cash on Delivery' || paymentMethod === 'Wallet') {
                         Swal.fire({
                             icon: "success",
                             title: "Order Placed!",

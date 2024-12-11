@@ -78,11 +78,9 @@ const orderSchema = new mongoose.Schema(
         type: String,
         enum: [
           "Pending",
-          "Completed",
+          "Paid",
           "Failed",
-          "Refunded",
-          "Partially Refunded",
-        ],
+          "Refund Processed for Returned/Cancelled Orders"],
         default: "Pending",
       },
       razorpayOrderId: {

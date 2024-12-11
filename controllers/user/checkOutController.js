@@ -306,7 +306,8 @@ exports.placeOrder = async (req, res) => {
       shippingAddress,
       payment: {
         paymentMethod,
-        paymentStatus: paymentMethod === "COD" ? "Pending" : "Completed",
+        paymentStatus:
+          paymentMethod === "Cash on Delivery" ? "Pending" : "Paid",
       },
       couponCode: appliedCouponCode || null,
       couponType: coupon ? coupon.couponType : null,
@@ -355,6 +356,9 @@ exports.placeOrder = async (req, res) => {
   }
 };
 
+
+
+
 exports.verifyPayment = async (req, res) => {
   try {
     const { paymentResponse, order } = req.body;
@@ -367,7 +371,7 @@ exports.verifyPayment = async (req, res) => {
         { _id: order.receipt },
         {
           $set: {
-            "payment.paymentStatus": "Completed",
+            "payment.paymentStatus": "Paid",
             "payment.razorpayOrderId": order.id,
             "payment.razorpayPaymentId": paymentResponse.razorpay_payment_id,
           },

@@ -3,6 +3,7 @@ const Category = require("../../models/categoryModel");
 const Variant = require("../../models/variantSchema");
 const mongoose = require("mongoose");
 const Cart = require("../../models/cartModel");
+const Wallet = require("../../models/walletModel");
 
 
 const Order = require("../../models/orderModel");
@@ -153,6 +154,32 @@ exports.cancelOrderItem = async (req, res) => {
           "Order item cannot be canceled as it is already shipped or delivered.",
       });
     }
+
+    if (order.payment.paymentStatus === "Paid") {
+      let wallet = await Wallet.findOne({ userId: order.userId });
+      if (!wallet) {
+        wallet = new Wallet({
+          userId: order.userId,
+          balance_amount: 0,
+          transactions: [],
+        });
+      }
+
+      // Refund amount
+      const refundAmount = orderItem.itemTotalPrice;
+
+      // Update wallet balance and add a transaction
+      wallet.balance_amount += refundAmount;
+      wallet.transactions.push({
+        transactionType: "CREDIT",
+        amount: refundAmount,
+        transactionDate: new Date(),
+      });
+
+      await wallet.save();
+      order.payment.paymentStatus = "Refund Processed for Returned/Cancelled Orders";
+    }
+
 
     orderItem.orderStatus = "Cancelled";
 

@@ -84,8 +84,4 @@ router.post("/coupon/update", adminCoupon.updateCoupon);
 
 
 
-
-
-
-
 module.exports = router;
