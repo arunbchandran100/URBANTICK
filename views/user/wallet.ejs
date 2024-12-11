@@ -35,35 +35,53 @@
                 <!-- Transactions Section -->
                 <h2 class="text-xl font-bold text-gray-800 mb-4">Transaction History</h2>
                 <% if (transactions.length> 0) { %>
-                    <% transactions.sort((a, b)=> new Date(b.transactionDate) - new Date(a.transactionDate)); %>
-                        <!-- Sort transactions in descending order -->
-                        <% transactions.forEach(transaction=> { %>
-                            <div class="mb-4 p-4 bg-white rounded-lg shadow-md border border-gray-300">
-                                <div class="flex justify-between items-center">
-                                    <div>
-                                        <p class="text-sm font-semibold text-gray-600">
-                                            Transaction Type:
-                                            <span
-                                                class="<%= transaction.transactionType === 'CREDIT' ? 'text-green-600' : 'text-red-600' %>">
-                                                <%= transaction.transactionType %>
-                                            </span>
-                                        </p>
-                                        <p class="text-sm text-gray-500">
-                                            Date: <%= new Date(transaction.transactionDate).toLocaleString() %>
-                                        </p>
-                                    </div>
-                                    <div>
-                                        <p
-                                            class="text-lg font-bold <%= transaction.transactionType === 'CREDIT' ? 'text-green-600' : 'text-red-600' %>">
-                                            ₹<%= transaction.amount.toLocaleString() %>
-                                        </p>
-                                    </div>
+                    <% transactions.forEach(transaction=> { %>
+                        <div class="mb-4 p-4 bg-white rounded-lg shadow-md border border-gray-300">
+                            <div class="flex justify-between items-center">
+                                <div>
+                                    <p class="text-sm font-semibold text-gray-600">
+                                        Transaction Type:
+                                        <span
+                                            class="<%= transaction.transactionType === 'CREDIT' ? 'text-green-600' : 'text-red-600' %>">
+                                            <%= transaction.transactionType %>
+                                        </span>
+                                    </p>
+                                    <p class="text-sm text-gray-500">
+                                        Date: <%= new Date(transaction.transactionDate).toLocaleString() %>
+                                    </p>
+                                </div>
+                                <div>
+                                    <p
+                                        class="text-lg font-bold <%= transaction.transactionType === 'CREDIT' ? 'text-green-600' : 'text-red-600' %>">
+                                        ₹<%= transaction.amount.toLocaleString() %>
+                                    </p>
                                 </div>
                             </div>
-                            <% }); %>
-                                <% } else { %>
-                                    <p class="text-gray-600">No transactions found.</p>
-                                    <% } %>
+                        </div>
+                        <% }); %>
+
+                            <!-- Pagination -->
+                            <div class="mt-8 flex justify-center items-center space-x-4">
+                                <button <% if (currentPage===1) { %> disabled <% } %>
+                                        onclick="window.location.href='?page=<%= currentPage - 1 %>'"
+                                            class="px-4 py-2 bg-stone-800 text-white rounded-full hover:bg-gray-700
+                                            disabled:bg-white disabled:text-white">
+                                            Previous
+                                </button>
+                                <p class="text-gray-600">Page <%= currentPage %> of <%= totalPages %>
+                                </p>
+                                <button <% if (currentPage===totalPages) { %> disabled <% } %>
+                                        onclick="window.location.href='?page=<%= currentPage + 1 %>'"
+                                            class="px-4 py-2 bg-stone-800 text-white rounded-full hover:bg-gray-700
+                                            disabled:bg-white disabled:text-white">
+                                            Next
+                                </button>
+                            </div>
+                            <% } else { %>
+                                <p class="text-gray-600">No transactions found.</p>
+                                <% } %>
+
+
 
             </div>
 </body>
