@@ -306,8 +306,7 @@ exports.placeOrder = async (req, res) => {
       shippingAddress,
       payment: {
         paymentMethod,
-        paymentStatus:
-          paymentMethod === "Cash on Delivery" ? "Pending" : "Paid",
+        paymentStatus: "Pending",
       },
       couponCode: appliedCouponCode || null,
       couponType: coupon ? coupon.couponType : null,
@@ -386,19 +385,32 @@ exports.verifyPayment = async (req, res) => {
           .json({ success: false, message: "Order not found" });
       }
 
-      res.status(200).json({
+      return res.status(200).json({
         success: true,
         message: "Payment verified successfully",
       });
     } else {
-      res.status(400).json({ success: false, message: "Invalid signature" });
+      await Order.findOneAndUpdate(
+        { _id: order.receipt },
+        { $set: { "payment.paymentStatus": "Pending" } },
+        { new: true }
+      );
+      return res
+        .status(400)
+        .json({ success: false, message: "Invalid signature" });
     }
   } catch (error) {
     console.error("Payment verification error: ", error);
-    res
+    await Order.findOneAndUpdate(
+      { _id: order.receipt },
+      { $set: { "payment.paymentStatus": "Pending" } },
+      { new: true }
+    );
+    return res
       .status(500)
       .json({ success: false, message: "Payment verification failed" });
   }
 };
+
 
 module.exports = exports;
