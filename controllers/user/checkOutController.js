@@ -93,6 +93,18 @@ exports.getCheckout = async (req, res) => {
 
     const totalAfterDiscount = subtotal - totalDiscount;
 
+    //make expired coupons Status to False
+    let Coupons = await Coupon.find();
+    today.setHours(0, 0, 0, 0);
+    
+    Coupons.forEach(async (coupon) => {
+      const couponEndDate = new Date(coupon.endDate);
+      if (couponEndDate < today) {
+        coupon.isActive = false;
+        await coupon.save();
+      }
+    });
+
     // Fetch available coupons
     const availableCoupons = await Coupon.find({
       isActive: true,

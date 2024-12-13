@@ -7,12 +7,23 @@ const Coupon = require("../../models/couponModel");
 
 exports.getAdminCoupon = async (req, res) => {
     try {
-        // Retrieve pagination parameters from the request
-        const page = parseInt(req.query.page) || 1; // Default to page 1 if not provided
-        const limit = 5; // Number of coupons to show per page
+
+        const today = new Date();
+        today.setHours(0, 0, 0, 0);
+        let Coupons = await Coupon.find();
+        today.setHours(0, 0, 0, 0);
+
+        Coupons.forEach(async (coupon) => {
+            const couponEndDate = new Date(coupon.endDate);
+            if (couponEndDate < today) {
+                coupon.isActive = false;
+                await coupon.save();
+            }
+        });
+        const page = parseInt(req.query.page) || 1;
+        const limit = 5;
         const skip = (page - 1) * limit;
 
-        // Fetch coupons from the database with pagination
         const [coupons, totalCoupons] = await Promise.all([
             Coupon.find().skip(skip).limit(limit),
             Coupon.countDocuments(),
@@ -21,9 +32,9 @@ exports.getAdminCoupon = async (req, res) => {
         const totalPages = Math.ceil(totalCoupons / limit);
 
         res.render("admin/adminCoupon", {
-            coupons, // Pass fetched coupons
-            currentPage: page, // Current page
-            totalPages, // Total number of pages
+            coupons,
+            currentPage: page,
+            totalPages,
         });
     } catch (error) {
         console.error("Error fetching coupons:", error);
