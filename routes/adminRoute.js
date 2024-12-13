@@ -83,5 +83,11 @@ router.post("/coupon/add", adminCoupon.addCoupon);
 router.post("/coupon/update", adminCoupon.updateCoupon);
 
 
+// Admin Sales Report
+const adminSalesReport = require("../controllers/admin/adminSalesReportController");
+
+router.get("/salesreport", adminSalesReport.getSalesReport);
+
+
 
 module.exports = router;

@@ -144,7 +144,7 @@ app.get("/auth/google/callback", (req, res, next) => {
 
       // Update the session with the user data
       req.session.user = user;
-      console.log(user);
+      //console.log(user);
       res.redirect("/user/profile");
     });
   })(req, res, next);

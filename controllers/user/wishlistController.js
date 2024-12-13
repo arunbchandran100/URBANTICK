@@ -67,7 +67,7 @@ exports.addToWishlist = async (req, res) => {
             return res.status(400).json({ error: "User not logged in" });
         }
 
-        console.log(22222222);
+        //console.log(22222222);
         const { productId, variantId } = req.body;
         const userId = req.session.user?._id;
 
