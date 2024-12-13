@@ -78,14 +78,14 @@ exports.getSalesReport = async (req, res) => {
             (acc, item) => {
                 acc.totalItemsSold += item.quantity;
                 acc.totalOrderAmount += item.itemTotalPrice;
-                acc.totalDiscount += item.offerAmount * item.quantity;;
+                acc.totalOffer += item.offerAmount * item.quantity;
                 acc.totalCouponDeduction += item.CouponAmountOfItem || 0;
                 return acc;
             },
             {
                 totalItemsSold: 0,
                 totalOrderAmount: 0,
-                totalDiscount: 0,
+                totalOffer: 0,
                 totalCouponDeduction: 0,
             }
         );
