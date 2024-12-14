@@ -85,7 +85,7 @@
 
 
                 <div class="mt-6">
-                    <button type="submit"
+                    <button type="submit" id="filter-button"
                         class="bg-slate-500 text-white border-gray-400 px-4 py-2 rounded-lg hover:bg-slate-700 shadow-md">Filter</button>
                 </div>
             </form>
@@ -162,7 +162,7 @@
 </body>
 <script>
     const notyf = new Notyf({
-        duration: 3000, 
+        duration: 3000,
         position: {
             x: "right",
             y: "bottom",
@@ -178,6 +178,7 @@
             dateFields.style.display = 'none';
         }
     }
+
     // Initialize the toggle on page load based on selected period
     document.addEventListener('DOMContentLoaded', toggleDateFields);
 
@@ -190,6 +191,7 @@
         const periodSelect = document.getElementById("period");
         const startDateField = document.getElementById("startDate");
         const endDateField = document.getElementById("endDate");
+        const filterButton = document.getElementById("filter-button");
 
         // Open Modal
         downloadButton?.addEventListener("click", (event) => {
@@ -214,6 +216,37 @@
         });
 
         // Validate and update download links dynamically
+        const validateDates = () => {
+            const period = periodSelect?.value || "daily";
+
+            if (period === "custom") {
+                const startDate = startDateField?.value;
+                const endDate = endDateField?.value;
+
+                if (!startDate || !endDate) {
+                    // Show SweetAlert for missing dates
+                    Swal.fire({
+                        icon: "error",
+                        title: "Invalid Date Range",
+                        text: "Please select both Start Date and End Date.",
+                    });
+                    return false;
+                }
+
+                if (new Date(startDate) > new Date(endDate)) {
+                    // Show SweetAlert for invalid range
+                    Swal.fire({
+                        icon: "error",
+                        title: "Invalid Date Range",
+                        text: "The Start Date cannot be later than the End Date.",
+                    });
+                    return false;
+                }
+            }
+
+            return true; // Valid
+        };
+
         const updateDownloadLinks = () => {
             const period = periodSelect?.value || "daily";
             let urlParams = new URLSearchParams();
@@ -222,13 +255,7 @@
                 const startDate = startDateField?.value;
                 const endDate = endDateField?.value;
 
-
-
                 if (startDate && endDate) {
-                    if (new Date(startDate) > new Date(endDate)) {
-                        notyf.error("Start date cannot be after end date.");
-                        return;
-                    }
                     urlParams.append("startDate", startDate);
                     urlParams.append("endDate", endDate);
                 }
@@ -241,6 +268,16 @@
             excelLink.href = `/admin/sales-report/excel?${urlParams.toString()}`;
         };
 
+        const handleDownload = (event) => {
+            if (!validateDates()) {
+                event.preventDefault(); // Prevent download if validation fails
+            }
+        };
+
+        // Attach validation to modal download buttons
+        pdfLink.addEventListener("click", handleDownload);
+        excelLink.addEventListener("click", handleDownload);
+        filterButton.addEventListener("click", handleDownload);
         // Attach event listeners for dynamic updates
         [periodSelect, startDateField, endDateField].forEach((element) => {
             element?.addEventListener("input", updateDownloadLinks);
@@ -250,6 +287,7 @@
         updateDownloadLinks();
     });
 </script>
+
 
 
 </html>
