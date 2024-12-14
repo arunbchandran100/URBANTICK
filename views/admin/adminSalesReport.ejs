@@ -29,6 +29,14 @@
                         <option value="yearly" <%=period==='yearly' ? 'selected' : '' %>>Yearly</option>
                     </select>
                 </div>
+                <div class="flex gap-4 mt-6">
+                    <a id="download-pdf" class="bg-red-500 text-white px-4 py-2 rounded hover:bg-red-600">Download
+                        PDF</a>
+                    <a id="download-excel" class="bg-green-500 text-white px-4 py-2 rounded hover:bg-green-600">Download
+                        Excel</a>
+                </div>
+
+
 
 
                 <div class="flex flex-wrap items-center gap-4 mb-4 mt-4">
@@ -49,6 +57,7 @@
                                 class="bg-slate-500 text-white border-gray-400 px-4 py-2 rounded-lg hover:bg-slate-700 shadow-md">Reset</a>
                         </div>
                     </div>
+
                 </div>
 
 
@@ -87,43 +96,44 @@
             </div>
 
             <!-- Sales Report Table -->
-<div class="mt-8 bg-zinc-800 p-6 rounded-xl shadow-lg">
-    <h2 class="text-xl font-semibold mb-4 text-gray-200">Order Details</h2>
-    <table class="min-w-full bg-zinc-800 border-2 border-gray-900 rounded-lg">
-        <thead>
-            <tr class="bg-stone-900">
-                <th class="p-3 text-left font-medium text-gray-300">Order ID</th>
-                <th class="p-3 text-left font-medium text-gray-300">Product</th>
-                <th class="p-3 text-left font-medium text-gray-300">Status</th>
-                <th class="p-3 text-left font-medium text-gray-300">Quantity</th>
-                <th class="p-3 text-left font-medium text-gray-300">Item Price</th>
-                <th class="p-3 text-left font-medium text-gray-300">Purchase Date</th>
-            </tr>
-        </thead>
-        <tbody>
-            <% items.forEach(item => { %>
-                <tr class="border-b border-gray-700">
-                    <td class="p-3 text-gray-300">
-                        <%= item.orderId %>
-                    </td>
-                    <td class="p-3 text-gray-300">
-                        <%= item.product.brand %> - <%= item.product.productName %>
-                    </td>
-                    <td class="p-3 text-gray-300">
-                        <%= item.orderStatus %>
-                    </td>
-                    <td class="p-3 text-gray-300">
-                        <%= item.quantity %>
-                    </td>
-                    <td class="p-3 text-gray-300">₹<%= item.itemTotalPrice.toFixed(2) %></td>
-                    <td class="p-3 text-gray-300">
-                        <%= new Date(item.createdAt).toLocaleDateString('en-US') %>
-                    </td>
-                </tr>
-            <% }); %>
-        </tbody>
-    </table>
-</div>
+            <div class="mt-8 bg-zinc-800 p-6 rounded-xl shadow-lg">
+                <h2 class="text-xl font-semibold mb-4 text-gray-200">Order Details</h2>
+                <table class="min-w-full bg-zinc-800 border-2 border-gray-900 rounded-lg">
+                    <thead>
+                        <tr class="bg-stone-900">
+                            <th class="p-3 text-left font-medium text-gray-300">Order ID</th>
+                            <th class="p-3 text-left font-medium text-gray-300">Product</th>
+                            <th class="p-3 text-left font-medium text-gray-300">Status</th>
+                            <th class="p-3 text-left font-medium text-gray-300">Quantity</th>
+                            <th class="p-3 text-left font-medium text-gray-300">Item Price</th>
+                            <th class="p-3 text-left font-medium text-gray-300">Purchase Date</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <% items.forEach(item=> { %>
+                            <tr class="border-b border-gray-700">
+                                <td class="p-3 text-gray-300">
+                                    <%= item.orderId %>
+                                </td>
+                                <td class="p-3 text-gray-300">
+                                    <%= item.product.brand %> - <%= item.product.productName %>
+                                </td>
+                                <td class="p-3 text-gray-300">
+                                    <%= item.orderStatus %>
+                                </td>
+                                <td class="p-3 text-gray-300">
+                                    <%= item.quantity %>
+                                </td>
+                                <td class="p-3 text-gray-300">₹<%= item.itemTotalPrice.toFixed(2) %>
+                                </td>
+                                <td class="p-3 text-gray-300">
+                                    <%= new Date(item.createdAt).toLocaleDateString('en-US') %>
+                                </td>
+                            </tr>
+                            <% }); %>
+                    </tbody>
+                </table>
+            </div>
 
         </main>
 </body>
@@ -139,6 +149,42 @@
     }
     // Initialize the toggle on page load based on selected period
     document.addEventListener('DOMContentLoaded', toggleDateFields);
+
+    document.addEventListener("DOMContentLoaded", () => {
+        const periodSelect = document.getElementById("period");
+        const startDateField = document.getElementById("startDate");
+        const endDateField = document.getElementById("endDate");
+        const pdfButton = document.getElementById("download-pdf");
+        const excelButton = document.getElementById("download-excel");
+
+        const updateDownloadLinks = () => {
+            const period = periodSelect.value;
+            let urlParams = new URLSearchParams();
+
+            if (period === "custom") {
+                const startDate = startDateField.value;
+                const endDate = endDateField.value;
+
+                if (startDate) urlParams.append("startDate", startDate);
+                if (endDate) urlParams.append("endDate", endDate);
+                urlParams.append("range", "custom");
+            } else {
+                urlParams.append("range", period);
+            }
+
+            pdfButton.href = `/admin/sales-report/pdf?${urlParams.toString()}`;
+            excelButton.href = `/admin/sales-report/excel?${urlParams.toString()}`;
+        };
+
+        // Update links on form changes
+        periodSelect.addEventListener("change", updateDownloadLinks);
+        startDateField.addEventListener("change", updateDownloadLinks);
+        endDateField.addEventListener("change", updateDownloadLinks);
+
+        // Initialize the links on page load
+        updateDownloadLinks();
+    });
+
 </script>
 
 </html>

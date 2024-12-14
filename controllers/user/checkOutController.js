@@ -218,8 +218,20 @@ exports.placeOrder = async (req, res) => {
 
       subtotal += itemTotalPrice;
 
+      const generateOrderID = () => {
+        const characters =
+          "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789";
+        let orderID = "#";
+        for (let i = 0; i < 5; i++) {
+          orderID += characters.charAt(
+            Math.floor(Math.random() * characters.length)
+          );
+        }
+        return orderID;
+      };
+
       return {
-        order_id: new mongoose.Types.ObjectId(),
+        order_id: generateOrderID(),
         product: {
           productId: product._id,
           brand: product.brand,
@@ -244,6 +256,7 @@ exports.placeOrder = async (req, res) => {
         CouponAmountOfItem: 0,
         priceAfterCoupon: itemTotalPrice,
       };
+
     });
     // Check and apply the coupon
     let couponDiscount = 0;

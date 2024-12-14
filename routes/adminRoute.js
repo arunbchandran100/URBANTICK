@@ -87,7 +87,8 @@ router.post("/coupon/update", adminCoupon.updateCoupon);
 const adminSalesReport = require("../controllers/admin/adminSalesReportController");
 
 router.get("/salesreport", adminAuthenticated, adminSalesReport.getSalesReport);
-
+router.get("/sales-report/pdf", adminSalesReport.downloadPDF);
+router.get("/sales-report/excel", adminSalesReport.downloadExcel);
 
 
 module.exports = router;

@@ -1,12 +1,11 @@
 const Order = require("../../models/orderModel");
+const PDFDocument = require("pdfkit");
+const ExcelJS = require("exceljs");
 
 exports.getSalesReport = async (req, res) => {
     try {
         const { startDate, endDate, period } = req.query;
 
-        // console.log(
-        //     "Start date " + startDate + " End date " + endDate + " Period " + period
-        // );
         const currentDate = new Date();
         let filter = {};
 
@@ -63,9 +62,7 @@ exports.getSalesReport = async (req, res) => {
             }
         }
 
-
         const orders = await Order.find(filter).lean();
-
 
         const filteredItems = orders.flatMap((order) =>
             order.orderItems
@@ -76,12 +73,11 @@ exports.getSalesReport = async (req, res) => {
                 )
                 .map((item) => ({
                     ...item,
-                    orderId: order._id,
+                    orderId: item.order_id,
                     userName: order.userName,
                     createdAt: order.createdAt,
                 }))
         );
-
 
         const reportData = filteredItems.reduce(
             (acc, item) => {
@@ -109,5 +105,186 @@ exports.getSalesReport = async (req, res) => {
     } catch (error) {
         console.error("Error generating sales report:", error);
         res.status(500).json({ error: "Failed to generate sales report" });
+    }
+};
+
+
+// Utility function to calculate date range
+const getDateRange = (range, startDate, endDate) => {
+    const currentDate = new Date();
+    let dateRange = { start: new Date(), end: new Date() };
+
+    const currentYear = currentDate.getFullYear(); // Get current year
+
+    switch (range) {
+        case "custom":
+            dateRange.start = new Date(startDate);
+            dateRange.end = new Date(endDate);
+            break;
+        case "daily":
+            dateRange.start = new Date(currentDate.setHours(0, 0, 0, 0));
+            dateRange.end = new Date(currentDate.setHours(23, 59, 59, 999));
+            break;
+        case "weekly":
+            // Get the start of the week (Sunday)
+            const startOfWeek = new Date(
+                currentDate.setDate(currentDate.getDate() - currentDate.getDay())
+            );
+            // Include today as part of the week
+            dateRange.start = new Date(startOfWeek.setHours(0, 0, 0, 0));
+            dateRange.end = new Date(startOfWeek.setDate(startOfWeek.getDate() + 7));
+            break;
+        case "monthly":
+            dateRange.start = new Date(currentYear, currentDate.getMonth(), 1);
+            dateRange.end = new Date(currentYear, currentDate.getMonth() + 1, 0);
+            break;
+        case "yearly":
+            dateRange.start = new Date(currentYear, 0, 1); // Start of the year (January 1st)
+            dateRange.end = new Date(currentYear, 11, 31); // End of the year (December 31st)
+            break;
+        default:
+            throw new Error("Invalid range");
+    }
+
+    return dateRange;
+};
+
+// Generate PDF report
+exports.downloadPDF = async (req, res) => {
+    try {
+        const { range, startDate, endDate } = req.query;
+        const dateRange = getDateRange(range, startDate, endDate);
+
+        const orders = await Order.find({
+            createdAt: { $gte: dateRange.start, $lte: dateRange.end },
+        }).lean();
+
+        const filteredItems = orders.flatMap((order) =>
+            order.orderItems
+                .filter((item) =>
+                    ["Delivered", "Return-Cancelled", "Return-Requested"].includes(
+                        item.orderStatus
+                    )
+                )
+                .map((item) => ({
+                    ...item,
+                    orderId: item.order_id,
+                    userName: order.userName,
+                    createdAt: order.createdAt,
+                }))
+        );
+
+        const doc = new PDFDocument();
+        res.setHeader("Content-Type", "application/pdf");
+        res.setHeader(
+            "Content-Disposition",
+            "attachment; filename=sales_report.pdf"
+        );
+
+        doc.pipe(res);
+
+        doc.fontSize(18).text("Sales Report", { align: "center" });
+        doc.moveDown();
+        doc
+            .fontSize(12)
+            .text(
+                `Date Range: ${dateRange.start.toDateString()} - ${dateRange.end.toDateString()}`,
+                { align: "center" }
+            );
+        doc.moveDown();
+
+        // Table header
+        doc.font("Helvetica-Bold");
+        doc.text("Order ID", 50, 150);
+        doc.text("User Name", 150, 150);
+        doc.text("Product", 250, 150);
+        doc.text("Quantity", 350, 150);
+        doc.text("Price", 450, 150);
+        doc.text("Date", 550, 150);
+
+        // Table rows
+        let currentTop = 180;
+        filteredItems.forEach((item) => {
+            doc.font("Helvetica").text(item.orderId, 50, currentTop);
+            doc.text(item.userName, 150, currentTop);
+            doc.text(`${item.product.brand} - ${item.product.productName}`, 250, currentTop);
+            doc.text(item.quantity, 350, currentTop);
+            doc.text(item.itemTotalPrice.toFixed(2), 450, currentTop);
+            doc.text(new Date(item.createdAt).toLocaleDateString("en-US"), 550, currentTop);
+            currentTop += 20;
+            if (currentTop > 700) {
+                doc.addPage();
+                currentTop = 50;
+            }
+        });
+
+        doc.end();
+    } catch (error) {
+        console.error("Error generating PDF report:", error);
+        res.status(500).json({ message: "Error generating PDF report" });
+    }
+};
+
+// Generate Excel report
+exports.downloadExcel = async (req, res) => {
+    try {
+        const { range, startDate, endDate } = req.query;
+        const dateRange = getDateRange(range, startDate, endDate);
+
+        const orders = await Order.find({
+            createdAt: { $gte: dateRange.start, $lte: dateRange.end },
+        }).lean();
+
+        const filteredItems = orders.flatMap((order) =>
+            order.orderItems
+                .filter((item) =>
+                    ["Delivered", "Return-Cancelled", "Return-Requested"].includes(
+                        item.orderStatus
+                    )
+                )
+                .map((item) => ({
+                    ...item,
+                    orderId: item.order_id,
+                    userName: order.userName,
+                    createdAt: order.createdAt,
+                }))
+        );
+
+        const workbook = new ExcelJS.Workbook();
+        const worksheet = workbook.addWorksheet("Sales Report");
+
+        worksheet.columns = [
+            { header: "Order ID", key: "orderId", width: 20 },
+            { header: "User Name", key: "userName", width: 20 },
+            { header: "Product", key: "product", width: 30 },
+            { header: "Quantity", key: "quantity", width: 10 },
+            { header: "Price", key: "price", width: 15 },
+            { header: "Date", key: "date", width: 15 },
+        ];
+
+        filteredItems.forEach((item) => {
+            worksheet.addRow({
+                orderId: item.orderId,
+                userName: item.userName,
+                product: `${item.product.brand} - ${item.product.productName}`,
+                quantity: item.quantity,
+                price: item.itemTotalPrice.toFixed(2),
+                date: new Date(item.createdAt).toLocaleDateString("en-US"),
+            });
+        });
+
+        res.setHeader(
+            "Content-Type",
+            "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"
+        );
+        res.setHeader(
+            "Content-Disposition",
+            "attachment; filename=sales_report.xlsx"
+        );
+        await workbook.xlsx.write(res);
+        res.end();
+    } catch (error) {
+        console.error("Error generating Excel report:", error);
+        res.status(500).json({ message: "Error generating Excel report" });
     }
 };
