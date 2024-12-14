@@ -59,8 +59,8 @@ router.post("/products/add/variant", adminProduct.postAddvariant);
 // Admin Orders
 const adminOrders = require("../controllers/admin/adminOrdersController");
 
-router.get("/orders", adminOrders.getAdminOrders);
-router.get("/orders/details/:id", adminOrders.getAdminOrdersDetails);
+router.get("/orders", adminAuthenticated, adminOrders.getAdminOrders);
+router.get("/orders/details/:id",  adminAuthenticated, adminOrders.getAdminOrdersDetails);
 router.post("/orders/update-status", adminOrders.updateOrderStatus);
 router.post("/order/approve-return", adminOrders.handleReturnRequest);
 router.post("/order/reject-return", adminOrders.handleReturnRequest);
@@ -70,7 +70,7 @@ router.post("/order/reject-return", adminOrders.handleReturnRequest);
 // Admin Offer
 const adminOffer = require("../controllers/admin/adminOfferController");
 
-router.get("/offer", adminOffer.getAdminOffers);
+router.get("/offer", adminAuthenticated, adminOffer.getAdminOffers);
 router.post("/offer/add", adminOffer.addOffer);
 router.post("/offer/update", adminOffer.updateOffer);
 router.delete("/offer/delete/:offerId", adminOffer.deleteOffer);
@@ -78,7 +78,7 @@ router.delete("/offer/delete/:offerId", adminOffer.deleteOffer);
 // Admin Coupon
 const adminCoupon = require("../controllers/admin/adminCouponController");
 
-router.get("/coupon", adminCoupon.getAdminCoupon);
+router.get("/coupon", adminAuthenticated, adminCoupon.getAdminCoupon);
 router.post("/coupon/add", adminCoupon.addCoupon);
 router.post("/coupon/update", adminCoupon.updateCoupon);
 
@@ -86,7 +86,7 @@ router.post("/coupon/update", adminCoupon.updateCoupon);
 // Admin Sales Report
 const adminSalesReport = require("../controllers/admin/adminSalesReportController");
 
-router.get("/salesreport", adminSalesReport.getSalesReport);
+router.get("/salesreport", adminAuthenticated, adminSalesReport.getSalesReport);
 
 
 

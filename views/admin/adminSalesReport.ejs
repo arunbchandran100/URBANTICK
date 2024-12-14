@@ -11,92 +11,134 @@
 <body class="bg-black text-white min-h-screen">
     <!-- Sidebar -->
     <%- include("partials/sidebar") %>
-    <main class="ml-64 p-8">
-        <h1 class="text-3xl font-semibold mb-6 text-gray-200">Sales Report</h1>
+        <main class="ml-64 p-8">
+            <h1 class="text-3xl font-semibold mb-6 text-gray-200">Sales Report</h1>
 
-        <!-- Filter Section -->
-        <form method="GET" action="/admin/sales-report" class="mb-6 bg-zinc-800 p-6 rounded-lg shadow-lg">
-            <div class="flex flex-wrap items-center gap-4">
-                <div>
+
+            <!-- Filter Section -->
+            <form method="GET" action="/admin/salesreport" class="mb-6 bg-zinc-800 p-6 rounded-lg shadow-lg">
+                <div class="w-1/6">
                     <label for="period" class="block text-gray-300 font-medium">Period</label>
-                    <select id="period" name="period" class="mt-1 block w-full px-3 py-2 border border-gray-600 rounded-lg bg-stone-900 text-gray-300">
-                        <option value="" <%= !period ? 'selected' : '' %>>Custom</option>
-                        <option value="daily" <%= period === 'daily' ? 'selected' : '' %>>Daily</option>
-                        <option value="weekly" <%= period === 'weekly' ? 'selected' : '' %>>Weekly</option>
-                        <option value="monthly" <%= period === 'monthly' ? 'selected' : '' %>>Monthly</option>
+                    <select id="period" name="period"
+                        class="mt-1 block w-full px-3 py-2 border border-gray-600 rounded-lg bg-stone-900 text-gray-300 shadow-sm text-center"
+                        onchange="toggleDateFields()">
+                        <option value="custom" <%=!period ? 'selected' : '' %>>Custom</option>
+                        <option value="daily" <%=period==='daily' ? 'selected' : '' %>>Daily</option>
+                        <option value="weekly" <%=period==='weekly' ? 'selected' : '' %>>Weekly</option>
+                        <option value="monthly" <%=period==='monthly' ? 'selected' : '' %>>Monthly</option>
+                        <option value="yearly" <%=period==='yearly' ? 'selected' : '' %>>Yearly</option>
                     </select>
                 </div>
-                <div>
-                    <label for="startDate" class="block text-gray-300 font-medium">Start Date</label>
-                    <input type="date" id="startDate" name="startDate" value="<%= startDate || '' %>"
-                        class="mt-1 block w-full px-3 py-2 border border-gray-600 rounded-lg bg-stone-900 text-gray-300" />
+
+
+                <div class="flex flex-wrap items-center gap-4 mb-4 mt-4">
+                    <div id="date-fields" class="w-full sm:w-auto flex-grow flex gap-4"
+                        style="display: <%= !period || period === 'custom' ? 'flex' : 'none' %>;">
+                        <div class="w-full sm:w-auto">
+                            <label for="startDate" class="block text-gray-300 font-medium">Start Date</label>
+                            <input type="date" id="startDate" name="startDate" value="<%= startDate || '' %>"
+                                class="mt-1 block w-full px-3 py-2 border border-gray-600 rounded-lg bg-stone-900 text-gray-300 shadow-sm" />
+                        </div>
+                        <div class="w-full sm:w-auto">
+                            <label for="endDate" class="block text-gray-300 font-medium">End Date</label>
+                            <input type="date" id="endDate" name="endDate" value="<%= endDate || '' %>"
+                                class="mt-1 block w-full px-3 py-2 border border-gray-600 rounded-lg bg-stone-900 text-gray-300 shadow-sm" />
+                        </div>
+                        <div class="mt-9">
+                            <a href="/admin/salesreport"
+                                class="bg-slate-500 text-white border-gray-400 px-4 py-2 rounded-lg hover:bg-slate-700 shadow-md">Reset</a>
+                        </div>
+                    </div>
                 </div>
-                <div>
-                    <label for="endDate" class="block text-gray-300 font-medium">End Date</label>
-                    <input type="date" id="endDate" name="endDate" value="<%= endDate || '' %>"
-                        class="mt-1 block w-full px-3 py-2 border border-gray-600 rounded-lg bg-stone-900 text-gray-300" />
-                </div>
+
+
                 <div class="mt-6">
                     <button type="submit"
-                        class="bg-slate-500 text-white border-gray-400 px-4 py-2 rounded-lg hover:bg-slate-700">Filter</button>
+                        class="bg-slate-500 text-white border-gray-400 px-4 py-2 rounded-lg hover:bg-slate-700 shadow-md">Filter</button>
+                </div>
+            </form>
+
+            <!-- Sales Summary -->
+            <div class="bg-zinc-800 p-6 rounded-lg shadow-lg">
+                <h2 class="text-xl font-semibold mb-4 text-gray-200">Sales Summary</h2>
+                <div class="grid grid-cols-2 sm:grid-cols-4 gap-4">
+                    <div class="p-4 bg-stone-900 rounded-lg shadow">
+                        <p class="text-gray-300">Total Items Sold</p>
+                        <p class="text-2xl font-bold text-white">
+                            <%= reportData.totalItemsSold %>
+                        </p>
+                    </div>
+                    <div class="p-4 bg-stone-900 rounded-lg shadow">
+                        <p class="text-gray-300">Total Order Amount</p>
+                        <p class="text-2xl font-bold text-white">₹<%= reportData.totalOrderAmount.toFixed(2) %>
+                        </p>
+                    </div>
+                    <div class="p-4 bg-stone-900 rounded-lg shadow">
+                        <p class="text-gray-300">Total Offer</p>
+                        <p class="text-2xl font-bold text-white">₹<%= reportData.totalOffer.toFixed(2) %>
+                        </p>
+                    </div>
+                    <div class="p-4 bg-stone-900 rounded-lg shadow">
+                        <p class="text-gray-300">Coupon Deduction</p>
+                        <p class="text-2xl font-bold text-white">₹<%= reportData.totalCouponDeduction.toFixed(2) %>
+                        </p>
+                    </div>
                 </div>
             </div>
-        </form>
 
-        <!-- Sales Summary -->
-        <div class="bg-zinc-800 p-6 rounded-lg shadow-lg">
-            <h2 class="text-xl font-semibold mb-4 text-gray-200">Sales Summary</h2>
-            <div class="grid grid-cols-2 sm:grid-cols-4 gap-4">
-                <div class="p-4 bg-stone-900 rounded-lg shadow">
-                    <p class="text-gray-300">Total Items Sold</p>
-                    <p class="text-2xl font-bold text-white">
-                        <%= reportData.totalItemsSold %>
-                    </p>
-                </div>
-                <div class="p-4 bg-stone-900 rounded-lg shadow">
-                    <p class="text-gray-300">Total Order Amount</p>
-                    <p class="text-2xl font-bold text-white">₹<%= reportData.totalOrderAmount.toFixed(2) %></p>
-                </div>
-                <div class="p-4 bg-stone-900 rounded-lg shadow">
-                    <p class="text-gray-300">Total Discount</p>
-                    <p class="text-2xl font-bold text-white">₹<%= reportData.totalOffer.toFixed(2) %></p>
-                </div>
-                <div class="p-4 bg-stone-900 rounded-lg shadow">
-                    <p class="text-gray-300">Coupon Deduction</p>
-                    <p class="text-2xl font-bold text-white">₹<%= reportData.totalCouponDeduction.toFixed(2) %></p>
-                </div>
-            </div>
-        </div>
+            <!-- Sales Report Table -->
+<div class="mt-8 bg-zinc-800 p-6 rounded-xl shadow-lg">
+    <h2 class="text-xl font-semibold mb-4 text-gray-200">Order Details</h2>
+    <table class="min-w-full bg-zinc-800 border-2 border-gray-900 rounded-lg">
+        <thead>
+            <tr class="bg-stone-900">
+                <th class="p-3 text-left font-medium text-gray-300">Order ID</th>
+                <th class="p-3 text-left font-medium text-gray-300">Product</th>
+                <th class="p-3 text-left font-medium text-gray-300">Status</th>
+                <th class="p-3 text-left font-medium text-gray-300">Quantity</th>
+                <th class="p-3 text-left font-medium text-gray-300">Item Price</th>
+                <th class="p-3 text-left font-medium text-gray-300">Purchase Date</th>
+            </tr>
+        </thead>
+        <tbody>
+            <% items.forEach(item => { %>
+                <tr class="border-b border-gray-700">
+                    <td class="p-3 text-gray-300">
+                        <%= item.orderId %>
+                    </td>
+                    <td class="p-3 text-gray-300">
+                        <%= item.product.brand %> - <%= item.product.productName %>
+                    </td>
+                    <td class="p-3 text-gray-300">
+                        <%= item.orderStatus %>
+                    </td>
+                    <td class="p-3 text-gray-300">
+                        <%= item.quantity %>
+                    </td>
+                    <td class="p-3 text-gray-300">₹<%= item.itemTotalPrice.toFixed(2) %></td>
+                    <td class="p-3 text-gray-300">
+                        <%= new Date(item.createdAt).toLocaleDateString('en-US') %>
+                    </td>
+                </tr>
+            <% }); %>
+        </tbody>
+    </table>
+</div>
 
-        <!-- Sales Report Table -->
-        <div class="mt-8 bg-zinc-800 p-6 rounded-xl shadow-lg">
-            <h2 class="text-xl font-semibold mb-4 text-gray-200">Order Details</h2>
-            <table class="min-w-full bg-zinc-800 border-2 border-gray-900 rounded-lg">
-                <thead>
-                    <tr class="bg-stone-900">
-                        <th class="p-3 text-left font-medium text-gray-300">Order ID</th>
-                        <th class="p-3 text-left font-medium text-gray-300">Product</th>
-                        <th class="p-3 text-left font-medium text-gray-300">Status</th>
-                        <th class="p-3 text-left font-medium text-gray-300">Quantity</th>
-                        <th class="p-3 text-left font-medium text-gray-300">Item Price</th>
-                    </tr>
-                </thead>
-                <tbody>
-                    <% items.forEach(item => { %>
-                        <tr class="border-b border-gray-700">
-                            <td class="p-3 text-gray-300"><%= item.orderId %></td>
-                            <td class="p-3 text-gray-300">
-                                <%= item.product.brand %> - <%= item.product.productName %>
-                            </td>
-                            <td class="p-3 text-gray-300"><%= item.orderStatus %></td>
-                            <td class="p-3 text-gray-300"><%= item.quantity %></td>
-                            <td class="p-3 text-gray-300">₹<%= item.itemTotalPrice.toFixed(2) %></td>
-                        </tr>
-                    <% }); %>
-                </tbody>
-            </table>
-        </div>
-    </main>
+        </main>
 </body>
+<script>
+    function toggleDateFields() {
+        const period = document.getElementById('period').value;
+        const dateFields = document.getElementById('date-fields');
+        if (period === 'custom') {
+            dateFields.style.display = 'flex';
+        } else {
+            dateFields.style.display = 'none';
+        }
+    }
+    // Initialize the toggle on page load based on selected period
+    document.addEventListener('DOMContentLoaded', toggleDateFields);
+</script>
 
 </html>

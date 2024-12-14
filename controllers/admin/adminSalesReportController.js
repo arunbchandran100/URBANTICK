@@ -4,11 +4,13 @@ exports.getSalesReport = async (req, res) => {
     try {
         const { startDate, endDate, period } = req.query;
 
-
+        // console.log(
+        //     "Start date " + startDate + " End date " + endDate + " Period " + period
+        // );
         const currentDate = new Date();
         let filter = {};
 
-        if (startDate && endDate) {
+        if (period === "custom" && startDate && endDate) {
             filter.createdAt = {
                 $gte: new Date(startDate),
                 $lte: new Date(endDate),
@@ -25,9 +27,8 @@ exports.getSalesReport = async (req, res) => {
                     const startOfWeek = new Date(
                         currentDate.setDate(currentDate.getDate() - currentDate.getDay())
                     );
-                    const endOfWeek = new Date(
-                        currentDate.setDate(startOfWeek.getDate() + 6)
-                    );
+                    const endOfWeek = new Date(startOfWeek);
+                    endOfWeek.setDate(startOfWeek.getDate() + 6);
                     filter.createdAt = {
                         $gte: startOfWeek,
                         $lt: endOfWeek,
@@ -49,15 +50,23 @@ exports.getSalesReport = async (req, res) => {
                         $lt: endOfMonth,
                     };
                     break;
+                case "yearly":
+                    const startOfYear = new Date(currentDate.getFullYear(), 0, 1);
+                    const endOfYear = new Date(currentDate.getFullYear() + 1, 0, 0);
+                    filter.createdAt = {
+                        $gte: startOfYear,
+                        $lt: endOfYear,
+                    };
+                    break;
                 default:
                     break;
             }
         }
 
-        // Fetch orders matching the filter
+
         const orders = await Order.find(filter).lean();
 
-        // Flatten order items and filter by the required statuses
+
         const filteredItems = orders.flatMap((order) =>
             order.orderItems
                 .filter((item) =>
@@ -67,13 +76,13 @@ exports.getSalesReport = async (req, res) => {
                 )
                 .map((item) => ({
                     ...item,
-                    orderId: order._id, // Attach order ID for reference
-                    userName: order.userName, // Attach user details for reference
+                    orderId: order._id,
+                    userName: order.userName,
                     createdAt: order.createdAt,
                 }))
         );
 
-        // Aggregate sales report data
+
         const reportData = filteredItems.reduce(
             (acc, item) => {
                 acc.totalItemsSold += item.quantity;
