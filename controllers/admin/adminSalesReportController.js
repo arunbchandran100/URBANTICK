@@ -174,6 +174,22 @@ exports.downloadPDF = async (req, res) => {
                 }))
         );
 
+        const reportData = filteredItems.reduce(
+            (acc, item) => {
+                acc.totalItemsSold += item.quantity;
+                acc.totalOrderAmount += item.itemTotalPrice;
+                acc.totalOffer += item.offerAmount * item.quantity;
+                acc.totalCouponDeduction += item.CouponAmountOfItem || 0;
+                return acc;
+            },
+            {
+                totalItemsSold: 0,
+                totalOrderAmount: 0,
+                totalOffer: 0,
+                totalCouponDeduction: 0,
+            }
+        );
+
         const doc = new PDFDocument();
         res.setHeader("Content-Type", "application/pdf");
         res.setHeader(
@@ -193,24 +209,46 @@ exports.downloadPDF = async (req, res) => {
             );
         doc.moveDown();
 
+        // Sales summary
+        doc
+            .font("Helvetica-Bold")
+            .fontSize(14)
+            .text("Summary:", { underline: true });
+        doc.font("Helvetica").fontSize(12);
+        doc.text(`Total Items Sold: ${reportData.totalItemsSold}`);
+        doc.text(`Total Order Amount: ₹${reportData.totalOrderAmount.toFixed(2)}`);
+        doc.text(`Total Offer: ₹${reportData.totalOffer.toFixed(2)}`);
+        doc.text(
+            `Total Coupon Deduction: ₹${reportData.totalCouponDeduction.toFixed(2)}`
+        );
+        doc.moveDown();
+
         // Table header
         doc.font("Helvetica-Bold");
-        doc.text("Order ID", 50, 150);
-        doc.text("User Name", 150, 150);
-        doc.text("Product", 250, 150);
-        doc.text("Quantity", 350, 150);
-        doc.text("Price", 450, 150);
-        doc.text("Date", 550, 150);
+        doc.text("Order ID", 50, 200);
+        doc.text("User Name", 150, 200);
+        doc.text("Product", 250, 200);
+        doc.text("Quantity", 350, 200);
+        doc.text("Price", 450, 200);
+        doc.text("Date", 550, 200);
 
         // Table rows
-        let currentTop = 180;
+        let currentTop = 220;
         filteredItems.forEach((item) => {
             doc.font("Helvetica").text(item.orderId, 50, currentTop);
             doc.text(item.userName, 150, currentTop);
-            doc.text(`${item.product.brand} - ${item.product.productName}`, 250, currentTop);
+            doc.text(
+                `${item.product.brand} - ${item.product.productName}`,
+                250,
+                currentTop
+            );
             doc.text(item.quantity, 350, currentTop);
             doc.text(item.itemTotalPrice.toFixed(2), 450, currentTop);
-            doc.text(new Date(item.createdAt).toLocaleDateString("en-US"), 550, currentTop);
+            doc.text(
+                new Date(item.createdAt).toLocaleDateString("en-US"),
+                550,
+                currentTop
+            );
             currentTop += 20;
             if (currentTop > 700) {
                 doc.addPage();
@@ -224,6 +262,7 @@ exports.downloadPDF = async (req, res) => {
         res.status(500).json({ message: "Error generating PDF report" });
     }
 };
+
 
 // Generate Excel report
 exports.downloadExcel = async (req, res) => {
@@ -250,6 +289,22 @@ exports.downloadExcel = async (req, res) => {
                 }))
         );
 
+        const reportData = filteredItems.reduce(
+            (acc, item) => {
+                acc.totalItemsSold += item.quantity;
+                acc.totalOrderAmount += item.itemTotalPrice;
+                acc.totalOffer += item.offerAmount * item.quantity;
+                acc.totalCouponDeduction += item.CouponAmountOfItem || 0;
+                return acc;
+            },
+            {
+                totalItemsSold: 0,
+                totalOrderAmount: 0,
+                totalOffer: 0,
+                totalCouponDeduction: 0,
+            }
+        );
+
         const workbook = new ExcelJS.Workbook();
         const worksheet = workbook.addWorksheet("Sales Report");
 
@@ -262,6 +317,22 @@ exports.downloadExcel = async (req, res) => {
             { header: "Date", key: "date", width: 15 },
         ];
 
+        // Add summary
+        worksheet.addRow([]);
+        worksheet.addRow(["Summary"]);
+        worksheet.addRow(["Total Items Sold", reportData.totalItemsSold]);
+        worksheet.addRow([
+            "Total Order Amount",
+            `₹${reportData.totalOrderAmount.toFixed(2)}`,
+        ]);
+        worksheet.addRow(["Total Offer", `₹${reportData.totalOffer.toFixed(2)}`]);
+        worksheet.addRow([
+            "Total Coupon Deduction",
+            `₹${reportData.totalCouponDeduction.toFixed(2)}`,
+        ]);
+        worksheet.addRow([]);
+
+        // Add data
         filteredItems.forEach((item) => {
             worksheet.addRow({
                 orderId: item.orderId,

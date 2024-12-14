@@ -22,19 +22,47 @@
                     <select id="period" name="period"
                         class="mt-1 block w-full px-3 py-2 border border-gray-600 rounded-lg bg-stone-900 text-gray-300 shadow-sm text-center"
                         onchange="toggleDateFields()">
-                        <option value="custom" <%=!period ? 'selected' : '' %>>Custom</option>
-                        <option value="daily" <%=period==='daily' ? 'selected' : '' %>>Daily</option>
+                        <option value="daily" <%=period==='daily' || !period ? 'selected' : '' %>>Daily</option>
                         <option value="weekly" <%=period==='weekly' ? 'selected' : '' %>>Weekly</option>
                         <option value="monthly" <%=period==='monthly' ? 'selected' : '' %>>Monthly</option>
                         <option value="yearly" <%=period==='yearly' ? 'selected' : '' %>>Yearly</option>
+                        <option value="custom" <%=period==='custom' ? 'selected' : '' %>>Custom</option>
                     </select>
+
                 </div>
-                <div class="flex gap-4 mt-6">
-                    <a id="download-pdf" class="bg-red-500 text-white px-4 py-2 rounded hover:bg-red-600">Download
-                        PDF</a>
-                    <a id="download-excel" class="bg-green-500 text-white px-4 py-2 rounded hover:bg-green-600">Download
-                        Excel</a>
+                <!-- Download Button -->
+                <button id="download-button"
+                    class="bg-blue-500 text-white px-4 py-2 rounded-lg hover:bg-blue-600 shadow-md">
+                    Download Report
+                </button>
+
+                <!-- Modal -->
+                <div id="download-modal"
+                    class="fixed inset-0 flex items-center justify-center bg-black bg-opacity-50 hidden">
+                    <div class="bg-zinc-800 rounded-lg shadow-xl w-96 p-6">
+                        <!-- Modal Header -->
+                        <div class="flex justify-between items-center mb-4">
+                            <h2 class="text-lg font-semibold text-gray-200">Download Report</h2>
+                            <button id="close-modal" class="text-gray-400 hover:text-white">
+                                &times;
+                            </button>
+                        </div>
+
+                        <!-- Modal Body -->
+                        <div class="flex flex-col space-y-4">
+                            <a id="modal-download-pdf"
+                                class="bg-red-500 text-white px-4 py-2 rounded-lg hover:bg-red-600 shadow-md text-center">
+                                Download PDF
+                            </a>
+                            <a id="modal-download-excel"
+                                class="bg-green-500 text-white px-4 py-2 rounded-lg hover:bg-green-600 shadow-md text-center">
+                                Download Excel
+                            </a>
+                        </div>
+                    </div>
                 </div>
+
+
 
 
 
@@ -138,6 +166,14 @@
         </main>
 </body>
 <script>
+    const notyf = new Notyf({
+        duration: 3000, // Notification duration in milliseconds
+        position: {
+            x: "right",
+            y: "bottom",
+        },
+    });
+
     function toggleDateFields() {
         const period = document.getElementById('period').value;
         const dateFields = document.getElementById('date-fields');
@@ -151,40 +187,74 @@
     document.addEventListener('DOMContentLoaded', toggleDateFields);
 
     document.addEventListener("DOMContentLoaded", () => {
+        const downloadButton = document.getElementById("download-button");
+        const modal = document.getElementById("download-modal");
+        const closeModal = document.getElementById("close-modal");
+        const pdfLink = document.getElementById("modal-download-pdf");
+        const excelLink = document.getElementById("modal-download-excel");
         const periodSelect = document.getElementById("period");
         const startDateField = document.getElementById("startDate");
         const endDateField = document.getElementById("endDate");
-        const pdfButton = document.getElementById("download-pdf");
-        const excelButton = document.getElementById("download-excel");
 
+        // Open Modal
+        downloadButton?.addEventListener("click", (event) => {
+            event.preventDefault(); // Prevent any default behavior
+            modal.classList.remove("hidden");
+            modal.classList.add("flex");
+        });
+
+        // Close Modal
+        closeModal?.addEventListener("click", (event) => {
+            event.preventDefault(); // Prevent any default behavior
+            modal.classList.remove("flex");
+            modal.classList.add("hidden");
+        });
+
+        // Close modal when clicking outside the content
+        window.addEventListener("click", (event) => {
+            if (event.target === modal) {
+                modal.classList.remove("flex");
+                modal.classList.add("hidden");
+            }
+        });
+
+        // Validate and update download links dynamically
         const updateDownloadLinks = () => {
-            const period = periodSelect.value;
+            const period = periodSelect?.value || "daily";
             let urlParams = new URLSearchParams();
 
             if (period === "custom") {
-                const startDate = startDateField.value;
-                const endDate = endDateField.value;
+                const startDate = startDateField?.value;
+                const endDate = endDateField?.value;
 
-                if (startDate) urlParams.append("startDate", startDate);
-                if (endDate) urlParams.append("endDate", endDate);
+
+
+                if (startDate && endDate) {
+                    if (new Date(startDate) > new Date(endDate)) {
+                        notyf.error("Start date cannot be after end date.");
+                        return;
+                    }
+                    urlParams.append("startDate", startDate);
+                    urlParams.append("endDate", endDate);
+                }
                 urlParams.append("range", "custom");
             } else {
                 urlParams.append("range", period);
             }
 
-            pdfButton.href = `/admin/sales-report/pdf?${urlParams.toString()}`;
-            excelButton.href = `/admin/sales-report/excel?${urlParams.toString()}`;
+            pdfLink.href = `/admin/sales-report/pdf?${urlParams.toString()}`;
+            excelLink.href = `/admin/sales-report/excel?${urlParams.toString()}`;
         };
 
-        // Update links on form changes
-        periodSelect.addEventListener("change", updateDownloadLinks);
-        startDateField.addEventListener("change", updateDownloadLinks);
-        endDateField.addEventListener("change", updateDownloadLinks);
+        // Attach event listeners for dynamic updates
+        [periodSelect, startDateField, endDateField].forEach((element) => {
+            element?.addEventListener("input", updateDownloadLinks);
+        });
 
-        // Initialize the links on page load
+        // Initialize links on page load
         updateDownloadLinks();
     });
-
 </script>
+
 
 </html>
