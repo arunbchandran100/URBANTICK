@@ -216,7 +216,9 @@ exports.downloadPDF = async (req, res) => {
             .text("Summary:", { underline: true });
         doc.font("Helvetica").fontSize(12);
         doc.text(`Total Items Sold: ${reportData.totalItemsSold}`);
-        doc.text(`Total Order Amount: ₹${reportData.totalOrderAmount.toFixed(2)}`);
+        doc.text(
+            `Total Order Amount: ₹${reportData.totalOrderAmount.toFixed(2)}`
+        );
         doc.text(`Total Offer: ₹${reportData.totalOffer.toFixed(2)}`);
         doc.text(
             `Total Coupon Deduction: ₹${reportData.totalCouponDeduction.toFixed(2)}`
@@ -225,31 +227,38 @@ exports.downloadPDF = async (req, res) => {
 
         // Table header
         doc.font("Helvetica-Bold");
-        doc.text("Order ID", 50, 200);
-        doc.text("User Name", 150, 200);
-        doc.text("Product", 250, 200);
-        doc.text("Quantity", 350, 200);
-        doc.text("Price", 450, 200);
-        doc.text("Date", 550, 200);
+        doc.text("Order ID", 50, 240);
+        doc.text("User Name", 130, 240);
+        doc.text("Product", 240, 240);
+        doc.text("Quantity", 350, 240);
+        doc.text("Price", 420, 240);
+        doc.text("Date", 490, 240, { width: 80, align: "center" });
 
         // Table rows
-        let currentTop = 220;
+        let currentTop = 260;
         filteredItems.forEach((item) => {
             doc.font("Helvetica").text(item.orderId, 50, currentTop);
-            doc.text(item.userName, 150, currentTop);
+            doc.text(item.userName, 130, currentTop);
             doc.text(
                 `${item.product.brand} - ${item.product.productName}`,
-                250,
-                currentTop
+                240,
+                currentTop,
+                { width: 100, ellipsis: true }
             );
-            doc.text(item.quantity, 350, currentTop);
-            doc.text(item.itemTotalPrice.toFixed(2), 450, currentTop);
+            doc.text(item.quantity, 350, currentTop, {
+                width: 80,
+                align: "center",
+            });
+            doc.text(item.itemTotalPrice.toFixed(2), 420, currentTop);
             doc.text(
                 new Date(item.createdAt).toLocaleDateString("en-US"),
-                550,
-                currentTop
+                500,
+                currentTop,
+                { width: 80, align: "center" }
             );
             currentTop += 20;
+
+
             if (currentTop > 700) {
                 doc.addPage();
                 currentTop = 50;
@@ -317,10 +326,15 @@ exports.downloadExcel = async (req, res) => {
             { header: "Date", key: "date", width: 15 },
         ];
 
+        worksheet.addRow([]);
+
+        worksheet.addRow([
+            `Date Range: ${dateRange.start.toDateString()} - ${dateRange.end.toDateString()}`
+        ]);
         // Add summary
         worksheet.addRow([]);
         worksheet.addRow(["Summary"]);
-        worksheet.addRow(["Total Items Sold", reportData.totalItemsSold]);
+        worksheet.addRow(["Total Items Sold", reportData.totalItemsSold.toFixed()]);
         worksheet.addRow([
             "Total Order Amount",
             `₹${reportData.totalOrderAmount.toFixed(2)}`,
@@ -338,7 +352,7 @@ exports.downloadExcel = async (req, res) => {
                 orderId: item.orderId,
                 userName: item.userName,
                 product: `${item.product.brand} - ${item.product.productName}`,
-                quantity: item.quantity,
+                quantity: item.quantity.toFixed(),
                 price: item.itemTotalPrice.toFixed(2),
                 date: new Date(item.createdAt).toLocaleDateString("en-US"),
             });
