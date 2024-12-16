@@ -4,11 +4,8 @@ const Category = require("../../models/categoryModel");
 const Product = require("../../models/productSchema");
 const Offer = require("../../models/offerModel");
 
-
-
 exports.getAdminOffers = async (req, res) => {
     try {
-        // For Setting the expired offer to FALSE
         let offers = await Offer.find();
 
         let today = new Date();
@@ -23,24 +20,19 @@ exports.getAdminOffers = async (req, res) => {
             }
         });
 
-        const ITEMS_PER_PAGE = 5; // Define how many offers to display per page
+        const ITEMS_PER_PAGE = 5;
         const page = parseInt(req.query.page, 10) || 1;
 
-        // Fetch offers with pagination
         const totalOffers = await Offer.countDocuments();
         offers = await Offer.find()
-            .populate("applicableProduct") // Populate product details
-            .populate("applicableCategory") // Populate category details
+            .populate("applicableProduct")
+            .populate("applicableCategory")
             .skip((page - 1) * ITEMS_PER_PAGE)
             .limit(ITEMS_PER_PAGE);
 
-        // console.log(offers);
-
-        // Fetch all products and categories for the dropdowns
         const products = await Product.find({}, "productName");
         const categories = await Category.find({}, "categoriesName");
-        // console.log(55226633);
-        // console.log(products);
+
         res.render("admin/adminOffer", {
             offers,
             products,
@@ -54,9 +46,6 @@ exports.getAdminOffers = async (req, res) => {
     }
 };
 
-
-
-// POST: Add Offer
 exports.addOffer = async (req, res) => {
     try {
         const {
@@ -69,7 +58,6 @@ exports.addOffer = async (req, res) => {
             isActive,
         } = req.body;
 
-
         if (
             !title ||
             !discountPercentage ||
@@ -81,13 +69,27 @@ exports.addOffer = async (req, res) => {
             return res.status(400).json({ message: "All fields are required." });
         }
 
+        if (title.trim() === "") {
+            return res
+                .status(400)
+                .json({ message: "Title cannot be empty or spaces only." });
+        }
+        if (/^\*+$/.test(title)) {
+            return res
+                .status(400)
+                .json({ message: "Title cannot be only asterisks." });
+        }
+        if (/^\d+$/.test(title)) {
+            return res
+                .status(400)
+                .json({ message: "Title cannot contain numbers only." });
+        }
 
         if (discountPercentage < 0 || discountPercentage > 100) {
             return res
                 .status(400)
                 .json({ message: "Discount percentage must be between 0 and 100." });
         }
-
 
         const parsedStartDate = new Date(startDate);
         const parsedEndDate = new Date(endDate);
@@ -96,13 +98,11 @@ exports.addOffer = async (req, res) => {
             return res.status(400).json({ message: "Invalid date format." });
         }
 
-
         if (parsedStartDate >= parsedEndDate) {
             return res
                 .status(400)
                 .json({ message: "Start date must be before the end date." });
         }
-
 
         const today = new Date();
         today.setHours(0, 0, 0, 0);
@@ -111,7 +111,6 @@ exports.addOffer = async (req, res) => {
                 .status(400)
                 .json({ message: "End date cannot be in the past." });
         }
-
 
         const existingOffer = await Offer.findOne({
             isActive: true,
@@ -122,16 +121,11 @@ exports.addOffer = async (req, res) => {
         });
 
         if (existingOffer) {
-            return res
-                .status(400)
-                .json({
-                    message:
-                        "There is already an active offer for this product or category.",
-                });
+            return res.status(400).json({
+                message:
+                    "There is already an active offer for this product or category.",
+            });
         }
-
-
-
 
         const newOffer = new Offer({
             title,
@@ -146,7 +140,6 @@ exports.addOffer = async (req, res) => {
 
         await newOffer.save();
 
-
         res.redirect("/admin/offer");
     } catch (error) {
         console.error("Error adding offer:", error);
@@ -154,14 +147,8 @@ exports.addOffer = async (req, res) => {
     }
 };
 
-
-
-
-
-// POST: Update Offer
 exports.updateOffer = async (req, res) => {
     try {
-        // For Setting the expired offer to FALSE
         const offers = await Offer.find();
 
         let today = new Date();
@@ -187,8 +174,9 @@ exports.updateOffer = async (req, res) => {
             isActive,
         } = req.body;
 
+        //console.log(req.body);
+
         if (
-            !offerId ||
             !title ||
             !discountPercentage ||
             !offerType ||
@@ -199,14 +187,30 @@ exports.updateOffer = async (req, res) => {
             return res.status(400).json({ message: "All fields are required." });
         }
 
-        // Ensure the discount percentage is within range
+        if (title.trim() === "") {
+            return res
+                .status(400)
+                .json({ message: "Title cannot be empty or spaces only." });
+        }
+        if (/^\*+$/.test(title)) {
+            return res
+                .status(400)
+                .json({ message: "Title cannot be only asterisks." });
+        }
+        if (/^\d+$/.test(title)) {
+            return res
+                .status(400)
+                .json({ message: "Title cannot contain numbers only." });
+        }
+
         if (discountPercentage < 0 || discountPercentage > 100) {
             return res
                 .status(400)
-                .json({ message: "Discount percentage must be between 0 and 100." });
+                .json({
+                    message: "Discount percentage must be between 0 and 100.",
+                });
         }
 
-        // Validate date formats
         const parsedStartDate = new Date(startDate);
         const parsedEndDate = new Date(endDate);
 
@@ -214,23 +218,19 @@ exports.updateOffer = async (req, res) => {
             return res.status(400).json({ message: "Invalid date format." });
         }
 
-        // Check if startDate is before endDate
         if (parsedStartDate >= parsedEndDate) {
             return res
                 .status(400)
                 .json({ message: "Start date must be before the end date." });
         }
 
-        // Check if the end date is not in the past
-        today = new Date();
-        today.setHours(0, 0, 0, 0); // Clear time for date-only comparison
+        today.setHours(0, 0, 0, 0);
         if (parsedEndDate < today) {
             return res
                 .status(400)
                 .json({ message: "End date cannot be in the past." });
         }
 
-        // Check if there is an active offer for the same product or category, excluding the current offer
         const existingOffer = await Offer.findOne({
             isActive: true,
             $or: [
@@ -247,7 +247,6 @@ exports.updateOffer = async (req, res) => {
             });
         }
 
-        // Update the offer
         const updatedOffer = await Offer.findByIdAndUpdate(
             offerId,
             {
@@ -274,22 +273,17 @@ exports.updateOffer = async (req, res) => {
     }
 };
 
-
-// DELETE: Delete Offer
 exports.deleteOffer = async (req, res) => {
     try {
         const { offerId } = req.params;
 
-        // Check if offer exists
         const offer = await Offer.findById(offerId);
         if (!offer) {
             return res.status(404).json({ message: "Offer not found." });
         }
 
-        // Delete the offer
         await Offer.findByIdAndDelete(offerId);
 
-        // Success response
         res.status(200).json({ message: "Offer successfully deleted." });
     } catch (error) {
         console.error("Error deleting offer:", error);
