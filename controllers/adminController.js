@@ -156,55 +156,98 @@ exports.getCategories = [
 exports.addCategory = [
   async (req, res) => {
     try {
-      // const categoryName = req.body.categoriesName.trim().toLowerCase();
       const lowerCategoryName = req.body.categoriesName.trim().toLowerCase();
       const categoryName =
         lowerCategoryName.charAt(0).toUpperCase() + lowerCategoryName.slice(1);
 
+      // Validate the category name
+      if (!categoryName || categoryName.trim() === "") {
+        return res.render("admin/adminCategory", {
+          error: "Category name cannot be empty or just spaces.",
+          categories: await Category.find(),
+          currentPage: 1,
+          totalPages: Math.ceil((await Category.countDocuments()) / 10),
+        });
+      }
 
+      const containsAlphabets = /[a-zA-Z]/.test(categoryName);
+      if (!containsAlphabets) {
+        return res.render("admin/adminCategory", {
+          error:
+            "Category name must include at least one alphabetic character.",
+          categories: await Category.find(),
+          currentPage: 1,
+          totalPages: Math.ceil((await Category.countDocuments()) / 10),
+        });
+      }
+
+      // Check if the category already exists
       const existingCategory = await Category.findOne({
         categoriesName: categoryName,
       });
       if (existingCategory) {
-        const categories = await Category.find();
-        const totalPages = Math.ceil((await Category.countDocuments()) / 10);
         return res.render("admin/adminCategory", {
-          error: "Category already exists",
-          categories,
+          error: "Category already exists.",
+          categories: await Category.find(),
           currentPage: 1,
-          totalPages,
+          totalPages: Math.ceil((await Category.countDocuments()) / 10),
         });
       }
 
+      // Add the new category
       const newCategory = new Category({
         categoriesName: categoryName,
       });
-
       await newCategory.save();
+
       res.redirect("/admin/category");
     } catch (err) {
+      console.error("Error adding category:", err);
       res.status(500).send("Error adding category");
     }
-  }
+  },
 ];
+
 
 
 exports.updateCategory = async (req, res) => {
   try {
-
     const lowerCategoryName = req.body.categoriesName.trim().toLowerCase();
     const categoriesName =
       lowerCategoryName.charAt(0).toUpperCase() + lowerCategoryName.slice(1);
 
+    // Validate the category name
+    if (!categoriesName || categoriesName.trim() === "") {
+      return res.status(400).render("admin/adminCategory", {
+        error: "Category name cannot be empty or just spaces.",
+        categories: await Category.find(),
+        currentPage: 1,
+        totalPages: Math.ceil((await Category.countDocuments()) / 10),
+      });
+    }
+
+    const containsAlphabets = /[a-zA-Z]/.test(categoriesName);
+    if (!containsAlphabets) {
+      return res.status(400).render("admin/adminCategory", {
+        error: "Category name must include at least one alphabetic character.",
+        categories: await Category.find(),
+        currentPage: 1,
+        totalPages: Math.ceil((await Category.countDocuments()) / 10),
+      });
+    }
+
+    // Update the category
     await Category.findByIdAndUpdate(req.params.id, {
       categoriesName,
-
     });
+
     res.redirect("/admin/category");
   } catch (err) {
+    console.error("Error updating category:", err);
     res.status(500).send("Error updating category");
   }
 };
+
 
 // Delete a category
 exports.deleteCategory = async (req, res) => {
