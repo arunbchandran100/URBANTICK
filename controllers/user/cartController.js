@@ -3,6 +3,7 @@ const mongoose = require("mongoose");
 const Cart = require("../../models/cartModel");
 const Offer = require("../../models/offerModel");
 
+
 exports.addToCart = async (req, res) => {
   try {
     if (!req.session.user) {
@@ -22,7 +23,7 @@ exports.addToCart = async (req, res) => {
       throw new Error("Variant not found");
     }
     const nvariantid = nvariant._id;
-    const userId = req.session.user._id;
+    const userId = new mongoose.Types.ObjectId(req.session.user._id);
 
     let cartItem = await Cart.findOne({
       userId,
@@ -31,9 +32,23 @@ exports.addToCart = async (req, res) => {
     });
 
     if (cartItem) {
-      return res
-        .status(200)
-        .json({ message: "Product is already in the cart." });
+      // Always send updated cart quantity even if the item is already in the cart
+      const totalQuantity = await Cart.aggregate([
+        {
+          $match: { userId: userId },
+        },
+        {
+          $group: {
+            _id: null,
+            totalQuantity: { $sum: "$quantity" },
+          },
+        },
+      ]);
+
+      return res.status(200).json({
+        message: "Product is already in the cart.",
+        cartQuantity: totalQuantity[0]?.totalQuantity || 0,
+      });
     } else {
       cartItem = new Cart({
         userId,
@@ -42,7 +57,24 @@ exports.addToCart = async (req, res) => {
         quantity,
       });
       await cartItem.save();
-      res.status(200).json({ message: "Item added to cart successfully." });
+
+      // Calculate the updated total quantity in the cart
+      const totalQuantity = await Cart.aggregate([
+        {
+          $match: { userId: userId },
+        },
+        {
+          $group: {
+            _id: null,
+            totalQuantity: { $sum: "$quantity" },
+          },
+        },
+      ]);
+
+      res.status(200).json({
+        message: "Item added to cart successfully.",
+        cartQuantity: totalQuantity[0]?.totalQuantity || 0,
+      });
     }
   } catch (error) {
     console.error("Error adding to cart:", error);
@@ -208,25 +240,3 @@ exports.updateCartQuantity = async (req, res) => {
     res.status(500).json({ message: "Server Error" });
   }
 };
-
-// Route to get stock for a specific variant
-// exports.getVariantStock = async (req, res) => {
-//   try {
-//     console.log(89898989898);
-//     const cartItemId = req.params.cartItemId;
-
-//     // Find the variant by ID
-//     const variant = await Variant.findById(cartItemId);
-//     console.log(variant);
-//     console.log(89998989);
-//     console.log(variant.stock);
-//     if (variant) {
-//       res.status(200).json({ stock: variant.stock });
-//     } else {
-//       res.status(404).json({ message: "Variant not found" });
-//     }
-//   } catch (error) {
-//     console.error("Error fetching variant stock:", error);
-//     res.status(500).json({ message: "Server Error" });
-//   }
-// };

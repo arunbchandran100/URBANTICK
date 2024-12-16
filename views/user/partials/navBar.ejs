@@ -35,12 +35,12 @@
           <i class="fa-solid fa-cart-shopping"></i>
 
           <% if (cartQuantity> 0) { %>
-            <span class="absolute -top-2 -right-2 bg-red-600 text-white text-xs font-bold rounded-full px-1.5 py-0.5">
+            <span id="cart-badge" class="absolute -top-2 -right-2 bg-red-600 text-white text-xs font-bold rounded-full px-1.5 py-0.5">
               <%= cartQuantity %>
             </span>
             <% } else { %>
               <!-- Hidden badge for empty cart -->
-              <span
+              <span id="cart-badge" 
                 class="absolute -top-2 -right-2 bg-red-600 text-white text-xs font-bold rounded-full px-2 py-0.5 hidden">
                 0
               </span>
