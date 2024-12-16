@@ -81,6 +81,7 @@ const adminCoupon = require("../controllers/admin/adminCouponController");
 router.get("/coupon", adminAuthenticated, adminCoupon.getAdminCoupon);
 router.post("/coupon/add", adminCoupon.addCoupon);
 router.post("/coupon/update", adminCoupon.updateCoupon);
+router.delete("/coupon/delete/:couponId", adminCoupon.deleteCoupon);
 
 
 // Admin Sales Report

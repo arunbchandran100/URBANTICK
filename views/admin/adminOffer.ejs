@@ -489,18 +489,6 @@
                 document.getElementById('editOfferModal').classList.add('hidden');
             }
 
-            function deleteOffer(offerId) {
-                if (confirm('Are you sure you want to delete this offer?')) {
-                    fetch(`/admin/offer/delete/${offerId}`, { method: 'DELETE' })
-                        .then(res => res.json())
-                        .then(data => {
-                            alert(data.message);
-                            location.reload();
-                        })
-                        .catch(err => console.error(err));
-                }
-            }
-
 
             function deleteOffer(offerId) {
                 Swal.fire({

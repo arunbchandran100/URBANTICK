@@ -224,8 +224,8 @@
             </div>
         </main>
 
-        <script> 
-             document.getElementById("addCouponForm").addEventListener("submit", async function (event) {
+        <script>
+            document.getElementById("addCouponForm").addEventListener("submit", async function (event) {
                 event.preventDefault(); // Prevent default form submission
 
                 const form = event.target;
@@ -337,11 +337,33 @@
                 document.getElementById('addCouponModal').classList.add('hidden');
             }
 
+
             function deleteCoupon(couponId) {
-                if (confirm("Are you sure you want to delete this coupon?")) {
-                    window.location.href = `/admin/coupon/delete/${couponId}`;
-                }
+                Swal.fire({
+                    title: "Are you sure?",
+                    text: "You won't be able to undo this action!",
+                    icon: "warning",
+                    showCancelButton: true,
+                    confirmButtonColor: "#d33",
+                    cancelButtonColor: "#3085d6",
+                    confirmButtonText: "Yes, delete it!",
+                }).then((result) => {
+                    if (result.isConfirmed) {
+                        fetch(`/admin/coupon/delete/${couponId}`, { method: "DELETE" })
+                            .then((res) => res.json())
+                            .then((data) => {
+                                Swal.fire("Deleted!", data.message, "success").then(() => {
+                                    location.reload();  
+                                });
+                            })
+                            .catch((err) => {
+                                console.error(err);
+                                Swal.fire("Error!", "An error occurred while deleting the coupon.", "error");
+                            });
+                    }
+                });
             }
+
         </script>
 
 
