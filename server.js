@@ -13,6 +13,8 @@ app.set("view engine", "ejs");
 app.use(express.static("public"));
 require("./models/mongodb");
 
+
+
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 
@@ -29,12 +31,15 @@ app.use(
   })
 );
 
+const getCartQuantity = require("./middleware/cartMiddleware");
+app.use(getCartQuantity);
+
 app.use((req, res, next) => {
   req.session.user = {
     _id: "674ad2c9d7fa0100fe7ea73a",
     fullName: "Arun b chandran",
     email: "arunbchandran100@gmail.com",
-    password: "$2a$10$$2a$10$A6WnIA./kUwvjoQYaxtsbOJhYMksp7jJyUr2yB8hsgrP8IhD.bnUO",
+    password: "$2a$10$W1N5MBrAmbXORwCkj.MxxO1ZnUgI9B9SoIvyx5r7SUPQ2E21U.MaO",
     status: "active",
     __v: 0,
   };

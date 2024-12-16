@@ -1,35 +1,52 @@
-    <!------------ Navbar ---------->
-    <div class=" fixed z-50  top-0  w-full h-22 flex items-center justify-between px-8 bg-gray-50 border-b-2 border-gray-700">
-      <!-- Left Side (Nav Links) -->
-      <div class="flex space-x-6 text-slate-800 font-medium">
-        <a href="/home" class="hover:text-slate-500">Home</a>
-        <a href="/shopall" class="hover:text-slate-500">Shop</a>
-        <a href="#" class="hover:text-slate-500">Contact Us</a>
-        <a href="#" class="hover:text-slate-500">About Us</a>
-      </div>
-      
-      <!-- Center (Logo) -->
-      <div class="flex-shrink-0 -ml-24 ">
-        <img src="/images/logo-nobg.png" alt="logo" class="h-16 mx-auto" />
-      </div>
-      
-      <!-- Right Side (Icons) -->
-      <div class="flex space-x-8 text-slate-800 text-xl">
-        <a href="/user/wishlist" class="hover:text-slate-500"><i class="fa-regular fa-heart"></i></a>
-        
-      <% if (user) { %>
-        <!-- Show Hello + User's First Name -->
-        <a href="/user/profile" class="hover:text-slate-500">
-          <i class="fa-regular fa-user"></i> Hello, <%= user.fullName.split(" ")[0] %>
+<!------------ Navbar ---------->
+<div
+  class=" fixed z-50  top-0  w-full h-22 flex items-center justify-between px-8 bg-gray-50 border-b-2 border-gray-700">
+  <!-- Left Side (Nav Links) -->
+  <div class="flex space-x-6 text-slate-800 font-medium">
+    <a href="/home" class="hover:text-slate-500">Home</a>
+    <a href="/shopall" class="hover:text-slate-500">Shop</a>
+    <a href="#" class="hover:text-slate-500">Contact Us</a>
+    <a href="#" class="hover:text-slate-500">About Us</a>
+  </div>
+
+  <!-- Center (Logo) -->
+  <div class="flex-shrink-0 -ml-24 ">
+    <img src="/images/logo-nobg.png" alt="logo" class="h-16 mx-auto" />
+  </div>
+
+  <!-- Right Side (Icons) -->
+  <div class="flex space-x-8 text-slate-800 text-xl">
+    <a href="/user/wishlist" class="hover:text-slate-500"><i class="fa-regular fa-heart"></i></a>
+
+    <% if (user) { %>
+      <!-- Show Hello + User's First Name -->
+      <a href="/user/profile" class="hover:text-slate-500">
+        <i class="fa-regular fa-user"></i> Hello, <%= user.fullName.split(" ")[0] %>
         </a>
       <% } else { %>
         <!-- Show Login Option -->
-        <a href="/user/login" class="hover:text-slate-500">
+        <a href=" /user/login" class="hover:text-slate-500">
           <i class="fa-regular fa-user"></i> Login
-        </a>
+      </a>
       <% } %>
-        
+
         <!-- <a href="/user/login" class="hover:text-slate-500"><i class="fa-regular fa-user"></i></a> -->
-        <a href="/shop/cart" class="hover:text-slate-500"><i class="fa-solid fa-cart-shopping"></i></a>
-      </div>
-    </div>
+        <a href="/shop/cart" class="hover:text-slate-500 relative">
+          <i class="fa-solid fa-cart-shopping"></i>
+
+          <% if (cartQuantity> 0) { %>
+            <span class="absolute -top-2 -right-2 bg-red-600 text-white text-xs font-bold rounded-full px-1.5 py-0.5">
+              <%= cartQuantity %>
+            </span>
+            <% } else { %>
+              <!-- Hidden badge for empty cart -->
+              <span
+                class="absolute -top-2 -right-2 bg-red-600 text-white text-xs font-bold rounded-full px-2 py-0.5 hidden">
+                0
+              </span>
+              <% } %>
+        </a>
+
+
+  </div>
+</div>
