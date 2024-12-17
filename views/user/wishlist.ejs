@@ -143,7 +143,30 @@
 
             document.addEventListener("DOMContentLoaded", () => {
                 updateCartBadge();
+                updateWishlistBadge();
+
             });
+
+            // Function to update the wishlist badge dynamically
+async function updateWishlistBadge() {
+    try {
+        const response = await axios.get("/wishlist/totalCount"); // Fetch wishlist count
+        if (response.status === 200) {
+            const wishlistCount = response.data.wishlistCount || 0;
+
+            const wishlistBadge = document.getElementById("wishlistBadge");
+            if (wishlistBadge) {
+                wishlistBadge.textContent = wishlistCount; // Set the count
+                wishlistBadge.classList.toggle("hidden", wishlistCount === 0); // Hide if count is 0
+            }
+        }
+    } catch (error) {
+        console.error("Error updating wishlist badge:", error);
+    }
+}
+
+
+
 
             async function updateCartBadge() {
                 try {
@@ -187,6 +210,9 @@
                             if (element) {
                                 element.remove();
                             }
+
+                            updateWishlistBadge();
+
 
                             // Show success notification
                             notyf.success("Item has been removed from your wishlist.");

@@ -126,7 +126,7 @@ router.delete('/wishlist/remove/:wishlistId', wishlistController.removeFromWishl
 
 const cartQuantityCrontroller = require("../controllers/user/cartQuantityCrontroller");
 router.get("/cart/totalQuantity", cartQuantityCrontroller.getTotalCartQuantity);
-
+router.get("/wishlist/totalCount", cartQuantityCrontroller.getWishlistCount);
 //--------------------Cart----------------------------------------- 
 const cartController = require("../controllers/user/cartController");
 

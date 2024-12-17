@@ -26,3 +26,24 @@ exports.getTotalCartQuantity = async (req, res) => {
         res.status(500).json({ message: "Error fetching cart quantity" });
     }
 };
+
+
+const Wishlist = require("../../models/wishlistModel"); // Adjust the path to your Wishlist model
+
+exports.getWishlistCount = async (req, res) => {
+    try {
+        if (!req.session.user) {
+            return res.status(401).json({ message: "User not logged in." });
+        }
+
+        const userId = req.session.user._id;
+
+        // Count wishlist items for the user
+        const wishlistCount = await Wishlist.countDocuments({ userId });
+
+        res.status(200).json({ wishlistCount });
+    } catch (error) {
+        console.error("Error fetching wishlist count:", error);
+        res.status(500).json({ message: "Server error. Please try again later." });
+    }
+};
