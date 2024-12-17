@@ -16,12 +16,36 @@ exports.getMyOrders = async (req, res) => {
     const limit = 5;
     const skip = (page - 1) * limit;
 
+    // Get total order count for pagination
     const totalOrders = await Order.countDocuments({ userId });
-    const userOrders = await Order.find({ userId })
+
+    // Fetch user orders
+    let userOrders = await Order.find({ userId })
       .sort({ createdAt: -1 })
       .skip(skip)
       .limit(limit);
 
+    // Update order status conditionally
+    for (let order of userOrders) {
+      if (
+        order.payment.paymentMethod === "Online Payment" &&
+        order.payment.paymentStatus === "Pending"
+        && order.orderItems.some((item) => item.orderStatus === "Processing")
+      ) {
+        // Update individual item statuses
+        order.orderItems.forEach((item) => {
+          item.orderStatus = "Payment Pending";
+        });
+        // Save the updated order
+        await order.save();
+      }
+    }
+
+    userOrders = await Order.find({ userId })
+      .sort({ createdAt: -1 })
+      .skip(skip)
+      .limit(limit);
+    // Format orders for rendering
     const ordersWithDetails = userOrders.map((order) => ({
       _id: order._id,
       orderDate: new Date(order.createdAt).toLocaleString("en-US", {
@@ -46,6 +70,7 @@ exports.getMyOrders = async (req, res) => {
       })),
     }));
 
+    // Render the user orders page
     res.render("user/userMyOrders", {
       orders: ordersWithDetails,
       currentPage: page,
@@ -63,8 +88,8 @@ exports.getMyOrders = async (req, res) => {
 
 exports.getOrderDetails = async (req, res) => {
   try {
-    const orderId = req.params.id; 
-    const userId = req.session.user._id; 
+    const orderId = req.params.id;
+    const userId = req.session.user._id;
 
     const order = await Order.findOne({ _id: orderId, userId });
 
@@ -82,7 +107,7 @@ exports.getOrderDetails = async (req, res) => {
         minute: "2-digit",
         hour12: true,
       }),
-      couponValue : order.couponValue,
+      couponValue: order.couponValue,
       totalPrice: order.totalPrice,
       paymentMethod: order.payment.paymentMethod,
       paymentStatus: order.payment.paymentStatus,
@@ -190,7 +215,7 @@ exports.cancelOrderItem = async (req, res) => {
         .json({ message: "Associated variant not found in inventory." });
     }
 
-    variant.stock += orderItem.quantity; 
+    variant.stock += orderItem.quantity;
     await variant.save();
 
     await order.save();

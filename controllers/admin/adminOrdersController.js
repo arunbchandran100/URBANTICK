@@ -131,6 +131,9 @@ exports.updateOrderStatus = [
         await variant.save();
       }
 
+      if (orderStatus === "Processing") {
+        order.payment.paymentStatus = "Retry Payment Successful";
+      }
 
       if (orderStatus === "Delivered") {
         order.payment.paymentStatus = "Paid";
