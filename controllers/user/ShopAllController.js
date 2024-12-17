@@ -207,6 +207,7 @@ exports.searchAndFilterProducts = async (req, res) => {
           productName: 1,
           brand: 1,
           imageUrl: 1,
+          "variants._id": 1,
           "variants.color": 1,
           "variants.price": 1,
           "variants.rating": 1,
@@ -227,6 +228,7 @@ exports.searchAndFilterProducts = async (req, res) => {
         Array.isArray(product.imageUrl) && product.imageUrl.length > 0
           ? product.imageUrl[0]
           : "/images/default-product.jpg",
+      variants_id: product.variants?._id,
       price: product.variants?.price || null,
       rating: product.variants?.rating || null,
       discountPrice: product.variants?.discountPrice || null,
