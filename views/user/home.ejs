@@ -95,6 +95,30 @@
         },
       });
 
+       document.addEventListener("DOMContentLoaded", () => {
+        updateWishlistBadge();
+
+      });
+
+      // Function to update the wishlist badge dynamically
+      async function updateWishlistBadge() {
+        try {
+          const response = await axios.get("/wishlist/totalCount"); // Fetch wishlist count
+          if (response.status === 200) {
+            const wishlistCount = response.data.wishlistCount || 0;
+
+            const wishlistBadge = document.getElementById("wishlistBadge");
+            if (wishlistBadge) {
+              wishlistBadge.textContent = wishlistCount; // Set the count
+              wishlistBadge.classList.toggle("hidden", wishlistCount === 0); // Hide if count is 0
+            }
+          }
+        } catch (error) {
+          console.error("Error updating wishlist badge:", error);
+        }
+      }
+
+
         async function addToWishlist(productId, variantId) {
       try {
           // Make a POST request to add the product to the wishlist
@@ -108,6 +132,7 @@
 
           // Check if the request was successful
           if (response.ok) {
+            updateWishlistBadge();
               notyf.success("Product added to wishlist!");
           } else {
               // Handle errors from the server
