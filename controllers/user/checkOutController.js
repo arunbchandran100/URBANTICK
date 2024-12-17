@@ -96,7 +96,7 @@ exports.getCheckout = async (req, res) => {
     //make expired coupons Status to False
     let Coupons = await Coupon.find();
     today.setHours(0, 0, 0, 0);
-    
+
     Coupons.forEach(async (coupon) => {
       const couponEndDate = new Date(coupon.endDate);
       if (couponEndDate < today) {
@@ -323,6 +323,12 @@ exports.placeOrder = async (req, res) => {
     orderItems.forEach((item) => {
       item.itemTotalPrice = item.priceAfterCoupon;
     });
+
+    //Above 1000 is Online payment
+    if (paymentMethod === "Cash on Delivery" && totalPrice > 1000) {
+      return res.status(400).json({ error: "Use Online Payment For orders Above 1000" });
+    }
+
 
     const newOrder = new Order({
       userId,

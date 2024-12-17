@@ -71,7 +71,9 @@
                             <label class="flex items-center gap-3">
                                 <input type="radio" name="paymentMethod" value="Cash on Delivery" class="mt-1">
                                 <span class="text-gray-800 font-semibold">Cash on Delivery</span>
+                                <small class="text-gray-500">(available for orders below ₹1000)</small>
                             </label>
+
                             <label class="flex items-center gap-3">
                                 <input type="radio" name="paymentMethod" value="Online Payment" class="mt-1">
                                 <span class="text-gray-800 font-semibold">Online Payment</span>
@@ -223,9 +225,9 @@
                         if (response.status === 200) {
                             const data = response.data;
 
-                            if (paymentMethod === 'Online Payment') {
+                            if (paymentMethod === "Online Payment") {
                                 handleRazorpayPayment(data.order);
-                            } else if (paymentMethod === 'Cash on Delivery' || paymentMethod === 'Wallet') {
+                            } else if (paymentMethod === "Cash on Delivery") {
                                 Swal.fire({
                                     icon: "success",
                                     title: "Order Placed!",
@@ -241,8 +243,18 @@
                         }
                     } catch (error) {
                         console.error("Error placing order:", error);
-                        Swal.fire("Error", error.response?.data?.message || "An error occurred while placing the order.", "error");
+
+                        // Check if error response contains the correct key 'error'
+                        const errorMessage =
+                            error.response?.data?.error || "An error occurred while placing the order.";
+
+                        Swal.fire({
+                            icon: "error",
+                            title: "Error",
+                            text: errorMessage,
+                        });
                     }
+
                 }
 
                 function handleRazorpayPayment(order) {
