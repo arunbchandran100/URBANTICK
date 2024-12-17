@@ -31,8 +31,8 @@ app.use(
   })
 );
 
-const getCartQuantity = require("./middleware/cartMiddleware");
-app.use(getCartQuantity);
+const getCartAndWishlistQuantity = require("./middleware/cartAndWishlistIconQtyMiddleware");
+app.use(getCartAndWishlistQuantity);
 
 app.use((req, res, next) => {
   req.session.user = {
