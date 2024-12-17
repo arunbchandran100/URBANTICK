@@ -15,7 +15,7 @@
 
         <!-- Breadcrumb -->
         <div class="bg-gray-50 pt-4">
-            <div class="max-w-7xl    sm:px-6 lg:px-8">
+            <div class="max-w-7xl sm:px-6 lg:px-8">
                 <nav class="text-sm font-medium text-gray-500" aria-label="Breadcrumb">
                     <ol class="flex items-center space-x-2">
                         <!-- Home Link -->
@@ -62,8 +62,8 @@
                                 </span>
                             </h3>
                             <div>
-                                <p class="ml-1 text-gray-800 font-medium">Color: <%= item.variantDetails.color || 'N/A'
-                                        %>
+                                <p class="ml-1 text-gray-800 font-medium">
+                                    Color: <%= item.variantDetails.color || 'N/A' %>
                                 </p>
                             </div>
                             <div class="text-yellow-500 flex items-center">
@@ -76,11 +76,11 @@
                             <!-- Pricing -->
                             <% if (item.variantDetails.price && item.variantDetails.discountPrice) { %>
                                 <div class="flex gap-2">
-                                    <div class="text-xl font-bold text-gray-900">₹<%=
-                                            item.variantDetails.discountPrice.toLocaleString() %>
+                                    <div class="text-xl font-bold text-gray-900">
+                                        ₹<%= item.variantDetails.discountPrice.toLocaleString() %>
                                     </div>
-                                    <div class="text-gray-500 line-through mt-1">₹<%=
-                                            item.variantDetails.price.toLocaleString() %>
+                                    <div class="text-gray-500 line-through mt-1">
+                                        ₹<%= item.variantDetails.price.toLocaleString() %>
                                     </div>
                                 </div>
                                 <% } else { %>
@@ -102,7 +102,8 @@
                                                 <% } else { %>
                                                     <div
                                                         class="mt-2 font-semibold text-red-600 bg-red-100 border border-red-600 rounded-lg p-2">
-                                                        Out of Stock</div>
+                                                        Out of Stock
+                                                    </div>
                                                     <% } %>
                                         </div>
                         </div>
@@ -129,9 +130,7 @@
         </div>
 
         <!------------- Footer ------------>
-        <div class="pt-6">
-            <%- include("partials/footer") %>
-        </div>
+        <div class="pt-6"><%- include("partials/footer") %></div>
 
         <script>
             const notyf = new Notyf({
@@ -142,9 +141,29 @@
                 },
             });
 
+            document.addEventListener("DOMContentLoaded", () => {
+                updateCartBadge();
+            });
+
+            async function updateCartBadge() {
+                try {
+                    const response = await axios.get("/cart/totalQuantity"); // Endpoint to fetch total quantity
+                    if (response.status === 200) {
+                        const totalQuantity = response.data.totalQuantity || 0;
+
+                        // Update the cart badge element
+                        const cartBadge = document.querySelector("#cartBadge");
+                        if (cartBadge) {
+                            cartBadge.textContent = totalQuantity;
+                            cartBadge.style.display = totalQuantity > 0 ? "inline" : "none"; // Hide badge if 0
+                        }
+                    }
+                } catch (error) {
+                    console.error("Error updating cart badge:", error);
+                }
+            }
 
             async function removeFromWishlist(wishlistId, elementId) {
-
                 // Show SweetAlert confirmation
                 const confirmation = await Swal.fire({
                     title: "Are you sure?",
@@ -158,7 +177,9 @@
 
                 if (confirmation.isConfirmed) {
                     try {
-                        const response = await fetch(`/wishlist/remove/${wishlistId}`, { method: "DELETE" });
+                        const response = await fetch(`/wishlist/remove/${wishlistId}`, {
+                            method: "DELETE",
+                        });
 
                         if (response.ok) {
                             // Remove the element from the DOM
@@ -188,12 +209,7 @@
                 }
             }
 
-
-
-
-
-
-            document.querySelectorAll("#addToCartButton").forEach(button => {
+            document.querySelectorAll("#addToCartButton").forEach((button) => {
                 button.addEventListener("click", function () {
                     const productId = button.getAttribute("data-product-id");
                     const variantId = button.getAttribute("data-variant-id");
@@ -210,25 +226,26 @@
                             quantity,
                         }),
                     })
-                        .then(response => response.json().then(data => ({ status: response.status, body: data })))
+                        .then((response) =>
+                            response
+                                .json()
+                                .then((data) => ({ status: response.status, body: data }))
+                        )
                         .then(({ status, body }) => {
                             if (status === 200) {
+                                updateCartBadge();
+
                                 notyf.success(body.message);
                             } else {
                                 throw new Error(body.message || "Failed to add to cart.");
                             }
                         })
-                        .catch(error => {
+                        .catch((error) => {
                             console.error("Error adding to cart:", error.message);
                             notyf.error(error.message);
                         });
                 });
             });
-
-
-
-
-
         </script>
 </body>
 

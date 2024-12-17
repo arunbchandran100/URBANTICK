@@ -17,8 +17,7 @@ exports.getTotalCartQuantity = async (req, res) => {
                 },
             },
         ]);
-        console.log('quantity is ');
-        console.log(totalQuantity);
+
         res
             .status(200)
             .json({ totalQuantity: totalQuantity[0]?.totalQuantity || 0 });
