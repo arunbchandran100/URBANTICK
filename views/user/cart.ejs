@@ -84,16 +84,17 @@
                                                     </p>
                                                     <% }else { %>
                                                         <div class="visibility: hidden">
-                                                             <p class="text-sm text-green-600 mt-1">
-                                                        Offer: <%= item.offerPercentage %>% off - Save ₹<%=
-                                                                item.offerAmount.toLocaleString() %>
-                                                    </p>
-                                                    <p id="perOfferDecrease" class="visibility: hidden">
-                                                        <%= item.offerAmount%>
-                                                    </p>
-                                                    <p class="text-sm text-gray-800">
-                                                        Price After Offer: ₹<%= item.afterOfferPrice.toLocaleString() %> Per Item
-                                                    </p>
+                                                            <p class="text-sm text-green-600 mt-1">
+                                                                Offer: <%= item.offerPercentage %>% off - Save ₹<%=
+                                                                        item.offerAmount.toLocaleString() %>
+                                                            </p>
+                                                            <p id="perOfferDecrease" class="visibility: hidden">
+                                                                <%= item.offerAmount%>
+                                                            </p>
+                                                            <p class="text-sm text-gray-800">
+                                                                Price After Offer: ₹<%=
+                                                                    item.afterOfferPrice.toLocaleString() %> Per Item
+                                                            </p>
                                                         </div>
                                                         <% } %>
 
@@ -230,6 +231,11 @@
                 y: "bottom",
             },
         });
+
+        document.addEventListener("DOMContentLoaded", () => {
+            updateCartBadge();
+        });
+
         document.getElementById('checkoutButton').addEventListener('click', function () {
             let outOfStock = false;
 
@@ -252,45 +258,67 @@
             }
         });
 
+        // Update the cart icon badge dynamically
+        async function updateCartBadge() {
+            try {
+                const response = await axios.get("/cart/totalQuantity"); // Endpoint to fetch total quantity
+                if (response.status === 200) {
+                    const totalQuantity = response.data.totalQuantity || 0;
+
+                    // Update the cart badge element
+                    const cartBadge = document.querySelector("#cartBadge");
+                    if (cartBadge) {
+                        cartBadge.textContent = totalQuantity;
+                        cartBadge.style.display = totalQuantity > 0 ? "inline" : "none"; // Hide badge if 0
+                    }
+                }
+            } catch (error) {
+                console.error("Error updating cart badge:", error);
+            }
+        }
+
+
 
         async function removeFromCart(cartItemId) {
-            // Show SweetAlert confirmation dialog
-            const result = await Swal.fire({
-                title: "Are you sure?",
-                icon: "warning",
-                showCancelButton: true,
-                confirmButtonColor: "#3085d6",
-                cancelButtonColor: "#d33",
-                confirmButtonText: "Remove From Cart!",
-            });
+            try {
+                const result = await Swal.fire({
+                    title: "Are you sure?",
+                    icon: "warning",
+                    showCancelButton: true,
+                    confirmButtonColor: "#3085d6",
+                    cancelButtonColor: "#d33",
+                    confirmButtonText: "Remove From Cart!",
+                });
 
-            if (result.isConfirmed) {
-                try {
+                if (result.isConfirmed) {
                     const response = await axios.delete(`/cart/${cartItemId}`);
                     if (response.status === 200) {
                         notyf.success("Item removed from cart");
 
-                        // Remove the item from the DOM
                         const cartItemElement = document.querySelector(
                             `[data-cart-item-id="${cartItemId}"]`
                         );
+
                         if (cartItemElement) {
                             cartItemElement.remove();
                         }
 
-                        // Optionally, update the subtotal and total
+                        // Update totals and cart badge
                         updateCartTotals();
+                        updateCartBadge();
                     } else {
-                        console.error(
-                            "Failed to remove item from cart:",
-                            response.data.message
-                        );
+                        console.error("Failed to remove item from cart:", response.data.message);
+                        notyf.error(response.data.message || "Failed to remove item.");
                     }
-                } catch (error) {
-                    console.error("Error removing item from cart:", error);
                 }
+            } catch (error) {
+                console.error("Error removing item from cart:", error);
+                notyf.error(
+                    error.response?.data?.message || "An error occurred while removing the item."
+                );
             }
         }
+
 
         function updateCartTotals() {
             const cartItemElements = document.querySelectorAll("[data-cart-item-id]");
@@ -333,16 +361,17 @@
                 const cartItemElement = document.querySelector(
                     `[data-cart-item-id="${cartItemId}"]`
                 );
-                const quantityElement = cartItemElement.querySelector(
-                    "#variantQuantityTag"
-                );
+                if (!cartItemElement) {
+                    notyf.error("Cart item not found.");
+                    return;
+                }
+
+                const quantityElement = cartItemElement.querySelector("#variantQuantityTag");
                 const priceElement = cartItemElement.querySelector("#variantPriceTag");
-                const perItemPriceElement =
-                    cartItemElement.querySelector("#perItemPrice");
+                const perItemPriceElement = cartItemElement.querySelector("#perItemPrice");
 
-                const currentQuantity = parseInt(quantityElement.textContent);
+                const currentQuantity = parseInt(quantityElement.textContent, 10);
                 const perItemPrice = parseFloat(perItemPriceElement.textContent);
-
                 const newQuantity = currentQuantity + delta;
 
                 if (newQuantity < 1) {
@@ -353,40 +382,31 @@
                     return;
                 }
 
-                // Send the updated quantity to the server
-                const response = await axios.put(`/cart/${cartItemId}`, {
-                    quantity: newQuantity,
-                });
+                const response = await axios.put(`/cart/${cartItemId}`, { quantity: newQuantity });
 
                 if (response.status === 200) {
-                    notyf.success("Cart updated");
+                    notyf.success("Cart updated successfully");
 
-                    // Update the quantity in the DOM
                     quantityElement.textContent = newQuantity;
 
-                    // Calculate the new price and update the DOM
-                    const newPrice = perItemPrice * newQuantity;
-                    priceElement.textContent = `₹${newPrice.toLocaleString()}`;
+                    const newPrice = (perItemPrice * newQuantity).toFixed(2);
+                    priceElement.textContent = `₹${newPrice}`;
 
-                    // Update the subtotal and total
+                    // Update totals and cart badge
                     updateCartTotals();
+                    updateCartBadge();
                 } else {
-                    notyf.error("Failed to update cart");
                     console.error("Failed to update cart:", response.data.message);
+                    notyf.error(response.data.message || "Failed to update cart.");
                 }
             } catch (error) {
-                if (
-                    error.response &&
-                    error.response.data &&
-                    error.response.data.message
-                ) {
-                    notyf.error(error.response.data.message); // Display server error message
-                } else {
-                    notyf.error("Error updating cart. Please try again."); // Fallback error message
-                }
                 console.error("Error updating cart:", error);
+                notyf.error(
+                    error.response?.data?.message || "An error occurred while updating the cart."
+                );
             }
         }
+
     </script>
 
 </html>

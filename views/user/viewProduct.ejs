@@ -494,59 +494,59 @@
       });
       // Frontend JavaScript
       document.getElementById("addToCartButton").addEventListener("click", function () {
-  const productId = "<%= product._id %>"; // Pass dynamically from server
-  const variantId = document.getElementById("color").value; // Selected variant ID
-  const quantity = 1; // Default quantity for now
+        const productId = "<%= product._id %>"; // Pass dynamically from server
+        const variantId = document.getElementById("color").value; // Selected variant ID
+        const quantity = 1; // Default quantity for now
 
-  fetch("/cart/add", {
-    method: "POST",
-    headers: {
-      "Content-Type": "application/json",
-    },
-    body: JSON.stringify({
-      productId,
-      variantId,
-      quantity,
-    }),
-  })
-    .then(response => response.json().then(data => ({ status: response.status, body: data })))
-    .then(({ status, body }) => {
-      if (status === 200) {
-        const cartBadge = document.getElementById("cart-badge");
-        if (cartBadge) {
-          cartBadge.textContent = body.cartQuantity;
-          if (body.cartQuantity > 0) {
-            cartBadge.classList.remove("hidden");
-          }
-        } else {
-          // Create cart badge if it doesn't exist
-          const newCartBadge = document.createElement("span");
-          newCartBadge.id = "cart-badge";
-          newCartBadge.classList.add(
-            "absolute",
-            "-top-2",
-            "-right-2",
-            "bg-red-600",
-            "text-white",
-            "text-xs",
-            "font-bold",
-            "rounded-full",
-            "px-1.5",
-            "py-0.5"
-          );
-          newCartBadge.textContent = body.cartQuantity;
-          document.querySelector(".fa-cart-shopping").parentNode.appendChild(newCartBadge);
-        }
-        notyf.success(body.message);
-      } else {
-        throw new Error(body.message || "Failed to add to cart.");
-      }
-    })
-    .catch(error => {
-      console.error("Error adding to cart:", error.message);
-      notyf.error(error.message);
-    });
-});
+        fetch("/cart/add", {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify({
+            productId,
+            variantId,
+            quantity,
+          }),
+        })
+          .then(response => response.json().then(data => ({ status: response.status, body: data })))
+          .then(({ status, body }) => {
+            if (status === 200) {
+              const cartBadge = document.getElementById("cartBadge");
+              if (cartBadge) {
+                cartBadge.textContent = body.cartQuantity;
+                if (body.cartQuantity > 0) {
+                  cartBadge.classList.remove("hidden");
+                }
+              } else {
+                // Create cart badge if it doesn't exist
+                const newCartBadge = document.createElement("span");
+                newCartBadge.id = "cartBadge";
+                newCartBadge.classList.add(
+                  "absolute",
+                  "-top-2",
+                  "-right-2",
+                  "bg-red-600",
+                  "text-white",
+                  "text-xs",
+                  "font-bold",
+                  "rounded-full",
+                  "px-1.5",
+                  "py-0.5"
+                );
+                newCartBadge.textContent = body.cartQuantity;
+                document.querySelector(".fa-cart-shopping").parentNode.appendChild(newCartBadge);
+              }
+              notyf.success(body.message);
+            } else {
+              throw new Error(body.message || "Failed to add to cart.");
+            }
+          })
+          .catch(error => {
+            console.error("Error adding to cart:", error.message);
+            notyf.error(error.message);
+          });
+      });
 
 
 

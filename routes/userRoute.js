@@ -121,6 +121,12 @@ router.get("/user/wishlist", userAuthenticated, wishlistController.getWishlist);
 router.post("/wishlist/add",  wishlistController.addToWishlist);
 router.delete('/wishlist/remove/:wishlistId', wishlistController.removeFromWishlist);
 
+
+//--------------------Cart Quantity Badge----------------------------------------- 
+
+const cartQuantityCrontroller = require("../controllers/user/cartQuantityCrontroller");
+router.get("/cart/totalQuantity", cartQuantityCrontroller.getTotalCartQuantity);
+
 //--------------------Cart----------------------------------------- 
 const cartController = require("../controllers/user/cartController");
 
