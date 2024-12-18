@@ -194,6 +194,7 @@
         <%- include("partials/footer") %>
 
             <script>
+                let RedOrderId;
                 let subtotal = <%= totalAfterDiscount %>;
                 let totalDiscount = <%= totalDiscount %>;
                 let shippingCost = 0;
@@ -224,7 +225,9 @@
 
                         if (response.status === 200) {
                             const data = response.data;
-
+                            RedOrderId = data.orderId;
+                            console.log('order id is ');
+                            console.log(RedOrderId);
                             if (paymentMethod === "Online Payment") {
                                 handleRazorpayPayment(data.order);
                                 Swal.fire({
@@ -235,7 +238,8 @@
                                     confirmButtonText: "OK",
                                 }).then((result) => {
                                     if (result.isConfirmed) {
-                                        window.location.href = "/user/orders";
+                                        console.log(RedOrderId);
+                                    window.location.href = `/user/order/details/${RedOrderId}`; // Redirect to specific order details page
                                     }
                                 });
                             } else if (paymentMethod === "Cash on Delivery") {
@@ -247,7 +251,7 @@
                                     confirmButtonText: "OK",
                                 }).then((result) => {
                                     if (result.isConfirmed) {
-                                        window.location.href = "/user/orders";
+                                        window.location.href = `/user/order/details/${RedOrderId}`; // Redirect to specific order details page
                                     }
                                 });
                             }
@@ -300,7 +304,7 @@
                             title: "Payment Failed",
                             text: response.error.description || "Payment failed. Please try again."
                         }).then(() => {
-                            window.location.href = "/user/orders";
+                            window.location.href = `/user/order/details/${RedOrderId}`; // Redirect to specific order details page
                         });
                     });
                 }
@@ -324,7 +328,7 @@
                                 confirmButtonText: "OK",
                             }).then((result) => {
                                 if (result.isConfirmed) {
-                                    window.location.href = "/user/orders";
+                                    window.location.href = `/user/order/details/${RedOrderId}`; // Redirect to specific order details page
                                 }
                             });
                         } else {
@@ -335,7 +339,7 @@
                     } catch (error) {
                         console.error("Error verifying payment:", error);
                         Swal.fire('Error', 'An error occurred while verifying your payment. Please contact support.', 'error').then(() => {
-                            window.location.href = "/user/orders";
+                            window.location.href = `/user/order/details/${RedOrderId}`; // Redirect to specific order details page
                         });
                     }
                 }

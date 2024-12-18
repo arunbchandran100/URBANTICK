@@ -370,6 +370,7 @@ exports.placeOrder = async (req, res) => {
         success: true,
         message: "Order created successfully",
         order: razorpayOrder,
+        orderId: newOrder._id,
       });
     } else {
       return res.status(200).json({
