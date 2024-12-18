@@ -145,5 +145,6 @@ router.get("/cart/checkout", userAuthenticated, checkoutController.getCheckout);
 //Place Order
 router.post("/user/checkout", checkoutController.placeOrder);
 router.post("/user/order/verify-payment", checkoutController.verifyPayment);
+router.get("/user/order/retry-payment/:orderId", checkoutController.retryPayment);
 
 module.exports = router;

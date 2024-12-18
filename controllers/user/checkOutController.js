@@ -404,6 +404,7 @@ exports.verifyPayment = async (req, res) => {
             "payment.paymentStatus": "Paid",
             "payment.razorpayOrderId": order.id,
             "payment.razorpayPaymentId": paymentResponse.razorpay_payment_id,
+            "orderItems.$[].orderStatus": "Processing", // Update all items' status
           },
         },
         { new: true }
@@ -440,6 +441,57 @@ exports.verifyPayment = async (req, res) => {
     return res
       .status(500)
       .json({ success: false, message: "Payment verification failed" });
+  }
+};
+
+exports.retryPayment = async (req, res) => {
+  try {
+    const orderId = req.params.orderId;
+
+    // Fetch the order from the database
+    const existingOrder = await Order.findById(orderId);
+    if (!existingOrder) {
+      return res
+        .status(404)
+        .json({ success: false, message: "Order not found." });
+    }
+
+    if (
+      existingOrder.payment.paymentStatus !== "Pending" ||
+      existingOrder.payment.paymentMethod !== "Online Payment"
+    ) {
+      return res.status(400).json({
+        success: false,
+        message:
+          "Retry payment is only applicable for pending online payments.",
+      });
+    }
+
+    // Create a new Razorpay order
+    const razorpayOrder = await razorpay.orders.create({
+      amount: existingOrder.totalPrice * 100, // Convert to paise
+      currency: "INR",
+      receipt: existingOrder._id.toString(),
+    });
+
+    // Update the existing order with the new Razorpay order details
+    existingOrder.payment.razorpayOrderId = razorpayOrder.id;
+    existingOrder.payment.paymentStatus = "Pending"; // Keep it pending until verified
+    await existingOrder.save();
+
+    return res.status(200).json({
+      success: true,
+      message: "Retry payment initiated successfully.",
+      order: razorpayOrder,
+    });
+  } catch (error) {
+    console.error("Error initiating retry payment:", error);
+    return res
+      .status(500)
+      .json({
+        success: false,
+        message: "An error occurred while retrying the payment.",
+      });
   }
 };
 
