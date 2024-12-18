@@ -129,6 +129,9 @@ exports.updateOrderStatus = [
           order.payment.paymentStatus = "Refund Processed for Returned/Cancelled Orders";
         }
         await variant.save();
+
+        order.totalPrice -= item.itemTotalPrice;
+
       }
 
       if (orderStatus === "Processing") {

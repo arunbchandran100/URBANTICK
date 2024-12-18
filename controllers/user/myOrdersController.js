@@ -205,6 +205,7 @@ exports.cancelOrderItem = async (req, res) => {
       order.payment.paymentStatus = "Refund Processed for Returned/Cancelled Orders";
     }
 
+    order.totalPrice -= orderItem.itemTotalPrice;
 
     orderItem.orderStatus = "Cancelled";
 
