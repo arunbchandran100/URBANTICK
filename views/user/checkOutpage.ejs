@@ -227,6 +227,17 @@
 
                             if (paymentMethod === "Online Payment") {
                                 handleRazorpayPayment(data.order);
+                                Swal.fire({
+                                    icon: "error",
+                                    title: "Payment Failed",
+                                    text: 'Please Retry Payment',
+                                    showConfirmButton: true,
+                                    confirmButtonText: "OK",
+                                }).then((result) => {
+                                    if (result.isConfirmed) {
+                                        window.location.href = "/user/orders";
+                                    }
+                                });
                             } else if (paymentMethod === "Cash on Delivery") {
                                 Swal.fire({
                                     icon: "success",
