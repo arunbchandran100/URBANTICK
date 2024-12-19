@@ -91,7 +91,21 @@ exports.getOrderDetails = async (req, res) => {
     const orderId = req.params.id;
     const userId = req.session.user._id;
 
-    const order = await Order.findOne({ _id: orderId, userId });
+    let order = await Order.findOne({ _id: orderId, userId });
+      if (
+        order.payment.paymentMethod === "Online Payment" &&
+        order.payment.paymentStatus === "Pending" &&
+        order.orderItems.some((item) => item.orderStatus === "Processing")
+      ) {
+        // Update individual item statuses
+        order.orderItems.forEach((item) => {
+          item.orderStatus = "Payment Pending";
+        });
+        // Save the updated order
+        await order.save();
+      }
+    
+    order = await Order.findOne({ _id: orderId, userId });
 
     if (!order) {
       return res.status(404).send("Order not found.");
@@ -227,6 +241,11 @@ exports.cancelOrderItem = async (req, res) => {
     res.status(500).json({ message: "Internal Server Error." });
   }
 };
+
+
+
+
+
 
 
 exports.submitReturnRequest = async (req, res) => {

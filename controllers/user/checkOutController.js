@@ -398,52 +398,64 @@ exports.verifyPayment = async (req, res) => {
     const digest = shasum.digest("hex");
 
     if (digest === paymentResponse.razorpay_signature) {
-      const updatedOrder = await Order.findOneAndUpdate(
-        { _id: order.receipt },
-        {
-          $set: {
-            "payment.paymentStatus": "Paid",
-            "payment.razorpayOrderId": order.id,
-            "payment.razorpayPaymentId": paymentResponse.razorpay_payment_id,
-            "orderItems.$[].orderStatus": "Processing", // Update all items' status
-          },
-        },
-        { new: true }
-      );
-
-      if (!updatedOrder) {
+      // Fetch the order first
+      const existingOrder = await Order.findById(order.receipt);
+      if (!existingOrder) {
         console.error("Order not found for Razorpay order ID:", order.id);
         return res
           .status(404)
           .json({ success: false, message: "Order not found" });
       }
 
+      // Update only items that are not already cancelled
+      existingOrder.orderItems.forEach((item) => {
+        if (item.orderStatus !== "Cancelled") {
+          item.orderStatus = "Processing";
+        }
+      });
+
+      // Update payment details
+      existingOrder.payment.paymentStatus = "Paid";
+      existingOrder.payment.razorpayOrderId = order.id;
+      existingOrder.payment.razorpayPaymentId =
+        paymentResponse.razorpay_payment_id;
+
+      // Save the updated order
+      await existingOrder.save();
+
       return res.status(200).json({
         success: true,
         message: "Payment verified successfully",
       });
     } else {
+      // Invalid signature, mark payment as pending
       await Order.findOneAndUpdate(
         { _id: order.receipt },
         { $set: { "payment.paymentStatus": "Pending" } },
         { new: true }
       );
+
       return res
         .status(400)
         .json({ success: false, message: "Invalid signature" });
     }
   } catch (error) {
     console.error("Payment verification error: ", error);
+
+    // In case of error, mark payment as pending
     await Order.findOneAndUpdate(
       { _id: order.receipt },
       { $set: { "payment.paymentStatus": "Pending" } },
       { new: true }
     );
+
     return res
       .status(500)
       .json({ success: false, message: "Payment verification failed" });
   }
 };
+
+
 
 exports.retryPayment = async (req, res) => {
   try {
@@ -468,9 +480,12 @@ exports.retryPayment = async (req, res) => {
       });
     }
 
+    // Ensure the total price is converted to an integer (paise) for Razorpay
+    const amountInPaise = Math.round(existingOrder.totalPrice * 100);
+
     // Create a new Razorpay order
     const razorpayOrder = await razorpay.orders.create({
-      amount: existingOrder.totalPrice * 100, // Convert to paise
+      amount: amountInPaise, // Convert to paise and ensure it's an integer
       currency: "INR",
       receipt: existingOrder._id.toString(),
     });
@@ -487,14 +502,13 @@ exports.retryPayment = async (req, res) => {
     });
   } catch (error) {
     console.error("Error initiating retry payment:", error);
-    return res
-      .status(500)
-      .json({
-        success: false,
-        message: "An error occurred while retrying the payment.",
-      });
+    return res.status(500).json({
+      success: false,
+      message: "An error occurred while retrying the payment.",
+    });
   }
 };
+
 
 
 module.exports = exports;

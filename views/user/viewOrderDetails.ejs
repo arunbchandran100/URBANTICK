@@ -149,7 +149,7 @@
                                     </div>
                                     <div></div>
                                     <!-- 6th Section: Cancel Button -->
-                                    <% if (item.orderStatus==='Processing' ) { %>
+                                    <% if (item.orderStatus==='Processing' || item.orderStatus ==='Payment Pending') { %>
                                         <div class="mt-6 ml-10">
                                             <button
                                                 class="cancel-btn text-sm px-4 py-2 bg-red-500 hover:bg-red-600 text-white rounded-md"
@@ -387,7 +387,7 @@
                             title: "Payment Failed",
                             text: response.error.description || "Retry payment failed. Please try again.",
                         }).then(() => {
-                                window.location.reload();
+                            window.location.reload();
                         });
                     });
                 }
@@ -493,7 +493,6 @@
                     }
 
                 }
-
 
 
             </script>
