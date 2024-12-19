@@ -166,7 +166,6 @@ exports.getOrderDetails = async (req, res) => {
 
 
 
-
 exports.cancelOrderItem = async (req, res) => {
   try {
     const { orderItemId } = req.body;
@@ -206,8 +205,8 @@ exports.cancelOrderItem = async (req, res) => {
         });
       }
 
-      // Refund amount
-      const refundAmount = orderItem.itemTotalPrice;
+      // Refund amount (adjusting based on coupon and offer amounts)
+      const refundAmount = orderItem.priceAfterCoupon;
 
       // Update wallet balance and add a transaction
       wallet.balance_amount += refundAmount;
@@ -218,13 +217,22 @@ exports.cancelOrderItem = async (req, res) => {
       });
 
       await wallet.save();
-      order.payment.paymentStatus = "Refund Processed for Returned/Cancelled Orders";
+      order.payment.paymentStatus =
+        "Refund Processed for Returned/Cancelled Orders";
     }
 
-    order.totalPrice -= orderItem.itemTotalPrice;
+    // Adjust order-level totals
+    const itemTotalPrice = orderItem.itemTotalPrice;
+    const offerAmount = orderItem.offerAmount || 0;
+    const couponAmount = orderItem.CouponAmountOfItem || 0;
+
+    order.totalPrice -= itemTotalPrice;
+    order.totalOfferAmount -= offerAmount;
+    order.totalCouponAmount -= couponAmount;
 
     orderItem.orderStatus = "Cancelled";
 
+    // Adjust the inventory stock
     const variant = await Variant.findById(orderItem.variant.variantId);
     if (!variant) {
       return res
@@ -237,13 +245,19 @@ exports.cancelOrderItem = async (req, res) => {
 
     await order.save();
 
-    res.status(200).json({ message: "Order item canceled successfully." });
+    res.status(200).json({
+      message: "Order item canceled successfully.",
+      updatedOrder: {
+        totalPrice: order.totalPrice,
+        totalOfferAmount: order.totalOfferAmount,
+        totalCouponAmount: order.totalCouponAmount,
+      },
+    });
   } catch (error) {
     console.error("Error canceling order item:", error);
     res.status(500).json({ message: "Internal Server Error." });
   }
 };
-
 
 
 

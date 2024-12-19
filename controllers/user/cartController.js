@@ -101,6 +101,9 @@ exports.getCart = async (req, res) => {
       }
     });
 
+    // Fetch active offers
+    offers = await Offer.find({ isActive: true });
+
     const cartItems = await Cart.find({ userId })
       .populate("productId")
       .populate("variantId");
@@ -110,24 +113,38 @@ exports.getCart = async (req, res) => {
 
     const formattedCartItems = cartItems.map((item) => {
       const product = item.productId;
+      const discountPrice = item.variantId.discountPrice;
       const variant = item.variantId;
-      const discountPrice = variant.discountPrice;
 
-      let applicableOffers = offers.filter(
+      let applicableOffers = [];
+      let bestOffer = { discountPercentage: 0 };
+
+      // Find product-level offers
+      applicableOffers = offers.filter(
         (offer) =>
-          (offer.offerType === "Product" &&
-            String(offer.applicableProduct) === String(product._id)) ||
-          (offer.offerType === "Category" &&
-            String(offer.applicableCategory) === String(product.categoriesId))
+          offer.offerType === "Product" &&
+          String(offer.applicableProduct) === String(product._id)
       );
 
-      const bestOffer = applicableOffers.reduce(
-        (max, current) =>
-          current.discountPercentage > max.discountPercentage ? current : max,
-        { discountPercentage: 0 }
-      );
+      // Find category-level offers if applicable
+      if (product.categoriesId) {
+        const categoryOffers = offers.filter(
+          (offer) =>
+            offer.offerType === "Category" &&
+            String(offer.applicableCategory) === String(product.categoriesId)
+        );
+        applicableOffers = applicableOffers.concat(categoryOffers);
+      }
 
-      const offerAmount = (discountPrice * bestOffer.discountPercentage) / 100;
+      // Determine the best applicable offer
+      if (applicableOffers.length > 0) {
+        bestOffer = applicableOffers.reduce((max, current) =>
+          current.discountPercentage > max.discountPercentage ? current : max
+        );
+      }
+
+      const offerPercentage = bestOffer.discountPercentage || 0;
+      const offerAmount = (discountPrice * offerPercentage) / 100;
       const afterOfferPrice = discountPrice - offerAmount;
 
       subtotal += discountPrice * item.quantity;
@@ -137,16 +154,18 @@ exports.getCart = async (req, res) => {
         _id: item._id,
         product,
         variant,
-        quantity: variant.stock > 0 ? item.quantity : 0,
-        offerPercentage: bestOffer.discountPercentage || 0,
+        quantity: variant && variant.stock > 0 ? item.quantity : 0,
+        offerPercentage,
         offerAmount,
-        afterOfferPrice: Math.max(afterOfferPrice, 0),
+        afterOfferPrice: afterOfferPrice > 0 ? afterOfferPrice : 0,
         offerType: bestOffer.offerType || null,
         offerTitle: bestOffer.title,
       };
     });
 
     const totalAfterDiscount = subtotal - totalDiscount;
+
+    // Fetch total cart quantity
     const totalQuantity = await getTotalQuantity(userId);
 
     res.render("user/cart", {
@@ -161,6 +180,7 @@ exports.getCart = async (req, res) => {
     res.status(500).send("Server Error");
   }
 };
+
 
 
 exports.deleteFromCart = async (req, res) => {

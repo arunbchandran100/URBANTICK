@@ -99,10 +99,13 @@ const orderSchema = new mongoose.Schema(
     couponType: {
       type: String,
     },
-    totalCouponValue: {
+    Subtotal: {
       type: Number,
     },
     totalOfferValue: {
+      type: Number,
+    },
+    totalCouponValue: {
       type: Number,
     },
     totalPrice: {

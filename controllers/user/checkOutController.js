@@ -180,8 +180,8 @@ exports.placeOrder = async (req, res) => {
     const activeOffers = await Offer.find({ isActive: true });
 
     let subtotal = 0;
-    let totalOfferAmount = 0;
-    let totalCouponAmount = 0;
+    let totalOfferValue = 0;
+    let totalPrice = 0;
 
     const orderItems = cartItems.map((item) => {
       const product = item.productId;
@@ -191,8 +191,10 @@ exports.placeOrder = async (req, res) => {
       let applicableOffers = [];
       let bestOffer = { discountPercentage: 0 };
 
+      // Filter applicable and active offers
       applicableOffers = activeOffers.filter(
         (offer) =>
+          offer.isActive && // Check if the offer is active
           offer.offerType === "Product" &&
           String(offer.applicableProduct) === String(product._id)
       );
@@ -200,26 +202,32 @@ exports.placeOrder = async (req, res) => {
       if (product.categoriesId) {
         const categoryOffers = offers.filter(
           (offer) =>
+            offer.isActive && // Check if the offer is active
             offer.offerType === "Category" &&
             String(offer.applicableCategory) === String(product.categoriesId)
         );
         applicableOffers = applicableOffers.concat(categoryOffers);
       }
 
+      // Determine the best offer
       if (applicableOffers.length > 0) {
         bestOffer = applicableOffers.reduce((max, current) =>
           current.discountPercentage > max.discountPercentage ? current : max
         );
       }
 
+      let offerAmount = 0;
       const offerPercentage = bestOffer.discountPercentage || 0;
-      const offerAmount = (discountPrice * offerPercentage) / 100;
-      totalOfferAmount += offerAmount * item.quantity;
+      if (offerPercentage > 0) {
+        offerAmount = (discountPrice * offerPercentage) / 100;
+      }
 
       const priceAfterOffer = discountPrice - offerAmount;
       const itemTotalPrice = priceAfterOffer * item.quantity;
+      const totalPriceWithoutOffer = discountPrice * item.quantity;
 
-      subtotal += itemTotalPrice;
+      subtotal += totalPriceWithoutOffer;
+      totalOfferValue += offerAmount * item.quantity;
 
       const generateOrderID = () => {
         const characters =
@@ -260,6 +268,7 @@ exports.placeOrder = async (req, res) => {
         priceAfterCoupon: itemTotalPrice,
       };
     });
+
 
     // Check and apply the coupon
     let couponDiscount = 0;
@@ -320,16 +329,16 @@ exports.placeOrder = async (req, res) => {
       const couponAmountOfItem = couponDiscount * itemWeightage;
       item.CouponAmountOfItem = couponAmountOfItem;
       item.priceAfterCoupon = item.itemTotalPrice - couponAmountOfItem;
-      totalCouponAmount += couponAmountOfItem;
+      item.itemTotalPrice = item.priceAfterCoupon;
     });
 
     totalPrice = subtotal - couponDiscount;
 
-    // Above 1000 requires Online Payment
+    // Above 1000 is Online payment
     if (paymentMethod === "Cash on Delivery" && totalPrice > 1000) {
       return res
         .status(400)
-        .json({ error: "Use Online Payment for orders above 1000" });
+        .json({ error: "Use Online Payment For orders Above 1000" });
     }
 
     const newOrder = new Order({
@@ -343,8 +352,9 @@ exports.placeOrder = async (req, res) => {
       },
       couponCode: appliedCouponCode || null,
       couponType: coupon ? coupon.couponType : null,
-      totalCouponValue: totalCouponAmount,
-      totalOfferValue: totalOfferAmount,
+      totalCouponValue: couponDiscount || 0, // Save total coupon value
+      totalOfferValue, // Save total offer value
+      Subtotal: subtotal, // Save order subtotal
       totalPrice,
     });
 
@@ -389,9 +399,6 @@ exports.placeOrder = async (req, res) => {
       .json({ error: "An error occurred while placing the order" });
   }
 };
-
-
-
 
 exports.verifyPayment = async (req, res) => {
   try {

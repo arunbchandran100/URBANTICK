@@ -181,10 +181,7 @@
                             <ul class="text-gray-800 mt-6 space-y-3">
                                 <li class="flex flex-wrap gap-4 text-sm">
                                     Subtotal
-                                    <span id="subtotalPriceTag" class="ml-auto font-bold">₹<%= cartItems.reduce((acc,
-                                            item)=> acc +
-                                            item.afterOfferPrice * item.quantity, 0).toLocaleString()
-                                            %></span>
+                                    <span id="subtotalPriceTag" class="ml-auto font-bold">₹<%=subtotal.toLocaleString()%></span>
                                 </li>
                                 <li class="flex flex-wrap gap-4 text-sm">
                                     Total Discount
@@ -345,11 +342,11 @@
             // Update the subtotal and total in the DOM
             document.getElementById(
                 "subtotalPriceTag"
-            ).textContent = `₹${subtotal.toLocaleString()}`;
+            ).textContent = `₹${(subtotal+totalDiscount).toLocaleString()}`;
 
             document.getElementById(
                 "totalDiscountPriceTag"
-            ).textContent = `₹${totalDiscount.toLocaleString()}`;
+            ).textContent = `-₹${totalDiscount.toLocaleString()}`;
 
             document.getElementById(
                 "totalPriceTag"
