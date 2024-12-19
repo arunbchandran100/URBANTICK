@@ -37,17 +37,20 @@
                             <h3 class="text-lg font-semibold text-gray-300">Price Breakdown</h3>
                             <p class="text-gray-400 ">Subtotal: ₹<%= order.items.reduce((acc, item)=> acc +
                                     item.priceWithoutOffer * item.quantity, 0).toLocaleString() %> </p>
-                            <p class="text-gray-400 ">Total Offer Redemption: -₹<%= order.items.reduce((acc, item)=>
-                                    acc + item.offerAmount * item.quantity, 0).toLocaleString() %> </p>
-                            <% if(order.couponValue) {%>
-                                <p class="font-semibold text-gray-400  ">Total Coupon Redemption: -₹<%=
-                                        order.couponValue.toLocaleString() %>
+                            <% if(order.totalOfferValue) {%>
+                                <p class="text-gray-400 ">Total Offer Redemption: -₹<%=
+                                        order.totalOfferValue.toLocaleString() %>
                                 </p>
                                 <% } %>
+                                    <% if(order.totalCouponValue) {%>
+                                        <p class="text-gray-400 ">Total Coupon Redemption: -₹<%=
+                                                order.totalCouponValue.toLocaleString() %>
+                                        </p>
+                                        <% } %>
 
-                                    <p class="font-semibold text-gray-300  ">Total Amount: ₹<%=
-                                            order.totalPrice.toLocaleString() %>
-                                    </p>
+                                            <p class="font-semibold text-gray-300  ">Total Amount: ₹<%=
+                                                    order.totalPrice.toLocaleString() %>
+                                            </p>
                         </div>
 
             </section>
@@ -160,7 +163,7 @@
                                                     <span class="bg-green-500 text-white px-3 py-1 rounded">
                                                         <%= item.orderStatus %>
                                                     </span>
-                                                    <% } else if(item.orderStatus==="Payment Pending"){ %>
+                                                    <% } else if(item.orderStatus==="Payment Pending" ){ %>
                                                         <!-- Show dropdown for other statuses -->
                                                         <select name="orderStatus"
                                                             class="bg-gray-700 text-white rounded p-2 focus:outline-none">
@@ -170,41 +173,46 @@
                                                                 <%= item.orderStatus !=="Payment Pending" ? "disabled"
                                                                     : "" %>>Payment Pending
                                                             </option>
-                                                          
+
                                                             <option value="Cancelled" <%=item.orderStatus==="Cancelled"
                                                                 ? "selected" : "" %>>Cancelled</option>
                                                         </select>
-                                                    <% } else { %>
-                                                        <!-- Show dropdown for other statuses -->
-                                                        <select name="orderStatus"
-                                                            class="bg-gray-700 text-white rounded p-2 focus:outline-none">
-                                                            <option value="Payment Pending"
-                                                                <%=item.orderStatus==="Payment Pending" ? "selected"
-                                                                : "" %>
-                                                                <%= item.orderStatus !=="Payment Pending" ? "disabled"
-                                                                    : "" %>>Payment Pending
-                                                            </option>
-                                                            <option value="Processing"
-                                                                <%=item.orderStatus==="Processing" ? "selected" : "" %>
-                                                                <%= ["Payment Pending", "Processing"
-                                                                    ].includes(item.orderStatus) ? "" : "disabled" %>
-                                                                    >Processing
-                                                            </option>
-                                                            <option value="Shipped" <%=item.orderStatus==="Shipped"
-                                                                ? "selected" : "" %>
-                                                                <%= ["Processing"].includes(item.orderStatus) ? ""
-                                                                    : "disabled" %>>Shipped
-                                                            </option>
-                                                            <option value="Delivered" <%=item.orderStatus==="Delivered"
-                                                                ? "selected" : "" %>
-                                                                <%= ["Processing", "Shipped"
-                                                                    ].includes(item.orderStatus) ? "" : "disabled" %>
-                                                                    >Delivered
-                                                            </option>
-                                                            <option value="Cancelled" <%=item.orderStatus==="Cancelled"
-                                                                ? "selected" : "" %>>Cancelled</option>
-                                                        </select>
-                                                        <% } %>
+                                                        <% } else { %>
+                                                            <!-- Show dropdown for other statuses -->
+                                                            <select name="orderStatus"
+                                                                class="bg-gray-700 text-white rounded p-2 focus:outline-none">
+                                                                <option value="Payment Pending"
+                                                                    <%=item.orderStatus==="Payment Pending" ? "selected"
+                                                                    : "" %>
+                                                                    <%= item.orderStatus !=="Payment Pending"
+                                                                        ? "disabled" : "" %>>Payment Pending
+                                                                </option>
+                                                                <option value="Processing"
+                                                                    <%=item.orderStatus==="Processing" ? "selected" : ""
+                                                                    %>
+                                                                    <%= ["Payment Pending", "Processing"
+                                                                        ].includes(item.orderStatus) ? "" : "disabled"
+                                                                        %>
+                                                                        >Processing
+                                                                </option>
+                                                                <option value="Shipped" <%=item.orderStatus==="Shipped"
+                                                                    ? "selected" : "" %>
+                                                                    <%= ["Processing"].includes(item.orderStatus) ? ""
+                                                                        : "disabled" %>>Shipped
+                                                                </option>
+                                                                <option value="Delivered"
+                                                                    <%=item.orderStatus==="Delivered" ? "selected" : ""
+                                                                    %>
+                                                                    <%= ["Processing", "Shipped"
+                                                                        ].includes(item.orderStatus) ? "" : "disabled"
+                                                                        %>
+                                                                        >Delivered
+                                                                </option>
+                                                                <option value="Cancelled"
+                                                                    <%=item.orderStatus==="Cancelled" ? "selected" : ""
+                                                                    %>>Cancelled</option>
+                                                            </select>
+                                                            <% } %>
 
                                         </form>
                                         <% } %>
