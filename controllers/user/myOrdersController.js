@@ -121,7 +121,9 @@ exports.getOrderDetails = async (req, res) => {
         minute: "2-digit",
         hour12: true,
       }),
-      couponValue: order.couponValue,
+
+      totalOfferValue: order.totalOfferValue,
+      totalCouponValue: order.totalCouponValue,
       totalPrice: order.totalPrice,
       paymentMethod: order.payment.paymentMethod,
       paymentStatus: order.payment.paymentStatus,
