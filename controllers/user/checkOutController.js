@@ -180,7 +180,8 @@ exports.placeOrder = async (req, res) => {
     const activeOffers = await Offer.find({ isActive: true });
 
     let subtotal = 0;
-    let totalPrice = 0;
+    let totalOfferAmount = 0;
+    let totalCouponAmount = 0;
 
     const orderItems = cartItems.map((item) => {
       const product = item.productId;
@@ -213,6 +214,8 @@ exports.placeOrder = async (req, res) => {
 
       const offerPercentage = bestOffer.discountPercentage || 0;
       const offerAmount = (discountPrice * offerPercentage) / 100;
+      totalOfferAmount += offerAmount * item.quantity;
+
       const priceAfterOffer = discountPrice - offerAmount;
       const itemTotalPrice = priceAfterOffer * item.quantity;
 
@@ -256,8 +259,8 @@ exports.placeOrder = async (req, res) => {
         CouponAmountOfItem: 0,
         priceAfterCoupon: itemTotalPrice,
       };
-
     });
+
     // Check and apply the coupon
     let couponDiscount = 0;
     let coupon;
@@ -317,18 +320,17 @@ exports.placeOrder = async (req, res) => {
       const couponAmountOfItem = couponDiscount * itemWeightage;
       item.CouponAmountOfItem = couponAmountOfItem;
       item.priceAfterCoupon = item.itemTotalPrice - couponAmountOfItem;
+      totalCouponAmount += couponAmountOfItem;
     });
 
     totalPrice = subtotal - couponDiscount;
-    orderItems.forEach((item) => {
-      item.itemTotalPrice = item.priceAfterCoupon;
-    });
 
-    //Above 1000 is Online payment
+    // Above 1000 requires Online Payment
     if (paymentMethod === "Cash on Delivery" && totalPrice > 1000) {
-      return res.status(400).json({ error: "Use Online Payment For orders Above 1000" });
+      return res
+        .status(400)
+        .json({ error: "Use Online Payment for orders above 1000" });
     }
-
 
     const newOrder = new Order({
       userId,
@@ -341,7 +343,8 @@ exports.placeOrder = async (req, res) => {
       },
       couponCode: appliedCouponCode || null,
       couponType: coupon ? coupon.couponType : null,
-      couponValue: couponDiscount || null,
+      totalCouponValue: totalCouponAmount,
+      totalOfferValue: totalOfferAmount,
       totalPrice,
     });
 

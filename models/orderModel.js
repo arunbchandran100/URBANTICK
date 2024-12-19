@@ -78,11 +78,12 @@ const orderSchema = new mongoose.Schema(
         type: String,
         enum: [
           "Payment Pending",
-          'Retry Payment Successful',
+          "Retry Payment Successful",
           "Pending",
           "Paid",
           "Failed",
-          "Refund Processed for Returned/Cancelled Orders"],
+          "Refund Processed for Returned/Cancelled Orders",
+        ],
         default: "Pending",
       },
       razorpayOrderId: {
@@ -98,8 +99,10 @@ const orderSchema = new mongoose.Schema(
     couponType: {
       type: String,
     },
-
-    couponValue: {
+    totalCouponValue: {
+      type: Number,
+    },
+    totalOfferValue: {
       type: Number,
     },
     totalPrice: {
