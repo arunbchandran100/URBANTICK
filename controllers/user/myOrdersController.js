@@ -225,10 +225,12 @@ exports.cancelOrderItem = async (req, res) => {
     const itemTotalPrice = orderItem.itemTotalPrice;
     const offerAmount = orderItem.offerAmount || 0;
     const couponAmount = orderItem.CouponAmountOfItem || 0;
+    const priceWithoutOffer = orderItem.priceWithoutOffer;
 
+    order.Subtotal -= priceWithoutOffer; 
     order.totalPrice -= itemTotalPrice;
-    order.totalOfferAmount -= offerAmount;
-    order.totalCouponAmount -= couponAmount;
+    order.totalOfferValue -= offerAmount;
+    order.totalCouponValue -= couponAmount;
 
     orderItem.orderStatus = "Cancelled";
 

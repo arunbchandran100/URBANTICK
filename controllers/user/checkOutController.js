@@ -71,11 +71,16 @@ exports.getCheckout = async (req, res) => {
       }
 
       const offerPercentage = bestOffer.discountPercentage || 0;
-      const offerAmount = (discountPrice * offerPercentage) / 100;
-      const afterOfferPrice = discountPrice - offerAmount;
+      const offerAmount =((discountPrice * offerPercentage) / 100) * item.quantity;
+      console.log('offer amout ', offerAmount);
+
+      const afterOfferPrice = (discountPrice - offerAmount) * item.quantity;
+      console.log('after offer price ', afterOfferPrice);
 
       subtotal += discountPrice * item.quantity;
-      totalDiscount += offerAmount * item.quantity;
+
+
+      totalDiscount += offerAmount ;
 
       return {
         _id: item._id,
@@ -127,7 +132,11 @@ exports.getCheckout = async (req, res) => {
         validCoupons.push(coupon);
       }
     }
-
+    console.log(
+      "subtotal " + subtotal + " totalDiscount ",
+      +totalDiscount + " totalAfterDiscount ",
+      totalAfterDiscount
+    );
     res.render("user/checkOutpage", {
       userAddresses,
       cartItems: formattedCartItems,
@@ -186,7 +195,7 @@ exports.placeOrder = async (req, res) => {
     const orderItems = cartItems.map((item) => {
       const product = item.productId;
       const variant = item.variantId;
-      const discountPrice = item.variantId.discountPrice;
+      const discountPrice = item.variantId.discountPrice * item.quantity;
 
       let applicableOffers = [];
       let bestOffer = { discountPercentage: 0 };
@@ -219,7 +228,7 @@ exports.placeOrder = async (req, res) => {
       let offerAmount = 0;
       const offerPercentage = bestOffer.discountPercentage || 0;
       if (offerPercentage > 0) {
-        offerAmount = (discountPrice * offerPercentage) / 100;
+        offerAmount = ((discountPrice * offerPercentage) / 100) * item.quantity;
       }
 
       const priceAfterOffer = discountPrice - offerAmount;
@@ -268,7 +277,6 @@ exports.placeOrder = async (req, res) => {
         priceAfterCoupon: itemTotalPrice,
       };
     });
-
 
     // Check and apply the coupon
     let couponDiscount = 0;
@@ -330,9 +338,10 @@ exports.placeOrder = async (req, res) => {
       item.CouponAmountOfItem = couponAmountOfItem;
       item.priceAfterCoupon = item.itemTotalPrice - couponAmountOfItem;
       item.itemTotalPrice = item.priceAfterCoupon;
+      totalPrice += item.itemTotalPrice;
     });
 
-    totalPrice = subtotal - couponDiscount;
+    //totalPrice = subtotal - couponDiscount;
 
     // Above 1000 is Online payment
     if (paymentMethod === "Cash on Delivery" && totalPrice > 1000) {
@@ -465,8 +474,6 @@ exports.verifyPayment = async (req, res) => {
   }
 };
 
-
-
 exports.retryPayment = async (req, res) => {
   try {
     const orderId = req.params.orderId;
@@ -518,7 +525,5 @@ exports.retryPayment = async (req, res) => {
     });
   }
 };
-
-
 
 module.exports = exports;
