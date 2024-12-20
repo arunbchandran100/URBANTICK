@@ -43,12 +43,13 @@ exports.getCheckout = async (req, res) => {
 
     const formattedCartItems = cartItems.map((item) => {
       const product = item.productId;
-      const discountPrice = item.variantId.discountPrice;
+      const discountPrice = item.variantId.discountPrice; // Use base price here
       const variant = item.variantId;
 
       let applicableOffers = [];
       let bestOffer = { discountPercentage: 0 };
 
+      // Filter applicable offers
       applicableOffers = offers.filter(
         (offer) =>
           offer.offerType === "Product" &&
@@ -64,6 +65,7 @@ exports.getCheckout = async (req, res) => {
         applicableOffers = applicableOffers.concat(categoryOffers);
       }
 
+      // Determine the best offer
       if (applicableOffers.length > 0) {
         bestOffer = applicableOffers.reduce((max, current) =>
           current.discountPercentage > max.discountPercentage ? current : max
@@ -71,16 +73,18 @@ exports.getCheckout = async (req, res) => {
       }
 
       const offerPercentage = bestOffer.discountPercentage || 0;
-      const offerAmount =((discountPrice * offerPercentage) / 100) * item.quantity;
-      console.log('offer amout ', offerAmount);
 
-      const afterOfferPrice = (discountPrice - offerAmount) * item.quantity;
-      console.log('after offer price ', afterOfferPrice);
+      // Calculate the offer amount and price after applying the offer
+      const offerAmount = (discountPrice * offerPercentage) / 100;
+      const afterOfferPrice = discountPrice - offerAmount;
 
-      subtotal += discountPrice * item.quantity;
+      // Calculate totals considering the quantity only once
+      const totalPriceForItem = discountPrice * item.quantity;
+      const totalOfferAmount = offerAmount * item.quantity;
+      const totalAfterOfferPrice = afterOfferPrice * item.quantity;
 
-
-      totalDiscount += offerAmount ;
+      subtotal += totalPriceForItem; // Add total price without offer
+      totalDiscount += totalOfferAmount; // Add total offer discount
 
       return {
         _id: item._id,
@@ -88,13 +92,14 @@ exports.getCheckout = async (req, res) => {
         variant,
         quantity: variant && variant.stock > 0 ? item.quantity : 0,
         offerPercentage,
-        offerAmount,
-        afterOfferPrice: afterOfferPrice > 0 ? afterOfferPrice : 0,
+        offerAmount: totalOfferAmount, // Total offer amount for the item
+        afterOfferPrice: totalAfterOfferPrice > 0 ? totalAfterOfferPrice : 0,
         offerType: bestOffer.offerType || null,
         offerTitle: bestOffer.title,
         couponIsApplied: bestOffer.discountPercentage > 0,
       };
     });
+
 
     const totalAfterDiscount = subtotal - totalDiscount;
 
@@ -192,91 +197,95 @@ exports.placeOrder = async (req, res) => {
     let totalOfferValue = 0;
     let totalPrice = 0;
 
-    const orderItems = cartItems.map((item) => {
-      const product = item.productId;
-      const variant = item.variantId;
-      const discountPrice = item.variantId.discountPrice * item.quantity;
+const orderItems = cartItems.map((item) => {
+  const product = item.productId;
+  const variant = item.variantId;
+  const discountPrice = item.variantId.discountPrice; // Single unit base price
 
-      let applicableOffers = [];
-      let bestOffer = { discountPercentage: 0 };
+  let applicableOffers = [];
+  let bestOffer = { discountPercentage: 0 };
 
-      // Filter applicable and active offers
-      applicableOffers = activeOffers.filter(
-        (offer) =>
-          offer.isActive && // Check if the offer is active
-          offer.offerType === "Product" &&
-          String(offer.applicableProduct) === String(product._id)
+  // Filter applicable and active offers
+  applicableOffers = activeOffers.filter(
+    (offer) =>
+      offer.isActive && // Check if the offer is active
+      offer.offerType === "Product" &&
+      String(offer.applicableProduct) === String(product._id)
+  );
+
+  if (product.categoriesId) {
+    const categoryOffers = offers.filter(
+      (offer) =>
+        offer.isActive && // Check if the offer is active
+        offer.offerType === "Category" &&
+        String(offer.applicableCategory) === String(product.categoriesId)
+    );
+    applicableOffers = applicableOffers.concat(categoryOffers);
+  }
+
+  // Determine the best offer
+  if (applicableOffers.length > 0) {
+    bestOffer = applicableOffers.reduce((max, current) =>
+      current.discountPercentage > max.discountPercentage ? current : max
+    );
+  }
+
+  // Calculate totals based on the quantity
+  const offerPercentage = bestOffer.discountPercentage || 0;
+  const offerAmount = ((discountPrice * offerPercentage) / 100) * item.quantity; // Total offer amount
+  const priceAfterOffer =
+    (discountPrice - (discountPrice * offerPercentage) / 100) * item.quantity; // Total price after offer
+  const priceWithoutOffer = discountPrice * item.quantity; // Total price without offer
+  const itemTotalPrice = priceAfterOffer; // Total price after offer
+  const CouponAmountOfItem = 0; // Initialize as 0
+  const priceAfterCoupon = itemTotalPrice - CouponAmountOfItem; // Price after coupon
+
+  // Update running totals
+  subtotal += priceWithoutOffer;
+  totalOfferValue += offerAmount;
+
+  // Generate a unique order ID
+  const generateOrderID = () => {
+    const characters =
+      "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789";
+    let orderID = "#";
+    for (let i = 0; i < 5; i++) {
+      orderID += characters.charAt(
+        Math.floor(Math.random() * characters.length)
       );
+    }
+    return orderID;
+  };
 
-      if (product.categoriesId) {
-        const categoryOffers = offers.filter(
-          (offer) =>
-            offer.isActive && // Check if the offer is active
-            offer.offerType === "Category" &&
-            String(offer.applicableCategory) === String(product.categoriesId)
-        );
-        applicableOffers = applicableOffers.concat(categoryOffers);
-      }
+  return {
+    order_id: generateOrderID(),
+    product: {
+      productId: product._id,
+      brand: product.brand,
+      productName: product.productName,
+      imageUrl: product.imageUrl[0],
+    },
+    variant: {
+      variantId: variant._id,
+      color: variant.color,
+      discountPrice: discountPrice, // Single unit price
+    },
+    quantity: item.quantity,
+    orderStatus: "Processing",
+    offerType: bestOffer.offerType || null,
+    offerTitle: bestOffer.title || null,
+    offerPercentage,
+    offerAmount, // Total offer amount
+    priceAfterOffer, // Total price after applying the offer
+    priceWithoutOffer, // Total price without applying any offer
+    itemTotalPrice, // Total price after applying the offer
+    priceWithoutCoupon: priceWithoutOffer, // Total price without applying any coupon
+    CouponAmountOfItem, // Total coupon amount for this item
+    priceAfterCoupon, // Total price after applying coupon
+  };
+});
 
-      // Determine the best offer
-      if (applicableOffers.length > 0) {
-        bestOffer = applicableOffers.reduce((max, current) =>
-          current.discountPercentage > max.discountPercentage ? current : max
-        );
-      }
 
-      let offerAmount = 0;
-      const offerPercentage = bestOffer.discountPercentage || 0;
-      if (offerPercentage > 0) {
-        offerAmount = ((discountPrice * offerPercentage) / 100) * item.quantity;
-      }
-
-      const priceAfterOffer = discountPrice - offerAmount;
-      const itemTotalPrice = priceAfterOffer * item.quantity;
-      const totalPriceWithoutOffer = discountPrice * item.quantity;
-
-      subtotal += totalPriceWithoutOffer;
-      totalOfferValue += offerAmount * item.quantity;
-
-      const generateOrderID = () => {
-        const characters =
-          "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789";
-        let orderID = "#";
-        for (let i = 0; i < 5; i++) {
-          orderID += characters.charAt(
-            Math.floor(Math.random() * characters.length)
-          );
-        }
-        return orderID;
-      };
-
-      return {
-        order_id: generateOrderID(),
-        product: {
-          productId: product._id,
-          brand: product.brand,
-          productName: product.productName,
-          imageUrl: product.imageUrl[0],
-        },
-        variant: {
-          variantId: variant._id,
-          color: variant.color,
-          discountPrice: variant.discountPrice,
-        },
-        quantity: item.quantity,
-        orderStatus: "Processing",
-        offerType: bestOffer.offerType || null,
-        offerTitle: bestOffer.title || null,
-        offerPercentage,
-        offerAmount,
-        priceAfterOffer,
-        priceWithoutOffer: discountPrice,
-        itemTotalPrice,
-        priceWithoutCoupon: itemTotalPrice,
-        CouponAmountOfItem: 0,
-        priceAfterCoupon: itemTotalPrice,
-      };
-    });
 
     // Check and apply the coupon
     let couponDiscount = 0;
