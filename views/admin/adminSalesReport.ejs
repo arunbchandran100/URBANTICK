@@ -102,17 +102,17 @@
                     </div>
                     <div class="p-4 bg-stone-900 rounded-lg shadow">
                         <p class="text-gray-300">Total Order Amount</p>
-                        <p class="text-2xl font-bold text-white">₹<%= reportData.totalOrderAmount.toFixed(2) %>
+                        <p class="text-2xl font-bold text-white">₹<%= reportData.totalOrderAmount.toLocaleString() %>
                         </p>
                     </div>
                     <div class="p-4 bg-stone-900 rounded-lg shadow">
                         <p class="text-gray-300">Total Offer</p>
-                        <p class="text-2xl font-bold text-white">₹<%= reportData.totalOffer.toFixed(2) %>
+                        <p class="text-2xl font-bold text-white">₹<%= reportData.totalOffer.toLocaleString() %>
                         </p>
                     </div>
                     <div class="p-4 bg-stone-900 rounded-lg shadow">
                         <p class="text-gray-300">Coupon Deduction</p>
-                        <p class="text-2xl font-bold text-white">₹<%= reportData.totalCouponDeduction.toFixed(2) %>
+                        <p class="text-2xl font-bold text-white">₹<%= reportData.totalCouponDeduction.toLocaleString() %>
                         </p>
                     </div>
                 </div>
@@ -147,7 +147,7 @@
                                 <td class="p-3 text-gray-300">
                                     <%= item.quantity %>
                                 </td>
-                                <td class="p-3 text-gray-300">₹<%= item.itemTotalPrice.toFixed(2) %>
+                                <td class="p-3 text-gray-300">₹<%= item.itemTotalPrice.toLocaleString() %>
                                 </td>
                                 <td class="p-3 text-gray-300">
                                     <%= new Date(item.createdAt).toLocaleDateString('en-US') %>

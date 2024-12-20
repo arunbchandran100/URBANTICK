@@ -178,7 +178,7 @@ exports.downloadPDF = async (req, res) => {
             (acc, item) => {
                 acc.totalItemsSold += item.quantity;
                 acc.totalOrderAmount += item.itemTotalPrice;
-                acc.totalOffer += item.offerAmount * item.quantity;
+                acc.totalOffer += item.offerAmount || 0;
                 acc.totalCouponDeduction += item.CouponAmountOfItem || 0;
                 return acc;
             },
@@ -302,7 +302,7 @@ exports.downloadExcel = async (req, res) => {
             (acc, item) => {
                 acc.totalItemsSold += item.quantity;
                 acc.totalOrderAmount += item.itemTotalPrice;
-                acc.totalOffer += item.offerAmount * item.quantity;
+                acc.totalOffer += item.offerAmount || 0;
                 acc.totalCouponDeduction += item.CouponAmountOfItem || 0;
                 return acc;
             },
