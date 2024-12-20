@@ -35,8 +35,7 @@
 
                         <div class="mt-4">
                             <h3 class="text-lg font-semibold text-gray-300">Price Breakdown</h3>
-                            <p class="text-gray-400 ">Subtotal: ₹<%= order.items.reduce((acc, item)=> acc +
-                                    item.priceWithoutOffer * item.quantity, 0).toLocaleString() %> </p>
+                            <p class="text-gray-400 ">Subtotal: ₹<%= order.Subtotal.toLocaleString() %> </p>
                             <% if(order.totalOfferValue) {%>
                                 <p class="text-gray-400 ">Total Offer Redemption: -₹<%=
                                         order.totalOfferValue.toLocaleString() %>

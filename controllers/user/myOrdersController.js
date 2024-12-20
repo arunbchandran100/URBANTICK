@@ -121,7 +121,7 @@ exports.getOrderDetails = async (req, res) => {
         minute: "2-digit",
         hour12: true,
       }),
-
+      Subtotal: order.Subtotal,
       totalOfferValue: order.totalOfferValue,
       totalCouponValue: order.totalCouponValue,
       totalPrice: order.totalPrice,

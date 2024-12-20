@@ -65,6 +65,7 @@ exports.getAdminOrdersDetails = [
         _id: order._id,
         userName: order.userName,
         orderDate: order.createdAt,
+        Subtotal: order.Subtotal,
         totalOfferValue: order.totalOfferValue,
         totalCouponValue: order.totalCouponValue,
         totalPrice: order.totalPrice,
