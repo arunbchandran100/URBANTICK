@@ -53,25 +53,40 @@
                     <!-- Total Offer Redemption -->
                     <div class="mt-4">
                         <h3 class="text-lg font-semibold text-gray-800">Price Breakdown</h3>
-                        <p class="text-sm text-gray-500">Subtotal: ₹<%= order.Subtotal.toLocaleString() %></p>
+                        <p class="text-sm text-gray-500">Subtotal: ₹<%= order.Subtotal.toLocaleString() %>
+                        </p>
                         <% if(order.totalOfferValue) {%>
-                        <p class="text-sm text-gray-500">Total Offer Redemption: ₹<%= order.totalOfferValue.toLocaleString() %></p>
-                        <% } %>
-                        <% if(order.totalCouponValue) {%>
-                            <p class="text-sm text-gray-500">Total Coupon Redemption: ₹<%=
-                                    order.totalCouponValue.toLocaleString() %>
+                            <p class="text-sm text-gray-500">Total Offer Redemption: ₹<%=
+                                    order.totalOfferValue.toLocaleString() %>
                             </p>
                             <% } %>
-                                <p class="text-lg font-semibold text-gray-800 mt-2">Total Amount: ₹<%=
-                                        order.totalPrice.toLocaleString() %>
-                                </p>
-                                <% if (order.paymentMethod==='Online Payment' && order.paymentStatus==='Pending' ) { %>
-                                    <button onclick="retryPayment('<%= order._id %>')"
-                                        class="mt-6 w-1/6 bg-gray-800 hover:bg-gray-700 text-white text-sm py-2 rounded-md">
-                                        Retry Payment
-                                    </button>
+                                <% if(order.totalCouponValue) {%>
+                                    <p class="text-sm text-gray-500">Total Coupon Redemption: ₹<%=
+                                            order.totalCouponValue.toLocaleString() %>
+                                    </p>
                                     <% } %>
+                                        <p class="text-lg font-semibold text-gray-800 mt-2">Total Amount: ₹<%=
+                                                order.totalPrice.toLocaleString() %>
+                                        </p>
+                                        <% if (order.paymentMethod==='Online Payment' && order.paymentStatus==='Pending'
+                                            ) { %>
+                                            <button onclick="retryPayment('<%= order._id %>')"
+                                                class="mt-6 w-1/6 bg-gray-800 hover:bg-gray-700 text-white text-sm py-2 rounded-md">
+                                                Retry Payment
+                                            </button>
+                                            <% } %>
+
+
+
+                                            <div class="mt-6">
+                                                    <button onclick="downloadInvoice('<%= order._id %>')"
+                                                        class="w-1/6 bg-black hover:bg-zinc-800 text-white text-sm py-2 rounded-md">
+                                                        Download Invoice
+                                                    </button>
+                                                </div>
+
                     </div>
+
                 </div>
 
 
@@ -211,6 +226,12 @@
                         y: "bottom",
                     },
                 });
+
+
+                function downloadInvoice(orderId) {
+                    window.location.href = `/user/order/downloadInvoice/${orderId}`;
+                }
+
 
                 // Cancel Order Item
                 document.querySelectorAll('.cancel-btn').forEach((button) => {

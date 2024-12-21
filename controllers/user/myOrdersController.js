@@ -166,6 +166,7 @@ exports.getOrderDetails = async (req, res) => {
 
 
 
+
 exports.cancelOrderItem = async (req, res) => {
   try {
     const { orderItemId } = req.body;
@@ -357,5 +358,112 @@ exports.cancelReturnRequest = async (req, res) => {
   } catch (error) {
     console.error(error);
     res.status(500).json({ message: "Failed to cancel return request." });
+  }
+};
+
+
+
+
+const PDFDocument = require("pdfkit");
+
+exports.generateInvoice = async (req, res) => {
+  try {
+    const { orderId } = req.params;
+
+    // Fetch the order
+    const order = await Order.findById(orderId);
+    if (!order) {
+      return res.status(404).json({ message: "Order not found" });
+    }
+
+    // Filter out cancelled items
+    const validOrderItems = order.orderItems.filter(
+      (item) => item.orderStatus !== "Cancelled"
+    );
+
+    if (validOrderItems.length === 0) {
+      return res.status(400).json({
+        message: "No valid items to generate an invoice for this order.",
+      });
+    }
+
+    // Prepare the filename
+    const filename = `invoice-${orderId}.pdf`;
+
+    // Set response headers
+    res.setHeader("Content-Type", "application/pdf");
+    res.setHeader("Content-Disposition", `attachment; filename="${filename}"`);
+
+    // Create a PDF document
+    const doc = new PDFDocument();
+    doc.pipe(res);
+
+    // Title
+    doc.fontSize(18).text("Order Invoice", { align: "center" });
+    doc.moveDown();
+
+    // Order details
+    doc.fontSize(12).text(`Order ID: ${order._id}`);
+    doc.text(`Order Date: ${new Date(order.createdAt).toLocaleString()}`);
+    doc.text(`Customer Name: ${order.userName}`);
+    doc.moveDown();
+
+    // Shipping Address
+    doc.fontSize(14).text("Shipping Address:", { underline: true });
+    const {
+      Name,
+      HouseName,
+      LocalityStreet,
+      TownCity,
+      state,
+      country,
+      pincode,
+      MobileNumber,
+    } = order.shippingAddress;
+    doc.fontSize(12).text(`Name: ${Name}`);
+    doc.text(`House: ${HouseName}`);
+    doc.text(`Street: ${LocalityStreet}`);
+    doc.text(`City: ${TownCity}`);
+    doc.text(`State: ${state}`);
+    doc.text(`Country: ${country}`);
+    doc.text(`Pincode: ${pincode}`);
+    doc.text(`Mobile: ${MobileNumber}`);
+    doc.moveDown();
+
+    // Order Items
+    doc.fontSize(14).text("Order Items:", { underline: true });
+    validOrderItems.forEach((item, index) => {
+      const { productName, brand } = item.product;
+      const { color, discountPrice } = item.variant;
+      doc
+        .fontSize(12)
+        .text(
+          `${
+            index + 1
+          }. ${brand} ${productName} (Color: ${color}) - ₹${discountPrice.toFixed(
+            2
+          )} x ${item.quantity} = ₹${(item.itemTotalPrice || 0).toFixed(2)}`
+        );
+    });
+    doc.moveDown();
+
+    // Payment Summary
+    doc.fontSize(14).text("Payment Summary:", { underline: true });
+    doc.fontSize(12).text(`Subtotal: ₹${order.Subtotal.toFixed(2)}`);
+    doc.text(`Offer Discounts: ₹${order.totalOfferValue.toFixed(2)}`);
+    doc.text(`Coupon Discounts: ₹${order.totalCouponValue.toFixed(2)}`);
+    doc.text(`Total Price: ₹${order.totalPrice.toFixed(2)}`);
+    doc.text(`Payment Method: ${order.payment.paymentMethod}`);
+    doc.text(`Payment Status: ${order.payment.paymentStatus}`);
+    doc.moveDown();
+
+    // Thank You Message
+    doc.fontSize(16).text("Thank you for your order!", { align: "center" });
+
+    // Finalize PDF
+    doc.end();
+  } catch (error) {
+    console.error("Error generating invoice:", error);
+    res.status(500).json({ message: "Failed to generate invoice" });
   }
 };
