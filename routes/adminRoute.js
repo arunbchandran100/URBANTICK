@@ -17,7 +17,9 @@ router.post("/login", adminController.postLogin);
 router.post("/logout", adminController.logout);
 
 // Admin dashboard
-router.get("/dashboard", adminAuthenticated,adminController.getDashboard);
+router.get("/dashboard", adminAuthenticated, adminController.getDashboard);
+router.get("/dashboard/chart-data", adminAuthenticated, adminController.getChartData);
+
 
 // Admin  Customers
 router.get("/customers", adminAuthenticated, adminController.getCustomers);

@@ -1,86 +1,83 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Admin Dashboard</title>
   <script src="https://cdn.tailwindcss.com"></script>
-    <link
-      rel="stylesheet"
-      href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.6.0/css/all.min.css"
-      integrity="sha512-Kc323vGBEqzTmouAECnVceyQqyqdsSiqLQISBL29aUW4U/M7pSPA/gEUZQqv1cwx4OnYxTxve5UMg5GT6L4JJg=="
-      crossorigin="anonymous"
-      referrerpolicy="no-referrer"
-    />
-    <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
-
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.6.0/css/all.min.css"
+    integrity="sha512-Kc323vGBEqzTmouAECnVceyQqyqdsSiqLQISBL29aUW4U/M7pSPA/gEUZQqv1cwx4OnYxTxve5UMg5GT6L4JJg=="
+    crossorigin="anonymous" referrerpolicy="no-referrer" />
+  <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
 </head>
 
 <body class="bg-black text-white min-h-screen">
 
   <!-- Sidebar -->
-   <%- include("partials/sidebar")  %>
-
+  <%- include("partials/sidebar") %>
 
   <!-- Main Content -->
   <main class="ml-64 p-8">
     <!-- Header -->
     <header class="flex items-center justify-between mb-8">
-      <h1 class="text-2xl font-semibold text-gray-200">Sales Summary</h1>
+      <h1 class="text-2xl font-semibold text-gray-200">Admin Dashboard</h1>
       <div class="flex items-center space-x-4">
-        <select class="px-4 py-2 text-gray-800 bg-gray-100 rounded-md">
-          <option>2024</option>
-          <!-- Additional options as needed -->
+        <select id="filterType" class="px-4 py-2 text-gray-800 bg-gray-100 rounded-md" onchange="fetchChartData()">
+          <option value="yearly">Yearly</option>
+          <option value="monthly">Monthly</option>
+          <option value="weekly">Weekly</option>
+          <option value="daily">Daily</option>
         </select>
-        <button class="px-4 py-2 text-black bg-white rounded-md">Download</button>
       </div>
     </header>
 
-    <!-- Sales Summary Cards -->
-    <section class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
-      <!-- Revenue Card -->
-      <div class="p-6 bg-zinc-800 rounded-lg shadow-md">
-        <h2 class="text-gray-400">Revenue</h2>
-        <div class="flex items-center justify-between mt-2">
-          <p class="text-xl font-bold">₹ 7,825</p>
-          <p class="text-orange-500 font-semibold">+ 22%</p>
-        </div>
-        <!-- Add a simple chart graphic if needed here -->
-      </div>
 
-      <!-- Orders Card -->
-      <div class="p-6 bg-zinc-800 rounded-lg shadow-md">
-        <h2 class="text-gray-400">Orders</h2>
-        <div class="flex items-center justify-between mt-2">
-          <p class="text-xl font-bold">900</p>
-          <p class="text-red-500 font-semibold">- 25%</p>
-        </div>
-      </div>
-
-      <!-- Products Sold Card -->
-      <div class="p-6 bg-zinc-800 rounded-lg shadow-md">
-        <h2 class="text-gray-400">Products Sold</h2>
-        <div class="flex items-center justify-between mt-2">
-          <p class="text-xl font-bold">14.4k</p>
-          <p class="text-green-500 font-semibold">+ 45%</p>
-        </div>
-      </div>
-
-      <!-- Total Customers Card -->
-      <div class="p-6 bg-zinc-800 rounded-lg shadow-md">
-        <h2 class="text-gray-400">Total Customers</h2>
-        <div class="flex items-center justify-between mt-2">
-          <p class="text-xl font-bold">100</p>
-          <p class="text-green-500 font-semibold">+ 4%</p>
-        </div>
-      </div>
+    <!-- Chart Section -->
+    <section class="bg-zinc-800 p-6 rounded-lg shadow-md">
+      <h2 class="text-gray-400 mb-4">Sales Chart</h2>
+      <canvas id="salesChart" width="400" height="200"></canvas>
     </section>
   </main>
 
-  <!-- Footer -->
-  <footer class="absolute bottom-5 left-1/2 transform -translate-x-1/2 text-gray-500 text-sm">
-    © 2024 UrbanTick. All Rights Reserved.
-  </footer>
 
+  <script>
+    let chart;
+    const fetchChartData = async () => {
+      const filter = document.getElementById('filterType').value;
+      const response = await fetch(`/admin/dashboard/chart-data?filter=${filter}`);
+      const data = await response.json();
+
+      const ctx = document.getElementById('salesChart').getContext('2d');
+      if (chart) {
+        chart.destroy();
+      }
+      chart = new Chart(ctx, {
+        type: 'line',
+        data: {
+          labels: data.labels,
+          datasets: [{
+            label: 'Sales',
+            data: data.sales,
+            backgroundColor: 'rgba(54, 162, 235, 0.2)',
+            borderColor: 'rgba(54, 162, 235, 1)',
+            borderWidth: 1
+          }]
+        },
+        options: {
+          responsive: true,
+          scales: {
+            x: { beginAtZero: true },
+            y: { beginAtZero: true }
+          }
+        }
+      });
+    };
+
+    // Load the chart initially with 'yearly' filter
+    fetchChartData();
+  </script>
 </body>
+
 </html>

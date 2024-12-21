@@ -45,15 +45,88 @@ exports.logout = (req, res) => {
 
 
 ///////////////////Dashboard-------------------
-exports.getDashboard = [
-  (req, res) => {
-    res.setHeader(
-      "Cache-Control",
-      "no-store, no-cache, must-revalidate, proxy-revalidate"
-    );
-    res.render("admin/adminDashboard");
-  },
-];
+const Order = require("../models/orderModel");
+
+exports.getDashboard = (req, res) => {
+  res.setHeader(
+    "Cache-Control",
+    "no-store, no-cache, must-revalidate, proxy-revalidate"
+  );
+  res.render("admin/adminDashboard");
+};
+
+exports.getChartData = async (req, res) => {
+  try {
+    const { filter } = req.query;
+
+    // Define startDate based on the filter
+    const now = new Date();
+    let startDate;
+    if (filter === "yearly") {
+      startDate = new Date(now.getFullYear(), 0, 1);
+    } else if (filter === "monthly") {
+      startDate = new Date(now.getFullYear(), now.getMonth(), 1);
+    } else if (filter === "weekly") {
+      const day = now.getDay();
+      startDate = new Date(now);
+      startDate.setDate(now.getDate() - day);
+    } else if (filter === "daily") {
+      startDate = new Date(now.getFullYear(), now.getMonth(), now.getDate());
+    }
+
+    // Aggregate orders and filter by orderStatus
+    const orders = await Order.aggregate([
+      {
+        $match: { createdAt: { $gte: startDate } },
+      },
+      {
+        $project: {
+          orderItems: {
+            $filter: {
+              input: "$orderItems",
+              as: "item",
+              cond: {
+                $in: [
+                  "$$item.orderStatus",
+                  ["Delivered", "Return-Cancelled", "Return-Requested"],
+                ],
+              },
+            },
+          },
+          createdAt: 1,
+        },
+      },
+      { $unwind: "$orderItems" },
+      {
+        $group: {
+          _id: {
+            $dateToString: {
+              format:
+                filter === "yearly"
+                  ? "%Y"
+                  : filter === "monthly"
+                  ? "%Y-%m"
+                  : "%Y-%m-%d",
+              date: "$createdAt",
+            },
+          },
+          totalSales: { $sum: "$orderItems.itemTotalPrice" },
+        },
+      },
+      { $sort: { _id: 1 } },
+    ]);
+
+    // Prepare labels and sales data
+    const labels = orders.map((o) => o._id);
+    const sales = orders.map((o) => o.totalSales);
+
+    res.json({ labels, sales });
+  } catch (error) {
+    console.error("Error fetching chart data:", error);
+    res.status(500).json({ message: "Failed to fetch chart data." });
+  }
+};
+
 
 
 ///////////////////Dashboard Customers-------------------
