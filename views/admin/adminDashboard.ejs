@@ -40,21 +40,48 @@
       <h2 class="text-xl font-semibold mb-4 text-gray-200">Best Sellers</h2>
 
       <!-- Top Products -->
-      <div class="mt-4">
+      <div class="bg-zinc-900 rounded-lg p-4 mt-4">
         <h3 class="text-lg font-semibold text-gray-200">Top Products</h3>
-        <ul id="topProducts" class="list-disc pl-6 text-gray-300"></ul>
+        <table class="w-full text-left text-gray-200 mt-2">
+          <thead>
+            <tr>
+              <th class="border-b border-gray-500 p-2">Product</th>
+              <th class="border-b border-gray-500 p-2">Units Sold</th>
+              <th class="border-b border-gray-500 p-2">Revenue</th>
+            </tr>
+          </thead>
+          <tbody id="topProducts"></tbody>
+        </table>
       </div>
 
       <!-- Top Categories -->
-      <div class="mt-4">
+      <div class="bg-zinc-900 rounded-lg p-4 mt-6">
         <h3 class="text-lg font-semibold text-gray-200">Top Categories</h3>
-        <ul id="topCategories" class="list-disc pl-6 text-gray-300"></ul>
+        <table class="w-full text-left text-gray-200 mt-2">
+          <thead>
+            <tr>
+              <th class="border-b border-gray-500 p-2">Category</th>
+              <th class="border-b border-gray-500 p-2">Units Sold</th>
+              <th class="border-b border-gray-500 p-2">Revenue</th>
+            </tr>
+          </thead>
+          <tbody id="topCategories"></tbody>
+        </table>
       </div>
 
       <!-- Top Brands -->
-      <div class="mt-4">
+      <div class="bg-zinc-900 rounded-lg p-4 mt-6">
         <h3 class="text-lg font-semibold text-gray-200">Top Brands</h3>
-        <ul id="topBrands" class="list-disc pl-6 text-gray-300"></ul>
+        <table class="w-full text-left text-gray-200 mt-2">
+          <thead>
+            <tr class="gap-x-4">
+              <th class="border-b border-gray-500 p-2">Brand</th>
+              <th class="border-b border-gray-500 p-2">Units Sold</th>
+              <th class="border-b border-gray-500 p-2">Revenue</th>
+            </tr>
+          </thead>
+          <tbody id="topBrands"></tbody>
+        </table>
       </div>
     </section>
   </main>
@@ -71,7 +98,7 @@
         // Update Sales Chart
         updateSalesChart(data.salesData);
 
-        // Update Best Sellers Lists
+        // Update Best Sellers Tables
         updateBestSellers('topProducts', data.topProducts);
         updateBestSellers('topCategories', data.topCategories);
         updateBestSellers('topBrands', data.topBrands);
@@ -108,12 +135,16 @@
     };
 
     const updateBestSellers = (elementId, data) => {
-      const list = document.getElementById(elementId);
-      list.innerHTML = ''; // Clear existing list
+      const tbody = document.getElementById(elementId);
+      tbody.innerHTML = ''; // Clear existing rows
       data.forEach((item) => {
-        const li = document.createElement('li');
-        li.textContent = `${item._id}: ${item.totalQuantity} units sold, ₹${item.totalRevenue} revenue`;
-        list.appendChild(li);
+        const tr = document.createElement('tr');
+        tr.innerHTML = `
+          <td class="border-b border-gray-500 p-2">${item._id}</td>
+          <td class="border-b border-gray-500 p-2">${item.totalQuantity}</td>
+          <td class="border-b border-gray-500 p-2">₹${item.totalRevenue.toLocaleString()}</td>
+        `;
+        tbody.appendChild(tr);
       });
     };
 
