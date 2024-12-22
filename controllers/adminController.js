@@ -55,6 +55,170 @@ exports.getDashboard = (req, res) => {
   res.render("admin/adminDashboard");
 };
 
+
+
+const mongoose = require("mongoose");
+
+exports.getDashboardData = async (req, res) => {
+  try {
+    const { filter } = req.query;
+
+    // Define startDate based on the filter
+    const now = new Date();
+    let startDate;
+    if (filter === "yearly") {
+      startDate = new Date(now.getFullYear(), 0, 1);
+    } else if (filter === "monthly") {
+      startDate = new Date(now.getFullYear(), now.getMonth(), 1);
+    } else if (filter === "weekly") {
+      const day = now.getDay();
+      startDate = new Date(now);
+      startDate.setDate(now.getDate() - day);
+    } else if (filter === "daily") {
+      startDate = new Date(now.getFullYear(), now.getMonth(), now.getDate());
+    }
+
+    // Aggregate orders for sales graph
+    const salesData = await Order.aggregate([
+      {
+        $match: { createdAt: { $gte: startDate } },
+      },
+      {
+        $project: {
+          orderItems: {
+            $filter: {
+              input: "$orderItems",
+              as: "item",
+              cond: {
+                $in: [
+                  "$$item.orderStatus",
+                  ["Delivered", "Return-Cancelled", "Return-Requested"],
+                ],
+              },
+            },
+          },
+          createdAt: 1,
+        },
+      },
+      { $unwind: "$orderItems" },
+      {
+        $group: {
+          _id: {
+            $dateToString: {
+              format:
+                filter === "yearly"
+                  ? "%Y"
+                  : filter === "monthly"
+                  ? "%Y-%m"
+                  : "%Y-%m-%d",
+              date: "$createdAt",
+            },
+          },
+          totalSales: { $sum: "$orderItems.itemTotalPrice" },
+        },
+      },
+      { $sort: { _id: 1 } },
+    ]);
+
+    // Aggregate top 10 products
+    const topProducts = await Order.aggregate([
+      { $unwind: "$orderItems" },
+      {
+        $match: {
+          "orderItems.orderStatus": {
+            $in: ["Delivered", "Return-Cancelled", "Return-Requested"],
+          },
+          createdAt: { $gte: startDate },
+        },
+      },
+      {
+        $group: {
+          _id: "$orderItems.product.productName",
+          totalQuantity: { $sum: "$orderItems.quantity" },
+          totalRevenue: { $sum: "$orderItems.itemTotalPrice" },
+        },
+      },
+      { $sort: { totalQuantity: -1 } },
+      { $limit: 10 },
+    ]);
+
+    // Aggregate top 10 categories
+    const topCategories = await Order.aggregate([
+      { $unwind: "$orderItems" },
+      {
+        $match: {
+          "orderItems.orderStatus": {
+            $in: ["Delivered", "Return-Cancelled", "Return-Requested"],
+          },
+          createdAt: { $gte: startDate },
+        },
+      },
+      {
+        $lookup: {
+          from: "products", // Product collection
+          localField: "orderItems.product.productId",
+          foreignField: "_id",
+          as: "productDetails",
+        },
+      },
+      { $unwind: "$productDetails" },
+      {
+        $lookup: {
+          from: "categories", // Category collection
+          localField: "productDetails.categoriesId",
+          foreignField: "_id",
+          as: "categoryDetails",
+        },
+      },
+      { $unwind: "$categoryDetails" },
+      {
+        $group: {
+          _id: "$categoryDetails.categoriesName",
+          totalQuantity: { $sum: "$orderItems.quantity" },
+          totalRevenue: { $sum: "$orderItems.itemTotalPrice" },
+        },
+      },
+      { $sort: { totalQuantity: -1 } },
+      { $limit: 10 },
+    ]);
+
+    // Aggregate top 10 brands
+    const topBrands = await Order.aggregate([
+      { $unwind: "$orderItems" },
+      {
+        $match: {
+          "orderItems.orderStatus": {
+            $in: ["Delivered", "Return-Cancelled", "Return-Requested"],
+          },
+          createdAt: { $gte: startDate },
+        },
+      },
+      {
+        $group: {
+          _id: "$orderItems.product.brand",
+          totalQuantity: { $sum: "$orderItems.quantity" },
+          totalRevenue: { $sum: "$orderItems.itemTotalPrice" },
+        },
+      },
+      { $sort: { totalQuantity: -1 } },
+      { $limit: 10 },
+    ]);
+
+    res.json({
+      salesData,
+      topProducts,
+      topCategories,
+      topBrands,
+    });
+  } catch (error) {
+    console.error("Error fetching dashboard data:", error);
+    res.status(500).json({ message: "Failed to fetch dashboard data." });
+  }
+};
+
+
+
+
 exports.getChartData = async (req, res) => {
   try {
     const { filter } = req.query;

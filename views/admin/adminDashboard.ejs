@@ -1,19 +1,15 @@
 <!DOCTYPE html>
 <html lang="en">
-
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Admin Dashboard</title>
   <script src="https://cdn.tailwindcss.com"></script>
   <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
-  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.6.0/css/all.min.css"
-    integrity="sha512-Kc323vGBEqzTmouAECnVceyQqyqdsSiqLQISBL29aUW4U/M7pSPA/gEUZQqv1cwx4OnYxTxve5UMg5GT6L4JJg=="
-    crossorigin="anonymous" referrerpolicy="no-referrer" />
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.6.0/css/all.min.css" integrity="sha512-Kc323vGBEqzTmouAECnVceyQqyqdsSiqLQISBL29aUW4U/M7pSPA/gEUZQqv1cwx4OnYxTxve5UMg5GT6L4JJg==" crossorigin="anonymous" referrerpolicy="no-referrer" />
   <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
 </head>
-
-<body class="bg-black text-white min-h-screen">
+<body class="bg-black text-gray-200 min-h-screen">
 
   <!-- Sidebar -->
   <%- include("partials/sidebar") %>
@@ -22,9 +18,9 @@
   <main class="ml-64 p-8">
     <!-- Header -->
     <header class="flex items-center justify-between mb-8">
-      <h1 class="text-2xl font-semibold text-gray-200">Admin Dashboard</h1>
+      <h1 class="text-3xl font-semibold text-gray-100">Admin Dashboard</h1>
       <div class="flex items-center space-x-4">
-        <select id="filterType" class="px-4 py-2 text-gray-800 bg-gray-100 rounded-md" onchange="fetchChartData()">
+        <select id="filterType" class="px-4 py-2 text-gray-800 bg-gray-100 rounded-md" onchange="fetchDashboardData()">
           <option value="yearly">Yearly</option>
           <option value="monthly">Monthly</option>
           <option value="weekly">Weekly</option>
@@ -33,37 +29,73 @@
       </div>
     </header>
 
+    <!-- Sales Graph -->
+    <section class="bg-zinc-800 rounded-lg p-6 shadow-md mt-8">
+      <h2 class="text-xl font-semibold mb-4 text-gray-200">Sales Chart</h2>
+      <canvas id="salesChart" class="w-full"></canvas>
+    </section>
 
-    <!-- Chart Section -->
-    <section class="bg-zinc-800 p-6 rounded-lg shadow-md">
-      <h2 class="text-gray-400 mb-4">Sales Chart</h2>
-      <canvas id="salesChart" width="400" height="200"></canvas>
+    <!-- Best Sellers Section -->
+    <section class="bg-zinc-800 rounded-lg p-6 shadow-md mt-8">
+      <h2 class="text-xl font-semibold mb-4 text-gray-200">Best Sellers</h2>
+
+      <!-- Top Products -->
+      <div class="mt-4">
+        <h3 class="text-lg font-semibold text-gray-200">Top Products</h3>
+        <ul id="topProducts" class="list-disc pl-6 text-gray-300"></ul>
+      </div>
+
+      <!-- Top Categories -->
+      <div class="mt-4">
+        <h3 class="text-lg font-semibold text-gray-200">Top Categories</h3>
+        <ul id="topCategories" class="list-disc pl-6 text-gray-300"></ul>
+      </div>
+
+      <!-- Top Brands -->
+      <div class="mt-4">
+        <h3 class="text-lg font-semibold text-gray-200">Top Brands</h3>
+        <ul id="topBrands" class="list-disc pl-6 text-gray-300"></ul>
+      </div>
     </section>
   </main>
 
-
   <script>
     let chart;
-    const fetchChartData = async () => {
-      const filter = document.getElementById('filterType').value;
-      const response = await fetch(`/admin/dashboard/chart-data?filter=${filter}`);
-      const data = await response.json();
 
-      const ctx = document.getElementById('salesChart').getContext('2d');
-      if (chart) {
-        chart.destroy();
+    const fetchDashboardData = async () => {
+      const filter = document.getElementById('filterType').value;
+      try {
+        const response = await fetch(`/admin/dashboard/data?filter=${filter}`);
+        const data = await response.json();
+
+        // Update Sales Chart
+        updateSalesChart(data.salesData);
+
+        // Update Best Sellers Lists
+        updateBestSellers('topProducts', data.topProducts, 'product');
+        updateBestSellers('topCategories', data.topCategories, 'category');
+        updateBestSellers('topBrands', data.topBrands, 'brand');
+      } catch (error) {
+        console.error('Error fetching dashboard data:', error);
       }
+    };
+
+    const updateSalesChart = (salesData) => {
+      const ctx = document.getElementById('salesChart').getContext('2d');
+      if (chart) chart.destroy(); // Destroy the existing chart
       chart = new Chart(ctx, {
         type: 'line',
         data: {
-          labels: data.labels,
-          datasets: [{
-            label: 'Sales',
-            data: data.sales,
-            backgroundColor: 'rgba(54, 162, 235, 0.2)',
-            borderColor: 'rgba(54, 162, 235, 1)',
-            borderWidth: 1
-          }]
+          labels: salesData.map((d) => d._id),
+          datasets: [
+            {
+              label: 'Total Sales',
+              data: salesData.map((d) => d.totalSales),
+              backgroundColor: 'rgba(54, 162, 235, 0.2)',
+              borderColor: 'rgba(54, 162, 235, 1)',
+              borderWidth: 1
+            }
+          ]
         },
         options: {
           responsive: true,
@@ -75,9 +107,18 @@
       });
     };
 
+    const updateBestSellers = (elementId, data, type) => {
+      const list = document.getElementById(elementId);
+      list.innerHTML = ''; // Clear existing list
+      data.forEach((item) => {
+        const li = document.createElement('li');
+        li.textContent = `${item._id}: ${item.totalQuantity} units sold, ₹${item.totalRevenue} revenue`;
+        list.appendChild(li);
+      });
+    };
+
     // Load the chart initially with 'yearly' filter
-    fetchChartData();
+    document.addEventListener('DOMContentLoaded', fetchDashboardData);
   </script>
 </body>
-
 </html>

@@ -18,6 +18,7 @@ router.post("/logout", adminController.logout);
 
 // Admin dashboard
 router.get("/dashboard", adminAuthenticated, adminController.getDashboard);
+router.get("/dashboard/data", adminAuthenticated, adminController.getDashboardData);
 router.get("/dashboard/chart-data", adminAuthenticated, adminController.getChartData);
 
 
