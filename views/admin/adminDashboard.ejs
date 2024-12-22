@@ -72,9 +72,9 @@
         updateSalesChart(data.salesData);
 
         // Update Best Sellers Lists
-        updateBestSellers('topProducts', data.topProducts, 'product');
-        updateBestSellers('topCategories', data.topCategories, 'category');
-        updateBestSellers('topBrands', data.topBrands, 'brand');
+        updateBestSellers('topProducts', data.topProducts);
+        updateBestSellers('topCategories', data.topCategories);
+        updateBestSellers('topBrands', data.topBrands);
       } catch (error) {
         console.error('Error fetching dashboard data:', error);
       }
@@ -86,7 +86,7 @@
       chart = new Chart(ctx, {
         type: 'line',
         data: {
-          labels: salesData.map((d) => d._id),
+          labels: salesData.map((d) => d.date), // Updated to use 'date'
           datasets: [
             {
               label: 'Total Sales',
@@ -107,7 +107,7 @@
       });
     };
 
-    const updateBestSellers = (elementId, data, type) => {
+    const updateBestSellers = (elementId, data) => {
       const list = document.getElementById(elementId);
       list.innerHTML = ''; // Clear existing list
       data.forEach((item) => {

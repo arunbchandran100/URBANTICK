@@ -63,23 +63,32 @@ exports.getDashboardData = async (req, res) => {
   try {
     const { filter } = req.query;
 
-    // Define startDate based on the filter
+    // Get the earliest sale date
+    const firstSale = await Order.findOne({}, { createdAt: 1 }).sort({
+      createdAt: 1,
+    });
+    if (!firstSale) {
+      return res.status(404).json({ message: "No sales data available." });
+    }
+
+    const startDate = new Date(firstSale.createdAt); // Start from the first sale date
     const now = new Date();
-    let startDate;
+
+    let groupBy;
+
+    // Define grouping formats
     if (filter === "yearly") {
-      startDate = new Date(now.getFullYear(), 0, 1);
+      groupBy = "%Y";
     } else if (filter === "monthly") {
-      startDate = new Date(now.getFullYear(), now.getMonth(), 1);
-    } else if (filter === "weekly") {
-      const day = now.getDay();
-      startDate = new Date(now);
-      startDate.setDate(now.getDate() - day);
-    } else if (filter === "daily") {
-      startDate = new Date(now.getFullYear(), now.getMonth(), now.getDate());
+      groupBy = "%Y-%m";
+    } else if (filter === "weekly" || filter === "daily") {
+      groupBy = "%Y-%m-%d";
+    } else {
+      return res.status(400).json({ message: "Invalid filter type." });
     }
 
     // Aggregate orders for sales graph
-    const salesData = await Order.aggregate([
+    const salesDataRaw = await Order.aggregate([
       {
         $match: { createdAt: { $gte: startDate } },
       },
@@ -105,12 +114,7 @@ exports.getDashboardData = async (req, res) => {
         $group: {
           _id: {
             $dateToString: {
-              format:
-                filter === "yearly"
-                  ? "%Y"
-                  : filter === "monthly"
-                  ? "%Y-%m"
-                  : "%Y-%m-%d",
+              format: groupBy,
               date: "$createdAt",
             },
           },
@@ -120,6 +124,41 @@ exports.getDashboardData = async (req, res) => {
       { $sort: { _id: 1 } },
     ]);
 
+    // Generate all possible intervals between the first sale and today
+    const results = [];
+    const dateIntervals = [];
+    let current = new Date(startDate);
+
+    while (current <= now) {
+      let dateLabel;
+
+      if (filter === "yearly") {
+        dateLabel = `${current.getFullYear()}`;
+        current.setFullYear(current.getFullYear() + 1);
+      } else if (filter === "monthly") {
+        dateLabel = `${current.getFullYear()}-${(current.getMonth() + 1)
+          .toString()
+          .padStart(2, "0")}`;
+        current.setMonth(current.getMonth() + 1);
+      } else {
+        dateLabel = current.toISOString().split("T")[0];
+        current.setDate(current.getDate() + (filter === "weekly" ? 7 : 1));
+      }
+
+      dateIntervals.push(dateLabel);
+    }
+
+    const salesMap = Object.fromEntries(
+      salesDataRaw.map((d) => [d._id, d.totalSales])
+    );
+
+    dateIntervals.forEach((interval) => {
+      results.push({
+        date: interval,
+        totalSales: salesMap[interval] || 0,
+      });
+    });
+
     // Aggregate top 10 products
     const topProducts = await Order.aggregate([
       { $unwind: "$orderItems" },
@@ -128,7 +167,6 @@ exports.getDashboardData = async (req, res) => {
           "orderItems.orderStatus": {
             $in: ["Delivered", "Return-Cancelled", "Return-Requested"],
           },
-          createdAt: { $gte: startDate },
         },
       },
       {
@@ -150,12 +188,11 @@ exports.getDashboardData = async (req, res) => {
           "orderItems.orderStatus": {
             $in: ["Delivered", "Return-Cancelled", "Return-Requested"],
           },
-          createdAt: { $gte: startDate },
         },
       },
       {
         $lookup: {
-          from: "products", // Product collection
+          from: "products",
           localField: "orderItems.product.productId",
           foreignField: "_id",
           as: "productDetails",
@@ -164,7 +201,7 @@ exports.getDashboardData = async (req, res) => {
       { $unwind: "$productDetails" },
       {
         $lookup: {
-          from: "categories", // Category collection
+          from: "categories",
           localField: "productDetails.categoriesId",
           foreignField: "_id",
           as: "categoryDetails",
@@ -190,7 +227,6 @@ exports.getDashboardData = async (req, res) => {
           "orderItems.orderStatus": {
             $in: ["Delivered", "Return-Cancelled", "Return-Requested"],
           },
-          createdAt: { $gte: startDate },
         },
       },
       {
@@ -205,7 +241,7 @@ exports.getDashboardData = async (req, res) => {
     ]);
 
     res.json({
-      salesData,
+      salesData: results,
       topProducts,
       topCategories,
       topBrands,
@@ -219,77 +255,6 @@ exports.getDashboardData = async (req, res) => {
 
 
 
-exports.getChartData = async (req, res) => {
-  try {
-    const { filter } = req.query;
-
-    // Define startDate based on the filter
-    const now = new Date();
-    let startDate;
-    if (filter === "yearly") {
-      startDate = new Date(now.getFullYear(), 0, 1);
-    } else if (filter === "monthly") {
-      startDate = new Date(now.getFullYear(), now.getMonth(), 1);
-    } else if (filter === "weekly") {
-      const day = now.getDay();
-      startDate = new Date(now);
-      startDate.setDate(now.getDate() - day);
-    } else if (filter === "daily") {
-      startDate = new Date(now.getFullYear(), now.getMonth(), now.getDate());
-    }
-
-    // Aggregate orders and filter by orderStatus
-    const orders = await Order.aggregate([
-      {
-        $match: { createdAt: { $gte: startDate } },
-      },
-      {
-        $project: {
-          orderItems: {
-            $filter: {
-              input: "$orderItems",
-              as: "item",
-              cond: {
-                $in: [
-                  "$$item.orderStatus",
-                  ["Delivered", "Return-Cancelled", "Return-Requested"],
-                ],
-              },
-            },
-          },
-          createdAt: 1,
-        },
-      },
-      { $unwind: "$orderItems" },
-      {
-        $group: {
-          _id: {
-            $dateToString: {
-              format:
-                filter === "yearly"
-                  ? "%Y"
-                  : filter === "monthly"
-                  ? "%Y-%m"
-                  : "%Y-%m-%d",
-              date: "$createdAt",
-            },
-          },
-          totalSales: { $sum: "$orderItems.itemTotalPrice" },
-        },
-      },
-      { $sort: { _id: 1 } },
-    ]);
-
-    // Prepare labels and sales data
-    const labels = orders.map((o) => o._id);
-    const sales = orders.map((o) => o.totalSales);
-
-    res.json({ labels, sales });
-  } catch (error) {
-    console.error("Error fetching chart data:", error);
-    res.status(500).json({ message: "Failed to fetch chart data." });
-  }
-};
 
 
 
