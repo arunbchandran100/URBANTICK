@@ -3,6 +3,7 @@ const Cart = require("../../models/cartModel");
 const Order = require("../../models/orderModel");
 const ProductVariant = require("../../models/variantSchema");
 const Offer = require("../../models/offerModel");
+const Wallet = require("../../models/walletModel");
 const { ObjectId } = require("mongoose").Types;
 const Coupon = require("../../models/couponModel");
 const mongoose = require("mongoose");
@@ -137,14 +138,29 @@ exports.getCheckout = async (req, res) => {
         validCoupons.push(coupon);
       }
     }
-    console.log(
-      "subtotal " + subtotal + " totalDiscount ",
-      +totalDiscount + " totalAfterDiscount ",
-      totalAfterDiscount
-    );
+
+
+    //Wallet
+    let wallet = await Wallet.findOne({ userId }).lean();
+
+    if (!wallet) {
+      wallet = await Wallet.create({
+        userId,
+        balance_amount: 0,
+        transactions: [],
+      });
+    }
+
+    //console.log(wallet.balance_amount);
+    // console.log(
+    //   "subtotal " + subtotal + " totalDiscount ",
+    //   +totalDiscount + " totalAfterDiscount ",
+    //   totalAfterDiscount
+    // );
     res.render("user/checkOutpage", {
       userAddresses,
       cartItems: formattedCartItems,
+      walletBalance: wallet.balance_amount,
       subtotal,
       totalDiscount,
       totalAfterDiscount,
@@ -393,7 +409,7 @@ exports.placeOrder = async (req, res) => {
 
     if (paymentMethod === "Online Payment") {
 
-    const amountInPaise = Math.round(totalPrice * 100);
+      const amountInPaise = Math.round(totalPrice * 100);
 
 
       const razorpayOrder = await razorpay.orders.create({

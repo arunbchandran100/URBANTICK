@@ -78,10 +78,13 @@
                                 <input type="radio" name="paymentMethod" value="Online Payment" class="mt-1">
                                 <span class="text-gray-800 font-semibold">Online Payment</span>
                             </label>
-                            <!-- <label class="flex items-center gap-3">
-                                <input type="radio" name="paymentMethod" value="Wallet" class="mt-1">
-                                <span class="text-gray-800 font-semibold">Wallet</span>
-                            </label> -->
+                     <label class="flex items-center gap-3">
+    <input type="radio" name="paymentMethod" value="Wallet" class="mt-1">
+    <span class="text-gray-800 font-semibold">Wallet: 
+        <span id="walletBalance" class="font-bold text-lg text-Zinc-400">₹<%= walletBalance.toLocaleString()%> Left</span>
+    </span>
+</label>
+
                         </div>
                     </div>
                 </div>
