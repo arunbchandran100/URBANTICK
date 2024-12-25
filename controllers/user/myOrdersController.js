@@ -92,19 +92,19 @@ exports.getOrderDetails = async (req, res) => {
     const userId = req.session.user._id;
 
     let order = await Order.findOne({ _id: orderId, userId });
-      if (
-        order.payment.paymentMethod === "Online Payment" &&
-        order.payment.paymentStatus === "Pending" &&
-        order.orderItems.some((item) => item.orderStatus === "Processing")
-      ) {
-        // Update individual item statuses
-        order.orderItems.forEach((item) => {
-          item.orderStatus = "Payment Pending";
-        });
-        // Save the updated order
-        await order.save();
-      }
-    
+    if (
+      order.payment.paymentMethod === "Online Payment" &&
+      order.payment.paymentStatus === "Pending" &&
+      order.orderItems.some((item) => item.orderStatus === "Processing")
+    ) {
+      // Update individual item statuses
+      order.orderItems.forEach((item) => {
+        item.orderStatus = "Payment Pending";
+      });
+      // Save the updated order
+      await order.save();
+    }
+
     order = await Order.findOne({ _id: orderId, userId });
 
     if (!order) {
@@ -228,7 +228,7 @@ exports.cancelOrderItem = async (req, res) => {
     const couponAmount = orderItem.CouponAmountOfItem || 0;
     const priceWithoutOffer = orderItem.priceWithoutOffer;
 
-    order.Subtotal -= priceWithoutOffer; 
+    order.Subtotal -= priceWithoutOffer;
     order.totalPrice -= itemTotalPrice;
     order.totalOfferValue -= offerAmount;
     order.totalCouponValue -= couponAmount;
@@ -395,7 +395,7 @@ exports.generateInvoice = async (req, res) => {
     res.setHeader("Content-Disposition", `attachment; filename="${filename}"`);
 
     // Create a PDF document
-    const doc = new PDFDocument();
+    const doc = new PDFDocument({ margin: 50 });
     doc.pipe(res);
 
     // Title
@@ -430,31 +430,70 @@ exports.generateInvoice = async (req, res) => {
     doc.text(`Mobile: ${MobileNumber}`);
     doc.moveDown();
 
-    // Order Items
+    // Order Items Table Header
     doc.fontSize(14).text("Order Items:", { underline: true });
+    doc.moveDown();
+    doc
+      .fontSize(12)
+      .text(
+        "____________________________________________________________________________"
+      );
+    doc
+      .fontSize(12)
+      .text(
+        `S.No       Product                         Brand              Color         Price         Quantity       Total`,
+        { align: "left" }
+      );
+    doc
+      .fontSize(12)
+      .text(
+        "____________________________________________________________________________"
+      );
+
+    // Order Items Table Rows
     validOrderItems.forEach((item, index) => {
       const { productName, brand } = item.product;
       const { color, discountPrice } = item.variant;
-      doc
-        .fontSize(12)
-        .text(
-          `${
-            index + 1
-          }. ${brand} ${productName} (Color: ${color}) - ₹${discountPrice.toFixed(
-            2
-          )} x ${item.quantity} = ₹${(item.itemTotalPrice || 0).toFixed(2)}`
-        );
+      const total = item.itemTotalPrice || 0;
+
+      doc.text(
+        `${
+          index + 1
+        }            ${productName}       ${brand}             ${color}       ₹${discountPrice.toFixed(
+          2
+        )}            ${item.quantity}              ₹${total.toFixed(2)}`
+      );
     });
+
+    doc
+      .fontSize(12)
+      .text(
+        "____________________________________________________________________________"
+      );
     doc.moveDown();
 
-    // Payment Summary
+    // Payment Summary Table
     doc.fontSize(14).text("Payment Summary:", { underline: true });
-    doc.fontSize(12).text(`Subtotal: ₹${order.Subtotal.toFixed(2)}`);
-    doc.text(`Offer Discounts: ₹${order.totalOfferValue.toFixed(2)}`);
-    doc.text(`Coupon Discounts: ₹${order.totalCouponValue.toFixed(2)}`);
-    doc.text(`Total Price: ₹${order.totalPrice.toFixed(2)}`);
-    doc.text(`Payment Method: ${order.payment.paymentMethod}`);
-    doc.text(`Payment Status: ${order.payment.paymentStatus}`);
+    doc.moveDown();
+    const summaryData = [
+      { label: "Subtotal", value: `₹${order.Subtotal.toFixed(2)}` },
+      {
+        label: "Offer Discounts",
+        value: `₹${order.totalOfferValue.toFixed(2)}`,
+      },
+      {
+        label: "Coupon Discounts",
+        value: `₹${order.totalCouponValue.toFixed(2)}`,
+      },
+      { label: "Total Price", value: `₹${order.totalPrice.toFixed(2)}` },
+      { label: "Payment Method", value: `${order.payment.paymentMethod}` },
+      { label: "Payment Status", value: `${order.payment.paymentStatus}` },
+    ];
+
+    summaryData.forEach((row) => {
+      doc.text(`${row.label.padEnd(20)}: ${row.value}`);
+    });
+
     doc.moveDown();
 
     // Thank You Message
@@ -467,3 +506,4 @@ exports.generateInvoice = async (req, res) => {
     res.status(500).json({ message: "Failed to generate invoice" });
   }
 };
+

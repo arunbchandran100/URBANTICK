@@ -78,7 +78,7 @@
 
 
 
-                                            <div class="mt-6">
+                                                <div class="mt-6">
                                                     <button onclick="downloadInvoice('<%= order._id %>')"
                                                         class="w-1/6 bg-black hover:bg-zinc-800 text-white text-sm py-2 rounded-md">
                                                         Download Invoice
@@ -228,9 +228,53 @@
                 });
 
 
-                function downloadInvoice(orderId) {
-                    window.location.href = `/user/order/downloadInvoice/${orderId}`;
-                }
+
+
+async function downloadInvoice(orderId) {
+  try {
+    const response = await fetch(`/user/order/downloadInvoice/${orderId}`);
+    
+    if (response.ok) {
+      const blob = await response.blob(); // Get the response as a Blob
+      const url = window.URL.createObjectURL(blob);
+      const a = document.createElement("a");
+      a.href = url;
+      a.download = `invoice-${orderId}.pdf`; // Set the file name
+      document.body.appendChild(a);
+      a.click();
+      a.remove();
+      window.URL.revokeObjectURL(url);
+
+      // Show success message
+      Swal.fire({
+        icon: "success",
+        title: "Success",
+        text: "Invoice downloaded successfully.",
+        showConfirmButton: true,
+        confirmButtonText: "OK",
+      });
+    } else {
+      const errorData = await response.json();
+      Swal.fire({
+        icon: "error",
+        title: "Error",
+        text: errorData.message || "Failed to download invoice.",
+        showConfirmButton: true,
+        confirmButtonText: "OK",
+      });
+    }
+  } catch (error) {
+    console.error("Error downloading invoice:", error);
+    Swal.fire({
+      icon: "error",
+      title: "Error",
+      text: "Something went wrong while downloading the invoice.",
+      showConfirmButton: true,
+      confirmButtonText: "OK",
+    });
+  }
+}
+
 
 
                 // Cancel Order Item
