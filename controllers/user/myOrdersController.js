@@ -363,7 +363,6 @@ exports.cancelReturnRequest = async (req, res) => {
 
 
 
-
 const PDFDocument = require("pdfkit");
 
 exports.generateInvoice = async (req, res) => {
@@ -383,7 +382,7 @@ exports.generateInvoice = async (req, res) => {
 
     if (validOrderItems.length === 0) {
       return res.status(400).json({
-        message: "No valid items to generate an invoice for this order.",
+        message: "No Active orders to generate an invoice for this order.",
       });
     }
 
@@ -399,17 +398,35 @@ exports.generateInvoice = async (req, res) => {
     doc.pipe(res);
 
     // Title
-    doc.fontSize(18).text("Order Invoice", { align: "center" });
+    doc
+      .fontSize(18)
+      .text("Order Invoice", { align: "center", underline: true });
     doc.moveDown();
 
     // Order details
-    doc.fontSize(12).text(`Order ID: ${order._id}`);
-    doc.text(`Order Date: ${new Date(order.createdAt).toLocaleString()}`);
-    doc.text(`Customer Name: ${order.userName}`);
+    doc
+      .fontSize(12)
+      .font("Helvetica-Bold")
+      .text(`Order ID:`, { continued: true })
+      .font("Helvetica")
+      .text(`${order._id}`);
+    doc
+      .font("Helvetica-Bold")
+      .text(`Order Date:`, { continued: true })
+      .font("Helvetica")
+      .text(`${new Date(order.createdAt).toLocaleString()}`);
+    doc
+      .font("Helvetica-Bold")
+      .text(`Customer Name:`, { continued: true })
+      .font("Helvetica")
+      .text(`${order.userName}`);
     doc.moveDown();
 
     // Shipping Address
-    doc.fontSize(14).text("Shipping Address:", { underline: true });
+    doc
+      .fontSize(14)
+      .font("Helvetica-Bold")
+      .text("Shipping Address:", { underline: true });
     const {
       Name,
       HouseName,
@@ -420,26 +437,62 @@ exports.generateInvoice = async (req, res) => {
       pincode,
       MobileNumber,
     } = order.shippingAddress;
-    doc.fontSize(12).text(`Name: ${Name}`);
-    doc.text(`House: ${HouseName}`);
-    doc.text(`Street: ${LocalityStreet}`);
-    doc.text(`City: ${TownCity}`);
-    doc.text(`State: ${state}`);
-    doc.text(`Country: ${country}`);
-    doc.text(`Pincode: ${pincode}`);
-    doc.text(`Mobile: ${MobileNumber}`);
+    doc
+      .fontSize(12)
+      .font("Helvetica-Bold")
+      .text(`Name:`, { continued: true })
+      .font("Helvetica")
+      .text(` ${Name}`);
+    doc
+      .font("Helvetica-Bold")
+      .text(`House:`, { continued: true })
+      .font("Helvetica")
+      .text(` ${HouseName}`);
+    doc
+      .font("Helvetica-Bold")
+      .text(`Street:`, { continued: true })
+      .font("Helvetica")
+      .text(` ${LocalityStreet}`);
+    doc
+      .font("Helvetica-Bold")
+      .text(`City:`, { continued: true })
+      .font("Helvetica")
+      .text(` ${TownCity}`);
+    doc
+      .font("Helvetica-Bold")
+      .text(`State:`, { continued: true })
+      .font("Helvetica")
+      .text(` ${state}`);
+    doc
+      .font("Helvetica-Bold")
+      .text(`Country:`, { continued: true })
+      .font("Helvetica")
+      .text(` ${country}`);
+    doc
+      .font("Helvetica-Bold")
+      .text(`Pincode:`, { continued: true })
+      .font("Helvetica")
+      .text(` ${pincode}`);
+    doc
+      .font("Helvetica-Bold")
+      .text(`Mobile:`, { continued: true })
+      .font("Helvetica")
+      .text(` ${MobileNumber}`);
     doc.moveDown();
 
     // Order Items Table Header
-    doc.fontSize(14).text("Order Items:", { underline: true });
+    doc
+      .fontSize(14)
+      .font("Helvetica-Bold")
+      .text("Order Items:", { underline: true });
     doc.moveDown();
     doc
       .fontSize(12)
       .text(
-        "____________________________________________________________________________"
+        "___________________________________________________________________________"
       );
     doc
-      .fontSize(12)
+      .font("Helvetica-Bold")
       .text(
         `S.No       Product                         Brand              Color         Price         Quantity       Total`,
         { align: "left" }
@@ -447,7 +500,7 @@ exports.generateInvoice = async (req, res) => {
     doc
       .fontSize(12)
       .text(
-        "____________________________________________________________________________"
+        "___________________________________________________________________________"
       );
 
     // Order Items Table Rows
@@ -456,24 +509,31 @@ exports.generateInvoice = async (req, res) => {
       const { color, discountPrice } = item.variant;
       const total = item.itemTotalPrice || 0;
 
-      doc.text(
-        `${
-          index + 1
-        }            ${productName}       ${brand}             ${color}       ₹${discountPrice.toFixed(
-          2
-        )}            ${item.quantity}              ₹${total.toFixed(2)}`
-      );
+      doc
+        .font("Helvetica")
+        .text(
+          `${(index + 1).toString().padEnd(10)}${productName.padEnd(
+            30
+          )}${brand.padEnd(20)}${color.padEnd(15)}₹${discountPrice
+            .toFixed(2)
+            .padEnd(10)}${item.quantity.toString().padEnd(15)}₹${total.toFixed(
+            2
+          )}`
+        );
     });
 
     doc
       .fontSize(12)
       .text(
-        "____________________________________________________________________________"
+        "___________________________________________________________________________"
       );
     doc.moveDown();
 
     // Payment Summary Table
-    doc.fontSize(14).text("Payment Summary:", { underline: true });
+    doc
+      .fontSize(14)
+      .font("Helvetica-Bold")
+      .text("Payment Summary:", { underline: true });
     doc.moveDown();
     const summaryData = [
       { label: "Subtotal", value: `₹${order.Subtotal.toFixed(2)}` },
@@ -491,13 +551,20 @@ exports.generateInvoice = async (req, res) => {
     ];
 
     summaryData.forEach((row) => {
-      doc.text(`${row.label.padEnd(20)}: ${row.value}`);
+      doc
+        .font("Helvetica-Bold")
+        .text(`${row.label.padEnd(20)}:`, { continued: true })
+        .font("Helvetica")
+        .text(` ${row.value}`);
     });
 
     doc.moveDown();
 
     // Thank You Message
-    doc.fontSize(16).text("Thank you for your order!", { align: "center" });
+    doc
+      .fontSize(16)
+      .font("Helvetica-Bold")
+      .text("Thank you for your order!", { align: "center" });
 
     // Finalize PDF
     doc.end();
@@ -506,4 +573,3 @@ exports.generateInvoice = async (req, res) => {
     res.status(500).json({ message: "Failed to generate invoice" });
   }
 };
-
