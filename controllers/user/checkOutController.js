@@ -406,8 +406,52 @@ exports.placeOrder = async (req, res) => {
     await newOrder.save();
     await Cart.deleteMany({ userId });
 
+    //Wallet
+    if (paymentMethod === "Wallet") {
+      // Find the user's wallet
+      let wallet = await Wallet.findOne({ userId});
+      if (!wallet) {
+        return res.status(400).json({
+          success: false,
+          message: "Wallet not found. Please contact support.",
+        });
+      }
 
-    if (paymentMethod === "Online Payment") {
+      // Check if the wallet has sufficient balance
+      if (wallet.balance_amount < totalPrice) {
+        return res.status(400).json({
+          success: false,
+          message:
+            "Insufficient wallet balance. Please add funds to your wallet.",
+        });
+      }
+
+      // Deduct the amount from the wallet
+      wallet.balance_amount -= totalPrice;
+      wallet.transactions.push({
+        transactionType: "DEBIT",
+        amount: totalPrice,
+        transactionDate: new Date(),
+      });
+
+      // Save the wallet update
+      await wallet.save();
+
+      // Mark the order as paid
+      newOrder.payment = {
+        paymentMethod: "Wallet",
+        paymentStatus: "Paid",
+      };
+
+      // Save the order
+      await newOrder.save();
+
+      return res.status(200).json({
+        success: true,
+        message: "Order placed successfully using wallet payment!",
+        orderId: newOrder._id,
+      });
+    } else if (paymentMethod === "Online Payment") {
 
       const amountInPaise = Math.round(totalPrice * 100);
 

@@ -78,12 +78,13 @@
                                 <input type="radio" name="paymentMethod" value="Online Payment" class="mt-1">
                                 <span class="text-gray-800 font-semibold">Online Payment</span>
                             </label>
-                     <label class="flex items-center gap-3">
-    <input type="radio" name="paymentMethod" value="Wallet" class="mt-1">
-    <span class="text-gray-800 font-semibold">Wallet: 
-        <span id="walletBalance" class="font-bold text-lg text-Zinc-400">₹<%= walletBalance.toLocaleString()%> Left</span>
-    </span>
-</label>
+                            <label class="flex items-center gap-3">
+                                <input type="radio" name="paymentMethod" value="Wallet" class="mt-1">
+                                <span class="text-gray-800 font-semibold">Wallet:
+                                    <span id="walletBalance" class="font-bold text-lg text-Zinc-400">₹<%=
+                                            walletBalance.toLocaleString()%> Left</span>
+                                </span>
+                            </label>
 
                         </div>
                     </div>
@@ -245,7 +246,7 @@
                                         window.location.href = `/user/order/details/${RedOrderId}`; // Redirect to specific order details page
                                     }
                                 });
-                            } else if (paymentMethod === "Cash on Delivery") {
+                            } else if (paymentMethod === "Cash on Delivery" || paymentMethod === "Wallet") {
                                 Swal.fire({
                                     icon: "success",
                                     title: "Order Placed!",
