@@ -9,6 +9,9 @@ const adminAuthenticated = require("../middleware/adminauthmildware");
 //     req.session.admin = true;
 //     next();
 // });
+ 
+
+
 
 // Admin login page
 router.get("/login", adminController.getLogin);

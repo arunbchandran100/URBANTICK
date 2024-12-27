@@ -126,6 +126,7 @@ app.get(
   })
 );
 
+
 app.get("/auth/google/callback", (req, res, next) => {
   passport.authenticate("google", (err, user, info) => {
     if (err) {
@@ -134,7 +135,7 @@ app.get("/auth/google/callback", (req, res, next) => {
       });
     }
 
-    if (!user && info && info.message) {
+    if (!user && info && info.message) { 
       // Display the block message
       return res.render("user/userLogin", { error: info.message });
     }
@@ -160,8 +161,8 @@ app.get("/auth/google/callback", (req, res, next) => {
 //     res.redirect("/");
 //   });
 // });
-
-app.listen(3000, () => {
-  console.log(`Server is running at port 3000`);
+let PORT = process.env.PORT || 3000;
+app.listen(PORT, () => {
+  console.log(`Server is running at port ${PORT}`);
 });
 
