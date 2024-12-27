@@ -81,7 +81,7 @@
                             <label class="flex items-center gap-3">
                                 <input type="radio" name="paymentMethod" value="Wallet" class="mt-1">
                                 <span class="text-gray-800 font-semibold">Wallet:
-                                    <span id="walletBalance" class="font-bold text-lg text-Zinc-400">₹<%=
+                                    <span id="walletBalance"  class="font-bold text-lg text-Zinc-400">₹<%=
                                             walletBalance.toLocaleString()%> Left</span>
                                 </span>
                             </label>
@@ -205,15 +205,30 @@
                 let couponValue = 0;
                 let selectedCouponCode = null;
                 let selectedCouponType = null;
-
+                let total
+                let walletBalance = <%= walletBalance %>;
                 function calculateTotal() {
-                    const total = subtotal - couponValue + shippingCost;
+                    total = subtotal - couponValue + shippingCost;
                     document.getElementById("finalTotal").innerText = `₹${total.toLocaleString()}`;
                 }
 
                 async function placeOrder() {
                     const selectedAddress = document.querySelector("input[name='selectedAddress']:checked")?.value;
                     const paymentMethod = document.querySelector("input[name='paymentMethod']:checked")?.value;
+
+                    if( paymentMethod === "Wallet"){
+                        if(total > walletBalance){
+                            console.log(5555555);
+
+                            Swal.fire({
+                            icon: "error",
+                            title: "Insufficient Wallet Balance",
+                            text:  "Choose Another Payment Method."
+                        })
+                        return
+                        }
+                    }
+
 
                     if (!selectedAddress || !paymentMethod) {
                         Swal.fire("Error", "Please select an address and payment method.", "error");
@@ -272,8 +287,6 @@
                             title: "Error",
                             text: errorMessage,
                         });
-
-
                     }
 
                 }

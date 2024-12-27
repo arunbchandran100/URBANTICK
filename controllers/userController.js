@@ -30,6 +30,13 @@ exports.loginPOST = async (req, res) => {
       });
     }
 
+        if (!user.password) {
+          return res.render("user/userLogin", {
+            error: "Login with Google or use Forgot Password",
+            email,
+          });
+        }
+
     const isMatch = await bcrypt.compare(password, user.password);
     if (!isMatch) {
       return res.render("user/userLogin", {
