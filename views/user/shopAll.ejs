@@ -148,7 +148,7 @@
             <div id="productGrid" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
               <!-- Dynamic product rendering here -->
               <% products.forEach(product=> { %>
-                <div class="bg-white rounded-lg shadow-md p-4 flex flex-col">
+                <div class="bg-white rounded-lg shadow-md p-4 flex flex-col transition-transform transform hover:scale-105">
                   <a href="/product/<%= product._id %>">
                     <img class="w-full h-auto rounded-lg mb-4" src="<%= product.imageUrl %>"
                       alt="<%= product.productName %>" />
@@ -380,7 +380,7 @@
             elements.productGrid.innerHTML = "";
             data.products.forEach((product) => {
               const productCard = `
-    <div class="bg-white rounded-lg shadow-md p-4 flex flex-col">
+    <div class="bg-white rounded-lg shadow-md p-4 flex flex-col transition-transform transform hover:scale-105">
       <a href="/product/${product._id}">
         <img 
           class="w-full h-auto rounded-lg mb-4" 

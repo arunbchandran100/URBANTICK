@@ -44,7 +44,7 @@
                 <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
                     <% wishlistItems.forEach(item=> { %>
                         <div id="wishlist-item-<%= item._id %>"
-                            class="bg-white rounded-lg shadow-md p-4 flex flex-col w-72 mx-auto">
+                            class="bg-white rounded-lg shadow-md p-4 flex flex-col w-72 mx-auto transition-transform transform hover:scale-105">
                             <!-- Product Image -->
                             <a href="/product/<%= item.productId %>">
                                 <img class="w-full h-62 object-cover rounded-lg mb-4"

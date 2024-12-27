@@ -254,7 +254,7 @@
 
       <% let i=0; %>
         <% relatedProducts.forEach(product=> { %> <% if (i < 5) { %>
-            <div class="bg-white rounded-lg shadow-md p-4 flex flex-col">
+            <div class="bg-white rounded-lg shadow-md p-4 flex flex-col transition-transform transform hover:scale-105">
               <a href="/product/<%= product._id %>">
                 <img class="w-full h-auto rounded-lg mb-4" src="<%= product.imageUrl %>"
                   alt="<%= product.productName %>" />
