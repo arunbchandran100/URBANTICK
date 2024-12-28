@@ -107,6 +107,7 @@
                       class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:border-2 focus:border-gray-900"
                       placeholder="Max" />
                   </div>
+
                 </div>
 
                 <div>
@@ -120,10 +121,14 @@
                 </div>
               </div>
 
-              <!-- Reset Button -->
+              <!-- Filter and Reset Button -->
               <div class="mt-6">
+                <button type="button"
+                  class="mt-2 px-8 py-2 mr-2 bg-gray-900 text-white rounded-lg transform transition-transform duration-300 ease-in-out hover:bg-zinc-600 hover:scale-105 active:bg-zinc-700 active:scale-95">
+                  Filter
+                </button>
                 <button id="resetButton"
-                  class="px-4 py-2 bg-zinc-800 text-white rounded-lg transform transition-transform duration-300 ease-in-out hover:bg-zinc-600 hover:scale-105 active:bg-zinc-700 active:scale-95">
+                  class="px-4 py-2  bg-gray-900 text-white rounded-lg transform transition-transform duration-300 ease-in-out hover:bg-zinc-600 hover:scale-105 active:bg-zinc-700 active:scale-95">
                   Reset Filters
                 </button>
               </div>
@@ -148,7 +153,8 @@
             <div id="productGrid" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
               <!-- Dynamic product rendering here -->
               <% products.forEach(product=> { %>
-                <div class="bg-white rounded-lg shadow-md p-4 flex flex-col transition-transform transform hover:scale-105">
+                <div
+                  class="bg-white rounded-lg shadow-md p-4 flex flex-col transition-transform transform hover:scale-105">
                   <a href="/product/<%= product._id %>">
                     <img class="w-full h-auto rounded-lg mb-4" src="<%= product.imageUrl %>"
                       alt="<%= product.productName %>" />
@@ -477,6 +483,8 @@
           elements.stockFilter,
           elements.sortFilter,
           elements.searchInput,
+          elements.minPrice,
+          elements.maxPrice,
         ].forEach((element) => {
           element.addEventListener("change", updateProducts);
         });

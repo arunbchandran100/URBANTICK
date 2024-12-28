@@ -4,106 +4,106 @@ const Variant = require("../../models/variantSchema");
 const mongoose = require("mongoose"); // Import mongoose
 
 exports.shopAll = async (req, res) => {
-    try {
-        const products = await Product.aggregate([
-            {
-                $lookup: {
-                    from: "variants",
-                    localField: "_id",
-                    foreignField: "productId",
-                    as: "variants",
-                },
-            },
-            {
-                $unwind: {
-                    path: "$variants",
-                    preserveNullAndEmptyArrays: true,
-                },
-            },
-            {
-                $project: {
-                    _id: 1,
-                    brand: 1,
-                    productName: 1,
-                    imageUrl: 1,
-                    "variants._id": 1,
-                    "variants.color": 1,
-                    "variants.price": 1,
-                    "variants.rating": 1,
-                    "variants.discountPrice": 1,
-                    "variants.discountPercentage": 1,
-                    "variants.stock": 1,
-                },
-            },
-        ]);
+  try {
+    const products = await Product.aggregate([
+      {
+        $lookup: {
+          from: "variants",
+          localField: "_id",
+          foreignField: "productId",
+          as: "variants",
+        },
+      },
+      {
+        $unwind: {
+          path: "$variants",
+          preserveNullAndEmptyArrays: true,
+        },
+      },
+      {
+        $project: {
+          _id: 1,
+          brand: 1,
+          productName: 1,
+          imageUrl: 1,
+          "variants._id": 1,
+          "variants.color": 1,
+          "variants.price": 1,
+          "variants.rating": 1,
+          "variants.discountPrice": 1,
+          "variants.discountPercentage": 1,
+          "variants.stock": 1,
+        },
+      },
+    ]);
 
-        const formattedProducts = products.map((product) => ({
-            _id: product._id,
-            brand: product.brand,
-            productName: product.productName,
-            imageUrl:
-                Array.isArray(product.imageUrl) && product.imageUrl.length > 0
-                    ? product.imageUrl[0]
-                    : "/images/default-product.jpg",
-            variants_id: product.variants?._id,
-            color: product.variants?.color,
-            price: product.variants?.price || null,
-            rating: product.variants?.rating || null,
-            discountPrice: product.variants?.discountPrice || null,
-            discountPercentage: product.variants?.discountPercentage || null,
-            stock: product.variants.stock,
-        }));
+    const formattedProducts = products.map((product) => ({
+      _id: product._id,
+      brand: product.brand,
+      productName: product.productName,
+      imageUrl:
+        Array.isArray(product.imageUrl) && product.imageUrl.length > 0
+          ? product.imageUrl[0]
+          : "/images/default-product.jpg",
+      variants_id: product.variants?._id,
+      color: product.variants?.color,
+      price: product.variants?.price || null,
+      rating: product.variants?.rating || null,
+      discountPrice: product.variants?.discountPrice || null,
+      discountPercentage: product.variants?.discountPercentage || null,
+      stock: product.variants.stock,
+    }));
 
-        // console.log(formattedProducts);
-        res.render("user/shopAll", { products: formattedProducts });
-    } catch (err) {
-        console.error("Error fetching products for Shop All page:", err.message);
-        res.status(500).send("Server Error");
-    }
+    // console.log(formattedProducts);
+    res.render("user/shopAll", { products: formattedProducts });
+  } catch (err) {
+    console.error("Error fetching products for Shop All page:", err.message);
+    res.status(500).send("Server Error");
+  }
 };
 
 
 exports.getFilterOptions = async (req, res) => {
-    try {
-        const brands = await Product.distinct("brand");
-        const colors = await Product.aggregate([
-            {
-                $lookup: {
-                    from: "variants",
-                    localField: "_id",
-                    foreignField: "productId",
-                    as: "variants",
-                },
-            },
-            {
-                $unwind: "$variants",
-            },
-            {
-                $group: {
-                    _id: null,
-                    uniqueColors: { $addToSet: "$variants.color" },
-                },
-            },
-            {
-                $project: {
-                    _id: 0,
-                    uniqueColors: 1,
-                },
-            },
-        ]);
+  try {
+    const brands = await Product.distinct("brand");
+    const colors = await Product.aggregate([
+      {
+        $lookup: {
+          from: "variants",
+          localField: "_id",
+          foreignField: "productId",
+          as: "variants",
+        },
+      },
+      {
+        $unwind: "$variants",
+      },
+      {
+        $group: {
+          _id: null,
+          uniqueColors: { $addToSet: "$variants.color" },
+        },
+      },
+      {
+        $project: {
+          _id: 0,
+          uniqueColors: 1,
+        },
+      },
+    ]);
 
-        const categories = await Category.find({}, { _id: 1, categoriesName: 1 });
+    const categories = await Category.find({}, { _id: 1, categoriesName: 1 });
 
-        // console.log(categories);
-        res.status(200).json({
-            brands,
-            colors: colors[0]?.uniqueColors || [],
-            categories, // Send all available categories
-        });
-    } catch (error) {
-        console.error("Error fetching filter options:", error);
-        res.status(500).json({ error: "Failed to fetch filter options" });
-    }
+    // console.log(categories);
+    res.status(200).json({
+      brands,
+      colors: colors[0]?.uniqueColors || [],
+      categories, // Send all available categories
+    });
+  } catch (error) {
+    console.error("Error fetching filter options:", error);
+    res.status(500).json({ error: "Failed to fetch filter options" });
+  }
 };
 
 
@@ -133,6 +133,8 @@ exports.searchAndFilterProducts = async (req, res) => {
         { brand: searchRegex },
       ];
     }
+
+    console.log(brand + " " + minPrice + "  " + maxPrice);
 
     // Price filter
     if (minPrice || maxPrice) {
