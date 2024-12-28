@@ -9,7 +9,7 @@ router.use((req, res, next) => {
     req.session.admin = true;
     next();
 });
- 
+
 
 
 
@@ -55,7 +55,7 @@ router.post("/products/:id/image", uploadMiddleware, adminProduct.postEditProduc
 
 router.post("/products/delete/:id", adminProduct.deleteProduct);
 
-router.get("/products/add/variant",  adminAuthenticated,adminProduct.getAddvariant);
+router.get("/products/add/variant", adminAuthenticated, adminProduct.getAddvariant);
 router.post("/products/add/variant", adminProduct.postAddvariant);
 // router.post("/products/update/:id", adminProduct.updatevariant);
 // router.post("/products/delete/:id", adminProduct.deletevariant);
@@ -65,7 +65,7 @@ router.post("/products/add/variant", adminProduct.postAddvariant);
 const adminOrders = require("../controllers/admin/adminOrdersController");
 
 router.get("/orders", adminAuthenticated, adminOrders.getAdminOrders);
-router.get("/orders/details/:id",  adminAuthenticated, adminOrders.getAdminOrdersDetails);
+router.get("/orders/details/:id", adminAuthenticated, adminOrders.getAdminOrdersDetails);
 router.post("/orders/update-status", adminOrders.updateOrderStatus);
 router.post("/order/approve-return", adminOrders.handleReturnRequest);
 router.post("/order/reject-return", adminOrders.handleReturnRequest);

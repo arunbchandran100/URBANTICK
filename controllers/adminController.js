@@ -71,12 +71,9 @@ exports.getDashboardData = async (req, res) => {
       return res.status(404).json({ message: "No sales data available." });
     }
 
-    const startDate = new Date(firstSale.createdAt); // Start from the first sale date
+    const startDate = new Date(firstSale.createdAt);
     const now = new Date();
-
-    // Ensure `now` includes the end of the day for today
     now.setHours(23, 59, 59, 999);
-
     let groupBy;
 
     // Define grouping formats
@@ -93,7 +90,7 @@ exports.getDashboardData = async (req, res) => {
     // Aggregate orders for sales graph
     const salesDataRaw = await Order.aggregate([
       {
-        $match: { createdAt: { $gte: startDate, $lte: now } }, // Include today's sales
+        $match: { createdAt: { $gte: startDate, $lte: now } },
       },
       {
         $project: {
@@ -127,42 +124,112 @@ exports.getDashboardData = async (req, res) => {
       { $sort: { _id: 1 } },
     ]);
 
-    // Generate all possible intervals between the first sale and today
-    const results = [];
-    const dateIntervals = [];
-    let current = new Date(startDate);
-
-    while (current <= now) {
-      let dateLabel;
-
-      if (filter === "yearly") {
-        dateLabel = `${current.getFullYear()}`;
-        current.setFullYear(current.getFullYear() + 1);
-      } else if (filter === "monthly") {
-        dateLabel = `${current.getFullYear()}-${(current.getMonth() + 1)
-          .toString()
-          .padStart(2, "0")}`;
-        current.setMonth(current.getMonth() + 1);
-      } else {
-        dateLabel = current.toISOString().split("T")[0];
-        current.setDate(current.getDate() + (filter === "weekly" ? 7 : 1));
-      }
-
-      dateIntervals.push(dateLabel);
+    // Helper function to get week number of the month
+    function getWeekOfMonth(date) {
+      const firstDayOfMonth = new Date(date.getFullYear(), date.getMonth(), 1);
+      const firstWeekday = firstDayOfMonth.getDay();
+      const offsetDate = date.getDate() + firstWeekday - 1;
+      return Math.floor(offsetDate / 7) + 1;
     }
 
-    const salesMap = Object.fromEntries(
-      salesDataRaw.map((d) => [d._id, d.totalSales])
-    );
+    // Helper function to get ordinal suffix
+    function getWeekSuffix(num) {
+      const j = num % 10;
+      const k = num % 100;
+      if (j == 1 && k != 11) {
+        return "st";
+      }
+      if (j == 2 && k != 12) {
+        return "nd";
+      }
+      if (j == 3 && k != 13) {
+        return "rd";
+      }
+      return "th";
+    }
 
-    dateIntervals.forEach((interval) => {
-      results.push({
-        date: interval,
-        totalSales: salesMap[interval] || 0,
+    // Generate all possible intervals between the first sale and today
+    const results = [];
+    if (filter === "weekly") {
+      const weeklyData = new Map();
+      let current = new Date(startDate);
+
+      while (current <= now) {
+        const year = current.getFullYear();
+        const month = current.getMonth() + 1;
+        const weekNum = getWeekOfMonth(current);
+        const weekLabel = `${weekNum}${getWeekSuffix(
+          weekNum
+        )} week of ${month}/${year}`;
+
+        // Find the end of the week (Saturday)
+        const weekEnd = new Date(current);
+        while (weekEnd.getDay() !== 6 && weekEnd <= now) {
+          weekEnd.setDate(weekEnd.getDate() + 1);
+        }
+
+        // Sum up sales for all days in this week
+        let weekTotal = 0;
+        const weekStart = new Date(current);
+        while (weekStart <= weekEnd && weekStart <= now) {
+          const dateStr = weekStart.toISOString().split("T")[0];
+          const dailySales = salesDataRaw.find((d) => d._id === dateStr);
+          if (dailySales) {
+            weekTotal += dailySales.totalSales;
+          }
+          weekStart.setDate(weekStart.getDate() + 1);
+        }
+
+        if (!weeklyData.has(weekLabel)) {
+          weeklyData.set(weekLabel, weekTotal);
+        }
+
+        // Move to next week
+        current.setDate(current.getDate() + 7);
+      }
+
+      // Convert Map to array of objects
+      weeklyData.forEach((totalSales, date) => {
+        results.push({
+          date,
+          totalSales,
+        });
       });
-    });
+    } else {
+      // Handle yearly, monthly, and daily filters
+      const dateIntervals = [];
+      let current = new Date(startDate);
 
+      while (current <= now) {
+        let dateLabel;
 
+        if (filter === "yearly") {
+          dateLabel = `${current.getFullYear()}`;
+          current.setFullYear(current.getFullYear() + 1);
+        } else if (filter === "monthly") {
+          dateLabel = `${current.getFullYear()}-${(current.getMonth() + 1)
+            .toString()
+            .padStart(2, "0")}`;
+          current.setMonth(current.getMonth() + 1);
+        } else if (filter === "daily") {
+          dateLabel = current.toISOString().split("T")[0];
+          current.setDate(current.getDate() + 1);
+        }
+
+        dateIntervals.push(dateLabel);
+      }
+
+      const salesMap = Object.fromEntries(
+        salesDataRaw.map((d) => [d._id, d.totalSales])
+      );
+
+      dateIntervals.forEach((interval) => {
+        results.push({
+          date: interval,
+          totalSales: salesMap[interval] || 0,
+        });
+      });
+    }
 
     // Aggregate top 10 products
     const topProducts = await Order.aggregate([
