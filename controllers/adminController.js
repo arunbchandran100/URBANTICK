@@ -74,6 +74,9 @@ exports.getDashboardData = async (req, res) => {
     const startDate = new Date(firstSale.createdAt); // Start from the first sale date
     const now = new Date();
 
+    // Ensure `now` includes the end of the day for today
+    now.setHours(23, 59, 59, 999);
+
     let groupBy;
 
     // Define grouping formats
@@ -90,7 +93,7 @@ exports.getDashboardData = async (req, res) => {
     // Aggregate orders for sales graph
     const salesDataRaw = await Order.aggregate([
       {
-        $match: { createdAt: { $gte: startDate } },
+        $match: { createdAt: { $gte: startDate, $lte: now } }, // Include today's sales
       },
       {
         $project: {
@@ -158,6 +161,8 @@ exports.getDashboardData = async (req, res) => {
         totalSales: salesMap[interval] || 0,
       });
     });
+
+
 
     // Aggregate top 10 products
     const topProducts = await Order.aggregate([
