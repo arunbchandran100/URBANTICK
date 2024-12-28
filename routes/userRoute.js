@@ -42,6 +42,7 @@ router.post("/user/logout", userProfileController.logoutPOST);
 
 
 //--------------------Home Page --------------------
+router.get("/", User.home);
 router.get("/home", User.home);
 
 
