@@ -157,11 +157,13 @@ app.get("/auth/google/callback", (req, res, next) => {
   })(req, res, next);
 });
 
-// app.get("/logout", (req, res) => {
-//   req.logout(() => {
-//     res.redirect("/");
-//   });
-// });
+
+
+app.use((req, res, next) => {
+  res.status(404).render("publicUser/partials/404", { title: "Page Not Found" });
+});
+
+
 let PORT = process.env.PORT || 3000;
 app.listen(PORT, () => {
   console.log(`Server is running at port ${PORT}`);

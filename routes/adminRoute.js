@@ -5,10 +5,10 @@ const uploadMiddleware = require("../middleware/uploadMiddleware");
 const adminAuthenticated = require("../middleware/adminauthmildware");
 
 
-router.use((req, res, next) => {
-    req.session.admin = true;
-    next();
-});
+// router.use((req, res, next) => {
+//     req.session.admin = true;
+//     next();
+// });
 
 
 
@@ -95,6 +95,7 @@ const adminSalesReport = require("../controllers/admin/adminSalesReportControlle
 router.get("/salesreport", adminAuthenticated, adminSalesReport.getSalesReport);
 router.get("/sales-report/pdf", adminSalesReport.downloadPDF);
 router.get("/sales-report/excel", adminSalesReport.downloadExcel);
+
 
 
 module.exports = router;

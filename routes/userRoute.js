@@ -65,7 +65,7 @@ router.get("/product/getcolor/variant", User.getVariantDetails);
 
 //User Dashboard 
 //-------------------- Personal info Dashboard --------------------
-router.get("/user/profile", userAuthenticated,userProfileController.getPersonalInformation);
+router.get("/user/profile", userAuthenticated, userProfileController.getPersonalInformation);
 router.post("/user/profile", userProfileController.updatePersonalInformation);
 
 
@@ -74,10 +74,10 @@ router.post("/user/profile", userProfileController.updatePersonalInformation);
 router.post("/user/address/add", userProfileController.addAddress);
 
 // Get all addresses
-router.get("/user/address", userAuthenticated,userProfileController.getUserAddresses);
+router.get("/user/address", userAuthenticated, userProfileController.getUserAddresses);
 
 // Update an address
-router.get("/user/address/edit/:id", userAuthenticated,userProfileController.getEditAddress);
+router.get("/user/address/edit/:id", userAuthenticated, userProfileController.getEditAddress);
 router.post("/user/address/edit/:id", userProfileController.updateAddress);
 
 // Delete an address
@@ -92,8 +92,8 @@ const myOrders = require("../controllers/user/myOrdersController");
 router.get("/user/orders", userAuthenticated, myOrders.getMyOrders);
 
 // View order Details
-router.get("/user/order/details/:id",userAuthenticated, myOrders.getOrderDetails);
-router.get("/user/order/downloadInvoice/:orderId", userAuthenticated,myOrders.generateInvoice);
+router.get("/user/order/details/:id", userAuthenticated, myOrders.getOrderDetails);
+router.get("/user/order/downloadInvoice/:orderId", userAuthenticated, myOrders.generateInvoice);
 
 router.post("/order/cancel", myOrders.cancelOrderItem);
 
@@ -106,13 +106,13 @@ router.post("/order/cancel-return", myOrders.cancelReturnRequest);
 //-------------------- Wallet Dashboard --------------------
 const userWallet = require("../controllers/user/walletController");
 
-router.get("/user/wallet", userAuthenticated,userWallet.getWallet);
+router.get("/user/wallet", userAuthenticated, userWallet.getWallet);
 
 
 //-------------------- Change password Dashboard --------------------
 const changePassword = require("../controllers/user/changePasswordController");
 
-router.get("/user/changePassword", userAuthenticated,changePassword.getChangePassword);
+router.get("/user/changePassword", userAuthenticated, changePassword.getChangePassword);
 router.post("/user/changePassword", changePassword.postChangePassword);
 
 
@@ -120,7 +120,7 @@ router.post("/user/changePassword", changePassword.postChangePassword);
 const wishlistController = require("../controllers/user/wishlistController");
 
 router.get("/user/wishlist", userAuthenticated, wishlistController.getWishlist);
-router.post("/wishlist/add",  wishlistController.addToWishlist);
+router.post("/wishlist/add", wishlistController.addToWishlist);
 router.delete('/wishlist/remove/:wishlistId', wishlistController.removeFromWishlist);
 
 
@@ -149,5 +149,7 @@ router.get("/cart/checkout", userAuthenticated, checkoutController.getCheckout);
 router.post("/user/checkout", checkoutController.placeOrder);
 router.post("/user/order/verify-payment", checkoutController.verifyPayment);
 router.get("/user/order/retry-payment/:orderId", checkoutController.retryPayment);
+
+
 
 module.exports = router;
