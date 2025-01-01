@@ -375,6 +375,7 @@ exports.placeOrder = async (req, res) => {
         .json({ error: "Use Online Payment For orders Above 1000" });
     }
 
+    //console.log("llllll total price for order" + totalPrice);
     const newOrder = new Order({
       userId,
       userName: req.session.user.fullName,
@@ -409,7 +410,7 @@ exports.placeOrder = async (req, res) => {
     //Wallet
     if (paymentMethod === "Wallet") {
       // Find the user's wallet
-      let wallet = await Wallet.findOne({ userId});
+      let wallet = await Wallet.findOne({ userId });
       if (!wallet) {
         return res.status(400).json({
           success: false,
@@ -453,7 +454,10 @@ exports.placeOrder = async (req, res) => {
       });
     } else if (paymentMethod === "Online Payment") {
 
+      //console.log("online payment amount" + totalPrice);
+
       const amountInPaise = Math.round(totalPrice * 100);
+      //console.log("online payment amount paisa" + amountInPaise);
 
 
       const razorpayOrder = await razorpay.orders.create({

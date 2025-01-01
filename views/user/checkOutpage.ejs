@@ -200,6 +200,7 @@
             <script>
                 let RedOrderId;
                 let subtotal = <%= totalAfterDiscount %>;
+                let subtotal_without_offer = <%= subtotal %>;
                 let totalDiscount = <%= totalDiscount %>;
                 let shippingCost = 0;
                 let couponValue = 0;
@@ -218,7 +219,7 @@
 
                     if( paymentMethod === "Wallet"){
                         if(total > walletBalance){
-                            console.log(5555555);
+                            //console.log(5555555);
 
                             Swal.fire({
                             icon: "error",
@@ -245,8 +246,8 @@
                         if (response.status === 200) {
                             const data = response.data;
                             RedOrderId = data.orderId;
-                            console.log('order id is ');
-                            console.log(RedOrderId);
+                            //console.log('order id is ');
+                            //console.log(RedOrderId);
                             if (paymentMethod === "Online Payment") {
                                 handleRazorpayPayment(data.order);
                                 Swal.fire({
@@ -257,7 +258,7 @@
                                     confirmButtonText: "OK",
                                 }).then((result) => {
                                     if (result.isConfirmed) {
-                                        console.log(RedOrderId);
+                                        //console.log(RedOrderId);
                                         window.location.href = `/user/order/details/${RedOrderId}`; // Redirect to specific order details page
                                     }
                                 });
@@ -364,8 +365,10 @@
 
                 // Handle coupon selection
                 function selectCoupon(couponCode, value, type) {
+                    //console.log("Selected Coupon:", couponCode, value, type);
+                    //console.log('subtotal' + subtotal);
                     selectedCouponCode = couponCode;
-                    couponValue = type === 'percentage' ? (subtotal * value) / 100 : value;
+                    couponValue = type === 'percentage' ? (subtotal_without_offer * value) / 100 : value;
                     document.getElementById("applyCouponBtn").disabled = false;
                 }
 

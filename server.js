@@ -36,7 +36,7 @@ app.use(getCartAndWishlistQuantity);
 
 // app.use((req, res, next) => {
 //   req.session.user = {
-//     _id: "676e2cd99cf68bc36cfc391b",
+//     _id: "676eabd20e34593b603fb0a8",
 //     fullName: "Arun b chandran",
 //     email: "arunbchandran100@gmail.com",
 //     password: "$2a$10$fk3CxhoyRYD2yXd7O6QFuOUlf1OT1eWZqG84TbYkhG6xIfUhrK5l.",
