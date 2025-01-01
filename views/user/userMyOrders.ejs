@@ -34,7 +34,8 @@
                                     <p class="text-sm font-semibold text-gray-600">Order
                                         ID:
                                         <span class="text-gray-800">
-                                            <%= order._id %>
+                                            <%= order._id ? '#' + order._id.toString().slice(-8) : "Unknown Status" %>
+
                                         </span>
                                     </p>
                                     <p class="text-sm text-gray-500">Order Date: <%= order.orderDate %>

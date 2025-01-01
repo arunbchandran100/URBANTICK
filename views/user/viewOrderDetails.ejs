@@ -27,7 +27,8 @@
                 <!-- Section 1: Order Information -->
                 <div class="mb-6 border border-gray-300 rounded-lg bg-white p-6 shadow-md">
                     <p class="text-l font-semibold text-gray-800">Order ID: <span class="text-gray-800">
-                            <%= order._id %>
+                            <%= order._id ? '#' + order._id.toString().slice(-8) : "Unknown Status" %>
+
                         </span></p>
                     <p class="text-sm text-gray-500">Order Date: <%= order.orderDate %>
                     </p>

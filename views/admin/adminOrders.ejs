@@ -51,9 +51,11 @@
                                     <%= order.userId?.fullName || "Unknown User" %>
                                 </td>
                                 <!-- Order Status -->
-                                <td class="py-3 px-4 text-slate-300 ">
-                                    <%= order._id || "Unknown Status" %>
-                                </td>
+<td class="py-3 px-4 text-slate-300">
+  <%= order._id ? '#' + order._id.toString().slice(-8) : "Unknown Status" %>
+</td>
+
+
                                 <!-- Date -->
                                 <td class="py-3 px-4 text-slate-100">
                                     <%= new Date(order.createdAt).toLocaleString('en-US', { year: 'numeric' ,
