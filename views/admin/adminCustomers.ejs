@@ -18,26 +18,14 @@
     />
   </head>
   <body class="bg-black text-white min-h-screen">
-  <!-- Sidebar -->
-   <%- include("partials/sidebar")  %>
+    <!-- Sidebar -->
+    <%- include("partials/sidebar") %>
 
     <!-- Main Content -->
     <main class="ml-64 p-8">
       <!-- Header -->
       <header class="flex items-center justify-between mb-8">
         <h1 class="text-2xl font-semibold text-gray-200">Customers</h1>
-        <div class="flex items-center space-x-4">
-          <!-- <div class="relative">
-            <input
-              type="text"
-              placeholder="Search"
-              class="bg-gray-800 text-white p-2 rounded pl-10 focus:outline-none"
-            />
-            <span class="absolute left-3 top-2 text-gray-400">
-              <i class="material-icons">search</i>
-            </span>
-          </div> -->
-        </div>
       </header>
 
       <!-- Customer Table -->
@@ -46,12 +34,10 @@
           <thead>
             <tr class="border-b border-gray-700">
               <th class="py-3 px-4">S.No</th>
-              <!-- Added Serial Number Column -->
               <th class="py-3 px-4">Name</th>
               <th class="py-3 px-4">Email</th>
               <th class="py-3 px-4">Mobile</th>
               <th class="py-3 px-4">Status</th>
-              <!-- Added Status Column -->
               <th class="py-3 px-4">Action</th>
             </tr>
           </thead>
@@ -61,29 +47,22 @@
               <td class="py-3 px-4 text-white">
                 <%= (currentPage - 1) * 12 + index + 1 %>
               </td>
-              <!-- Adjusted Serial Number for Pagination -->
-
               <td class="py-3 px-4 text-white"><%= customer.fullName %></td>
               <td class="py-3 px-4 text-white"><%= customer.email %></td>
               <td class="py-3 px-4 text-white"><%= customer.mobile %></td>
               <td
+                id="statusText-<%= customer._id %>"
                 class="py-3 px-4 <%= customer.status === 'blocked' ? 'text-red-500' : 'text-white' %>"
               >
                 <%= customer.status %>
               </td>
-              <!-- Added Conditional Status -->
-              <td class="py-3 px-4 flex space-x-2">
+              <td class="py-3 px-4">
                 <button
-                  class="bg-green-500 text-white px-3 py-1 rounded hover:bg-green-600"
-                  onclick="updateStatus('<%= customer._id %>', 'active')"
+                  id="statusButton-<%= customer._id %>"
+                  class="px-3 py-1 rounded text-white <%= customer.status === 'blocked' ? 'bg-green-500 hover:bg-green-600' : 'bg-red-500 hover:bg-red-600' %>"
+                  onclick="toggleStatus('<%= customer._id %>', '<%= customer.status %>')"
                 >
-                  UnBlock
-                </button>
-                <button
-                  class="bg-red-500 text-white px-3 py-1 rounded hover:bg-red-600"
-                  onclick="updateStatus('<%= customer._id %>', 'blocked')"
-                >
-                  Block
+                  <%= customer.status === 'blocked' ? 'Unblock' : 'Block' %>
                 </button>
               </td>
             </tr>
@@ -99,13 +78,15 @@
             class="bg-gray-700 text-white px-3 py-1 rounded hover:bg-gray-600"
             >Previous</a
           >
-          <% } %> <% for (let i = 1; i <= totalPages; i++) { %>
+          <% } %>
+          <% for (let i = 1; i <= totalPages; i++) { %>
           <a
             href="/admin/customers?page=<%= i %>"
             class="bg-gray-700 text-white px-3 py-1 rounded hover:bg-gray-600"
             ><%= i %></a
           >
-          <% } %> <% if (currentPage < totalPages) { %>
+          <% } %>
+          <% if (currentPage < totalPages) { %>
           <a
             href="/admin/customers?page=<%= currentPage + 1 %>"
             class="bg-gray-700 text-white px-3 py-1 rounded hover:bg-gray-600"
@@ -117,18 +98,42 @@
     </main>
 
     <script>
-      function updateStatus(customerId, status) {
+      function toggleStatus(customerId, currentStatus) {
+        const newStatus = currentStatus === 'blocked' ? 'active' : 'blocked';
+
         fetch(`/admin/customers/updateStatus/${customerId}`, {
           method: "POST",
           headers: {
             "Content-Type": "application/json",
           },
-          body: JSON.stringify({ status }),
+          body: JSON.stringify({ status: newStatus }),
         })
           .then((response) => response.json())
           .then((data) => {
             if (data.success) {
-              location.reload(); 
+              // Update the button
+              const button = document.getElementById(`statusButton-${customerId}`);
+              if (newStatus === 'blocked') {
+                button.textContent = "Unblock";
+                button.classList.remove('bg-red-500', 'hover:bg-red-600');
+                button.classList.add('bg-green-500', 'hover:bg-green-600');
+              } else {
+                button.textContent = "Block";
+                button.classList.remove('bg-green-500', 'hover:bg-green-600');
+                button.classList.add('bg-red-500', 'hover:bg-red-600');
+              }
+              button.setAttribute("onclick", `toggleStatus('${customerId}', '${newStatus}')`);
+
+              // Update the status text
+              const statusText = document.getElementById(`statusText-${customerId}`);
+              statusText.textContent = newStatus;
+              if (newStatus === 'blocked') {
+                statusText.classList.remove('text-white');
+                statusText.classList.add('text-red-500');
+              } else {
+                statusText.classList.remove('text-red-500');
+                statusText.classList.add('text-white');
+              }
             } else {
               alert("Error updating status");
             }
